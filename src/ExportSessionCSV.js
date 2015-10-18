@@ -15,7 +15,7 @@ ExportSessionCSV.prototype.getCSVData = function() {
 
     annotations.forEach(function(annotation) {
 
-        dateFormat = getDateFormat(annotation.getTimeStamp());
+        dateFormat = annotation.getTimeStamp().toString('dd-MM-yyyy HH:mm');
         //csvData.push([annotation.getTimeStamp().toLocaleDateString("en-GB",dateFormatOptions), annotation.constructor.name, annotation.getName(),annotation.getURL()])
         dataString = dateFormat + "," + annotation.constructor.name + "," + annotation.getName() + "," + annotation.getURL();
 
@@ -29,9 +29,13 @@ ExportSessionCSV.prototype.getCSVHeader = function() {
     return "TimeStamp,Type,Name,URL";
 };
 
-function getDateFormat(date) {
-//    var dateFormat = date.getDate() + "/" + date.getMonth() + 1 + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
-
-    var dateString= date.toString('dd-MM-yyyy HH:mm');
-    return dateString;
+ExportSessionCSV.prototype.donwloadCSVFile = function() {
+    var pom = document.createElement('a');
+    var csvContent=actualCSV; //here we load our csv data
+    var blob = new Blob([csvContent],{type: 'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    pom.href = url;
+    pom.setAttribute('download', 'foo.csv');
+    pom.click();
 };
+

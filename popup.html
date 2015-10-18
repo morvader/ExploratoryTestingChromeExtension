@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+    <title>Reporting options</title>
+    <script src="src/Session.js"></script>
+    <script src="src/Annotation.js"></script>
+    <script src="src/ExportSessionCSV.js"></script>
+
+    <script src="popup.js"></script>
+</head>
+
+<body>
+<ul class="menu">Choose an option
+
+    <li>
+        <div id="reportBug">
+            <button id="BugBtn" onclick="showBugReport()">Bug</button>
+            <div id="addNewBug" style="display:none">
+                <textarea id="newBugDescription" rows="2" cols="40"></textarea>
+                <button onclick="cancelAnnotation()">Cancel</button>
+                <button id="addNewBugBtn" onclick="addNewBug()">Add</button>
+            </div>
+        </div>
+    </li>
+    <li>
+        <button id="NoteBtn" onclick="showNoteReport()">Note</button>
+        <div id="addNewNote" style="display:none">
+            <textarea id="newNoteDescription" rows="2" cols="40"></textarea>
+            <button onclick="cancelAnnotation()">Cancel</button>
+            <button id="addNewNoteBtn" onclick="addNewNote()">Add</button>
+        </div>
+    </li>
+    <li>
+        <button id="QuestionBtn" onclick="showQuestionReport()">Question</button>
+        <div id="addNewQuestion" style="display:none">
+            <textarea id="newQuestionDescription" rows="2" cols="40"></textarea>
+            <button onclick="cancelAnnotation()">Cancel</button>
+            <button id="addNewQuestionBtn" onclick="addNewQuestion()">Add</button>
+        </div>
+    </li>
+    <li>
+        <button id="IdeaBtn" onclick="showIdeaReport()">Idea</button>
+        <div id="addNewIdea" style="display:none">
+            <textarea id="newIdeaDescription" rows="2" cols="40"></textarea>
+            <button onclick="cancelAnnotation()">Cancel</button>
+            <button id="addNewIdeaBtn" onclick="addNewIdea()">Add</button>
+        </div>
+    </li>
+</ul>
+
+<div class="sessionOptions">
+    <button id="resetBtn" onclick="clearSession()">Reset</button>
+    <button id="previewBtn">Preview</button>
+    <button id="exportCSVBtn" onclick="exportSesstionCSV()">Export CSV</button>
+</div>
+
+</body>
+</html>
