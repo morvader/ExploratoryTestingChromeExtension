@@ -10,7 +10,11 @@ Session.prototype.getBrowserInfo = function() {
 };
 
 Session.prototype.getStartDateTime = function() {
-  return this.StartDateTime;
+  return new Date(this.StartDateTime);
+};
+
+Session.prototype.clearAnnotations = function() {
+  this.annotations = new Array();
 };
 
 Session.prototype.getAnnotations = function() {

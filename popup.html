@@ -5,12 +5,14 @@
     <script src="src/Session.js"></script>
     <script src="src/Annotation.js"></script>
     <script src="src/ExportSessionCSV.js"></script>
+    <script src="lib/browserInfo.js"></script>
+    <script src="lib/date.js"></script>
 
     <script src="popup.js"></script>
 </head>
 
 <body>
-<ul class="menu">Choose an option
+<ul class="menu">New Annotation
 
     <li>
         <div id="reportBug">
@@ -18,7 +20,7 @@
             <div id="addNewBug" style="display:none">
                 <textarea id="newBugDescription" rows="2" cols="40"></textarea>
                 <button onclick="cancelAnnotation()">Cancel</button>
-                <button id="addNewBugBtn" onclick="addNewBug()">Add</button>
+                <button id="addNewBugBtn">Add</button>
             </div>
         </div>
     </li>
