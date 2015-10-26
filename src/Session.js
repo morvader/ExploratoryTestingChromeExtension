@@ -21,6 +21,31 @@ Session.prototype.getAnnotations = function() {
   return this.annotations;
 };
 
+Session.prototype.getBugs = function() {
+  return this.annotations.filter(function(item){
+       return (item instanceof Bug);
+   });
+};
+
+Session.prototype.getNotes = function() {
+  return this.annotations.filter(function(item){
+         return (item instanceof Note);
+     });
+};
+
+Session.prototype.getIdeas = function() {
+  return this.annotations.filter(function(item){
+         return (item instanceof Idea);
+     });
+};
+
+Session.prototype.getQuestions = function() {
+   return this.annotations.filter(function(item){
+        return (item instanceof Question);
+    });
+};
+
+
 Session.prototype.addBug = function(newBug) {
   this.annotations.push(newBug);
 };

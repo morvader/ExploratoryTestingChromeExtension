@@ -1,6 +1,23 @@
 //var session = new Session();
 var currentUrl;
 
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+    switch(request.command){
+        case "New_Bug":
+            showBugReport();
+            break;
+        case "New_Idea":
+            showIdeaReport();
+            break;
+        case "New_Note":
+            showNoteReport();
+            break;
+        case "New_Question":
+            showQuestionReport();
+            break;
+    }
+});
+
 function showBugReport(){
     hideAllReports();
     document.getElementById("addNewBug").style.display = 'block'; // show clicked element
@@ -25,22 +42,67 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
-  var addNewBug = document.getElementById("addNewBugBtn");
-  addNewBug.addEventListener('click', function() {
+  var addNewBugBtn = document.getElementById("addNewBugBtn");
+  addNewBugBtn.addEventListener('click', addNewBug);
+}, false);
 
+function addNewBug(){
     var bugName = document.getElementById("newBugDescription").value;
     if(bugName == "") return;
 
     chrome.extension.sendMessage({
       type: "addBug",
-      name: bugName,
+      name: bugName
+    },function(response) {
+        updateCounters();
     });
 
     clearAllReports();
     hideAllReports();
+};
 
-  }, false);
-}, false);
+function addNewNote(){
+    var noteName = document.getElementById("newNoteDescription").value;
+    if(noteName == "") return;
+
+    chrome.extension.sendMessage({
+      type: "addNote",
+      name: noteName,
+    },function(response) {
+       updateCounters();
+    });
+
+    clearAllReports();
+    hideAllReports();
+};
+
+function addNewIdea(){
+ var ideaName = document.getElementById("newIdeaDescription").value;
+    if(ideaName == "") return;
+    chrome.extension.sendMessage({
+      type: "addIdea",
+      name: ideaName
+    },function(response) {
+        updateCounters();
+    });
+
+    clearAllReports();
+    hideAllReports();
+};
+
+function addNewQuestion(){
+var questionName = document.getElementById("newQuestionDescription").value;
+    if(questionName == "") return;
+    chrome.extension.sendMessage({
+      type: "addQuestion",
+      name: questionName
+    },function(response) {
+       updateCounters();
+    });
+
+    clearAllReports();
+    hideAllReports();
+};
 
 document.addEventListener('DOMContentLoaded', function() {
   var noteBtn = document.getElementById("NoteBtn");
@@ -49,66 +111,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   var addNewNoteBtn = document.getElementById("addNewNoteBtn");
-  addNewNoteBtn.addEventListener('click', function() {
-
-    var noteName = document.getElementById("newNoteDescription").value;
-    if(noteName == "") return;
-
-    chrome.extension.sendMessage({
-      type: "addNote",
-      name: noteName,
-    });
-
-    clearAllReports();
-    hideAllReports();
-
-  }, false);
+  addNewNoteBtn.addEventListener('click', addNewNote);
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
   var questionBtn = document.getElementById("QuestionBtn");
-  questionBtn.addEventListener('click', function() {
-   showQuestionReport();
-  }, false);
+  questionBtn.addEventListener('click', showQuestionReport)
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
   var addNewQuestionBtn = document.getElementById("addNewQuestionBtn");
-  addNewQuestionBtn.addEventListener('click', function() {
-    var questionName = document.getElementById("newQuestionDescription").value;
-    if(questionName == "") return;
-    chrome.extension.sendMessage({
-      type: "addQuestion",
-      name: questionName
-    });
-
-    clearAllReports();
-    hideAllReports();
-
-  }, false);
+  addNewQuestionBtn.addEventListener('click', addNewQuestion)
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
   var ideaBtn = document.getElementById("IdeaBtn");
-  ideaBtn.addEventListener('click', function() {
-   showIdeaReport();
-  }, false);
+  ideaBtn.addEventListener('click', showIdeaReport)
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
   var addNewIdeaBtn = document.getElementById("addNewIdeaBtn");
-  addNewIdeaBtn.addEventListener('click', function() {
-    var ideaName = document.getElementById("newIdeaDescription").value;
-    if(ideaName == "") return;
-    chrome.extension.sendMessage({
-      type: "addIdea",
-      name: ideaName
-    });
-
-    clearAllReports();
-    hideAllReports();
-
-  }, false);
+  addNewIdeaBtn.addEventListener('click',addNewIdea)
 }, false);
 
 function exportSessionCSV(){
@@ -163,5 +186,76 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.extension.sendMessage({
        type: "clearSession"
     });
+    document.getElementById('bugCounter').innerHTML  = "";
+    document.getElementById('ideaCounter').innerHTML  = "";
+    document.getElementById('noteCounter').innerHTML  = "";
+    document.getElementById('questionCounter').innerHTML  = "";
   }, false);
 }, false);
+
+function updateCounters(){
+    var background = chrome.extension.getBackgroundPage();
+    var session = background.session;
+
+    var bugs = session.getBugs().length;
+    var notes = session.getNotes().length;
+    var ideas = session.getIdeas().length;
+    var questions = session.getQuestions().length;
+
+    if(bugs > 0){
+      document.getElementById('bugCounter').innerHTML  = "(" + bugs + ")";
+    }
+
+    if(notes > 0){
+      document.getElementById('noteCounter').innerHTML  = "(" + notes + ")";
+    }
+
+    if(ideas > 0 ){
+      document.getElementById('ideaCounter').innerHTML  = "(" + ideas + ")";
+    }
+
+    if(questions > 0 ){
+      document.getElementById('questionCounter').innerHTML  = "(" + questions + ")";
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  var exportCSVBtn = document.getElementById("newBugDescription");
+  exportCSVBtn.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+        addNewBug();             // code for enter
+    }
+  });
+}, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var exportCSVBtn = document.getElementById("newIdeaDescription");
+  exportCSVBtn.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+        addNewIdea();             // code for enter
+    }
+  });
+}, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var exportCSVBtn = document.getElementById("newNoteDescription");
+  exportCSVBtn.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+        addNewNote();             // code for enter
+    }
+  });
+}, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var exportCSVBtn = document.getElementById("newQuestionDescription");
+  exportCSVBtn.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+        addNewQuestion();             // code for enter
+    }
+  });
+}, false);
+

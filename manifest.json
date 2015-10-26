@@ -22,4 +22,36 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   }
+  //  "commands": {
+  //    "New_Bug": {
+  //      "suggested_key": {
+  //        "default": "Alt+B"
+  //      },
+  //      "description": "Report new Bug"
+  //    },
+  //    "New_Idea": {
+  //      "suggested_key": {
+  //        "default": "Alt+I"
+  //      },
+  //      "description": "Report new Idea"
+  //    },
+  //    "New_Note": {
+  //      "suggested_key": {
+  //        "default": "Alt+N"
+  //      },
+  //      "description": "Report new Note"
+  //    },
+  //    "New_Question": {
+  //      "suggested_key": {
+  //        "default": "Alt+Q"
+  //      },
+  //      "description": "Report new Question"
+  //    },
+  //    "_execute_browser_action": {
+  //      "suggested_key": {
+  //        "default": "Ctrl+Shift+E",
+  //        "mac": "MacCtrl+Shift+E"
+  //      }
+  //    }
+  //  }
 }

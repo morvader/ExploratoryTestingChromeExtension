@@ -22,6 +22,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             clearSession();
             break;
     }
+    sendResponse({status: "ok"});
     return true;
 });
 
@@ -87,4 +88,9 @@ function exportSessionCSV(){
     pom.href = url;
     pom.setAttribute('download', fileName);
     pom.click();
-}
+};
+
+//chrome.commands.onCommand.addListener(function(command) {
+//  //console.log('onCommand event received for message: ', command);
+//  chrome.extension.sendRequest({command: command}, function(response) {});
+//});
