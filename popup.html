@@ -1,58 +1,77 @@
 <!doctype html>
 <html>
 <head>
-    <title>Reporting options</title>
+    <title>Exploratory Testing Chrome Extension</title>
+    <link rel="stylesheet" type="text/css" href="popUp.css">
     <script src="popup.js"></script>
 
 </head>
 
 <body>
-<ul class="menu">New Annotation
+<p>Exploratory Testing Chrome Extension</p>
+<ul class="menu">Add New Annotation
 
     <li>
         <div id="reportBug">
-            <button id="BugBtn">Bug</button>
+            <button id="BugBtn" class="BugButton">Bug</button>
             <label id="bugCounter"></label>
             <div id="addNewBug" style="display:none">
                 <textarea id="newBugDescription" rows="2" cols="40"></textarea>
-                <button name="Cancel">Cancel</button>
-                <button id="addNewBugBtn">Add</button>
+
+                <div class="annotaionOptions">
+                    <button name="Cancel" class="cancelButton">Cancel</button>
+                    <button id="addNewBugBtn" class="actionButton">Add</button>
+                </div>
             </div>
         </div>
     </li>
     <li>
-        <button id="NoteBtn">Note</button>
+        <button id="NoteBtn" class="NoteButton">Note</button>
         <label id="noteCounter"></label>
         <div id="addNewNote" style="display:none">
             <textarea id="newNoteDescription" rows="2" cols="40"></textarea>
-            <button name="Cancel">Cancel</button>
-            <button id="addNewNoteBtn">Add</button>
+
+            <div class="annotaionOptions">
+                <button name="Cancel" class="cancelButton">Cancel</button>
+                <button id="addNewNoteBtn" class="actionButton">Add</button>
+            </div>
         </div>
     </li>
     <li>
-        <button id="QuestionBtn">Question</button>
+        <button id="QuestionBtn" class="QuestionButton">Question</button>
         <label id="questionCounter"></label>
         <div id="addNewQuestion" style="display:none">
             <textarea id="newQuestionDescription" rows="2" cols="40"></textarea>
-            <button name="Cancel">Cancel</button>
-            <button id="addNewQuestionBtn">Add</button>
+
+            <div class="annotaionOptions">
+                <button name="Cancel" class="cancelButton">Cancel</button>
+                <button id="addNewQuestionBtn" class="actionButton">Add</button>
+            </div>
         </div>
     </li>
     <li>
-        <button id="IdeaBtn">Idea</button>
+        <button id="IdeaBtn" class="IdeaButton">Idea</button>
         <label id="ideaCounter"></label>
         <div id="addNewIdea" style="display:none">
             <textarea id="newIdeaDescription" rows="2" cols="40"></textarea>
-            <button name="Cancel">Cancel</button>
-            <button id="addNewIdeaBtn">Add</button>
+
+            <div class="annotaionOptions">
+                <button name="Cancel" class="cancelButton">Cancel</button>
+                <button id="addNewIdeaBtn" class="actionButton">Add</button>
+            </div>
         </div>
     </li>
 </ul>
 
-<div class="sessionOptions">
-    <button id="resetBtn">Reset</button>
-    <button id="previewBtn">Preview</button>
-    <button id="exportCSVBtn">Export CSV</button>
+
+<div>
+    <div>
+        <button id="resetBtn" class="cancelButton">Reset</button>
+        <div class="sessionOptions">
+            <button id="previewBtn" class="actionButton">Preview</button>
+            <button id="exportCSVBtn" class="actionButton">Export CSV</button>
+        </div>
+    </div>
 </div>
 
 </body>

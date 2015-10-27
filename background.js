@@ -16,7 +16,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             addAnnotation("Question",request.name);
             break;
         case "exportSessionCSV":
-            exportSessionCSV();
+            if(!exportSessionCSV())
+                sendResponse({status: "nothing to export"});
             break;
         case "clearSession":
             clearSession();
@@ -72,6 +73,9 @@ function clearSession(){
 };
 
 function exportSessionCSV(){
+
+    if(session.getAnnotations().length == 0) return false;
+
     var exportService = new ExportSessionCSV(session);
     var csvData = exportService.getCSVData();
 

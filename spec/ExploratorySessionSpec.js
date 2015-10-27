@@ -122,6 +122,27 @@ describe("Exploratory Session", function(){
 			expect(annotations[3] instanceof Question).toBeTruthy();
 
 		});
+		it("retrieve annotations by type", function(){
+
+        	session.addBug(new Bug("Add Bug"));
+        	session.addIdea(new Idea("Aded Idea"));
+        	session.addNote(new Note("Add Note"));
+        	session.addBug(new Bug("Add Bug2"));
+        	//session.addQuestion(new Question("Add Question"));
+        	session.addNote(new Note("Add Note2"));
+        	session.addBug(new Bug("Add Bug3"));
+
+        	var bugs = session.getBugs();
+        	var notes = session.getNotes();
+        	var ideas = session.getIdeas();
+        	var questions = session.getQuestions();
+
+        	expect(bugs.length).toEqual(3);
+        	expect(notes.length).toEqual(2);
+        	expect(ideas.length).toEqual(1);
+        	expect(questions.length).toEqual(0);
+
+        });
 
 
 	});
