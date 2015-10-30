@@ -10,6 +10,7 @@
       "src/Annotation.js",
       "src/Session.js",
       "src/ExportSessionCSV.js",
+      "src/ExportSessionHTML.js",
       "background.js"
     ],
     "persistent": true

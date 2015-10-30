@@ -222,11 +222,29 @@
 .menu {
   list-style-type: none;
   padding-left: 5px;
-  min-width:300px;
+  min-width:180px;
+  float: left;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
-
 li{
  padding:1px 1px 1px 5px;
+}
+
+.reportAnnotation{
+    float:left;
+    display:none;
+}
+.heading{
+    font-size:14px;
+    margin: auto;
+}
+.menuTittle{
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+.footer{
+ padding:5px 2px 5px 5px;
 }
 .sessionOptions{
     float: right;

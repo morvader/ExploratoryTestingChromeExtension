@@ -4,67 +4,73 @@
     <title>Exploratory Testing Chrome Extension</title>
     <link rel="stylesheet" type="text/css" href="popUp.css">
     <script src="popup.js"></script>
+    <script src="src/ExportSessionHTML.js"></script>
 
 </head>
 
 <body>
-<p>Exploratory Testing Chrome Extension</p>
-<ul class="menu">Add New Annotation
+<h1 class="heading">Exploratory Testing Session</h1>
 
-    <li>
-        <div id="reportBug">
+<div class="main">
+    <p class="menuTittle">Add new Annotation</p>
+    <ul class="menu">
+        <li>
             <button id="BugBtn" class="BugButton">Bug</button>
             <label id="bugCounter"></label>
-            <div id="addNewBug" style="display:none">
-                <textarea id="newBugDescription" rows="2" cols="40"></textarea>
+
+            <div id="addNewBug" class="reportAnnotation">
+                <textarea id="newBugDescription" rows="2" cols="30"></textarea>
 
                 <div class="annotaionOptions">
                     <button name="Cancel" class="cancelButton">Cancel</button>
                     <button id="addNewBugBtn" class="actionButton">Add</button>
                 </div>
             </div>
-        </div>
-    </li>
-    <li>
-        <button id="NoteBtn" class="NoteButton">Note</button>
-        <label id="noteCounter"></label>
-        <div id="addNewNote" style="display:none">
-            <textarea id="newNoteDescription" rows="2" cols="40"></textarea>
+        </li>
+        <li>
+            <button id="NoteBtn" class="NoteButton">Note</button>
+            <label id="noteCounter"></label>
 
-            <div class="annotaionOptions">
-                <button name="Cancel" class="cancelButton">Cancel</button>
-                <button id="addNewNoteBtn" class="actionButton">Add</button>
+            <div id="addNewNote" class="reportAnnotation">
+                <textarea id="newNoteDescription" rows="2" cols="30"></textarea>
+
+                <div class="annotaionOptions">
+                    <button name="Cancel" class="cancelButton">Cancel</button>
+                    <button id="addNewNoteBtn" class="actionButton">Add</button>
+                </div>
             </div>
-        </div>
-    </li>
-    <li>
-        <button id="QuestionBtn" class="QuestionButton">Question</button>
-        <label id="questionCounter"></label>
-        <div id="addNewQuestion" style="display:none">
-            <textarea id="newQuestionDescription" rows="2" cols="40"></textarea>
+        </li>
+        <li>
+            <button id="QuestionBtn" class="QuestionButton">Question</button>
+            <label id="questionCounter"></label>
 
-            <div class="annotaionOptions">
-                <button name="Cancel" class="cancelButton">Cancel</button>
-                <button id="addNewQuestionBtn" class="actionButton">Add</button>
+            <div id="addNewQuestion" class="reportAnnotation">
+                <textarea id="newQuestionDescription" rows="2" cols="30"></textarea>
+
+                <div class="annotaionOptions">
+                    <button name="Cancel" class="cancelButton">Cancel</button>
+                    <button id="addNewQuestionBtn" class="actionButton">Add</button>
+                </div>
             </div>
-        </div>
-    </li>
-    <li>
-        <button id="IdeaBtn" class="IdeaButton">Idea</button>
-        <label id="ideaCounter"></label>
-        <div id="addNewIdea" style="display:none">
-            <textarea id="newIdeaDescription" rows="2" cols="40"></textarea>
+        </li>
+        <li>
+            <button id="IdeaBtn" class="IdeaButton">Idea</button>
+            <label id="ideaCounter"></label>
 
-            <div class="annotaionOptions">
-                <button name="Cancel" class="cancelButton">Cancel</button>
-                <button id="addNewIdeaBtn" class="actionButton">Add</button>
+            <div id="addNewIdea" class="reportAnnotation">
+                <textarea id="newIdeaDescription" rows="2" cols="30"></textarea>
+
+                <div class="annotaionOptions">
+                    <button name="Cancel" class="cancelButton">Cancel</button>
+                    <button id="addNewIdeaBtn" class="actionButton">Add</button>
+                </div>
             </div>
-        </div>
-    </li>
-</ul>
+        </li>
+    </ul>
+</div>
 
 
-<div>
+<div class="footer">
     <div>
         <button id="resetBtn" class="cancelButton">Reset</button>
         <div class="sessionOptions">

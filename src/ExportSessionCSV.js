@@ -5,9 +5,6 @@ function ExportSessionCSV(session) {
 ExportSessionCSV.prototype.getCSVData = function() {
     var dateFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour:'numeric', minute:'numeric' };
 
-    //var csvData = [];
-    //csvData.push(this.getCSVHeader());
-
     var annotations = this.session.getAnnotations();
 
     var csvContent = "";

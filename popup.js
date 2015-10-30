@@ -1,22 +1,6 @@
-//var session = new Session();
-var currentUrl;
-
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-    switch(request.command){
-        case "New_Bug":
-            showBugReport();
-            break;
-        case "New_Idea":
-            showIdeaReport();
-            break;
-        case "New_Note":
-            showNoteReport();
-            break;
-        case "New_Question":
-            showQuestionReport();
-            break;
-    }
-});
+window.onload = function() {
+   updateCounters();
+}
 
 function showBugReport(){
     hideAllReports();
@@ -176,20 +160,43 @@ document.addEventListener('DOMContentLoaded', function() {
   previewBtn.addEventListener('click', function() {
    var background = chrome.extension.getBackgroundPage();
    var session = background.session;
-   alert(session.getAnnotations().length)
+   //alert(session.getAnnotations().length);
+   var exportHTMLService = new ExportSessionHTML(session);
+   var htmlData = exportHTMLService.getHTMLData();
+
+   chrome.tabs.create({url: chrome.extension.getURL("HTMLReport/preview.html"),'active': false}, function(tab){
+           var selfTabId = tab.id;
+           chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+               if (changeInfo.status == "complete" && tabId == selfTabId){
+                   // send the data to the page's script:
+                   var tabs = chrome.extension.getViews({type: "tab"});
+                   tabs[0].loadData(htmlData);
+               }
+           });
+       });
   }, false);
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
   var resetBtn = document.getElementById('resetBtn');
   resetBtn.addEventListener('click', function() {
-    chrome.extension.sendMessage({
-       type: "clearSession"
-    });
-    document.getElementById('bugCounter').innerHTML  = "";
-    document.getElementById('ideaCounter').innerHTML  = "";
-    document.getElementById('noteCounter').innerHTML  = "";
-    document.getElementById('questionCounter').innerHTML  = "";
+    var r = confirm("This will reset current session. Are you sure?");
+    if (r == true) {
+        chrome.extension.sendMessage({
+               type: "clearSession"
+        },function(response) {
+         alert("Session cleared");
+         document.getElementById('bugCounter').innerHTML  = "";
+         document.getElementById('ideaCounter').innerHTML  = "";
+         document.getElementById('noteCounter').innerHTML  = "";
+         document.getElementById('questionCounter').innerHTML  = "";
+        });
+
+    } else {
+        return;
+    }
+
+
   }, false);
 }, false);
 

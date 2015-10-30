@@ -61,8 +61,6 @@ function addAnnotation(type, name){
 
 function startSession(){
     var browser=get_browser_info();
-    // browser.name = 'Chrome'
-    // browser.version = '40'
     var browserInfoString = browser.name + "_" + browser.version;
 
     session = new Session(Date.now(),browserInfoString);
@@ -94,7 +92,3 @@ function exportSessionCSV(){
     pom.click();
 };
 
-//chrome.commands.onCommand.addListener(function(command) {
-//  //console.log('onCommand event received for message: ', command);
-//  chrome.extension.sendRequest({command: command}, function(response) {});
-//});
