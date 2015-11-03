@@ -160,9 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
   previewBtn.addEventListener('click', function() {
    var background = chrome.extension.getBackgroundPage();
    var session = background.session;
-   //alert(session.getAnnotations().length);
-   var exportHTMLService = new ExportSessionHTML(session);
-   var htmlData = exportHTMLService.getHTMLData();
+
+   if(session.getAnnotations().length == 0 ) return;
+
+   //var exportHTMLService = new ExportSessionHTML(session);
+   //var htmlData = exportHTMLService.getHTMLData();
 
    chrome.tabs.create({url: chrome.extension.getURL("HTMLReport/preview.html"),'active': false}, function(tab){
            var selfTabId = tab.id;
@@ -170,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                if (changeInfo.status == "complete" && tabId == selfTabId){
                    // send the data to the page's script:
                    var tabs = chrome.extension.getViews({type: "tab"});
-                   tabs[0].loadData(htmlData);
+                   tabs[0].loadData(session);
                }
            });
        });
@@ -180,12 +182,20 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   var resetBtn = document.getElementById('resetBtn');
   resetBtn.addEventListener('click', function() {
+   var background = chrome.extension.getBackgroundPage();
+   var session = background.session;
+
+   //Only ask if there are annotations already
+   if(session.getAnnotations().length == 0) return;
+
     var r = confirm("This will reset current session. Are you sure?");
     if (r == true) {
         chrome.extension.sendMessage({
                type: "clearSession"
         },function(response) {
+
          alert("Session cleared");
+
          document.getElementById('bugCounter').innerHTML  = "";
          document.getElementById('ideaCounter').innerHTML  = "";
          document.getElementById('noteCounter').innerHTML  = "";
@@ -195,8 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         return;
     }
-
-
   }, false);
 }, false);
 
