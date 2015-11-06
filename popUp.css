@@ -1,5 +1,5 @@
 .BugButton {
-    width: 70px;
+    width: 150px;
 	-moz-box-shadow:inset 0px 1px 0px 0px #f5978e;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #f5978e;
 	box-shadow:inset 0px 1px 0px 0px #f5978e;
@@ -41,7 +41,7 @@
 }
 
 .NoteButton {
-    width: 70px;
+    width: 150px;
 	-moz-box-shadow:inset 0px 1px 0px 0px #fff6af;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #fff6af;
 	box-shadow:inset 0px 1px 0px 0px #fff6af;
@@ -83,7 +83,7 @@
 }
 
 .IdeaButton {
-    width: 70px;
+    width: 150px;
 	-moz-box-shadow:inset 0px 1px 0px 0px #97c4fe;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #97c4fe;
 	box-shadow:inset 0px 1px 0px 0px #97c4fe;
@@ -125,7 +125,7 @@
 }
 
 .QuestionButton {
-    width: 70px;
+    width: 150px;
 	-moz-box-shadow:inset 0px 1px 0px 0px #e184f3;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #e184f3;
 	box-shadow:inset 0px 1px 0px 0px #e184f3;
@@ -245,6 +245,7 @@ li{
 }
 .footer{
  padding:5px 2px 5px 5px;
+ clear:both;
 }
 .sessionOptions{
     float: right;

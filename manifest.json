@@ -13,7 +13,7 @@
       "src/ExportSessionHTML.js",
       "background.js"
     ],
-    "persistent": true
+    "persistent": false
   },
   "permissions": [
     "activeTab",

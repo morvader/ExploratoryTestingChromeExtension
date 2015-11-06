@@ -27,6 +27,9 @@ function Bug(name,url,timestamp){
     this.URL = url;
     this.timeStamp = timestamp;
 }
+Bug.prototype.getType = function(){
+    return "Bug";
+};
 
 //Idea class inherit from annotation
 Idea.prototype = new Annotation();        // Here's where the inheritance occurs
@@ -36,6 +39,9 @@ function Idea(name,url,timestamp){
     this.URL = url;
     this.timeStamp = timestamp;
 }
+Idea.prototype.getType = function(){
+    return "Idea";
+};
 
 //Note class inherit from annotation
 Note.prototype = new Annotation();        // Here's where the inheritance occurs
@@ -45,6 +51,9 @@ function Note(name,url,timestamp){
     this.URL = url;
     this.timeStamp = timestamp;
 }
+Note.prototype.getType = function(){
+    return "Note";
+};
 
 //Question class inherit from annotation
 Question.prototype = new Annotation();        // Here's where the inheritance occurs
@@ -54,5 +63,7 @@ function Question(name,url,timestamp){
     this.URL = url;
     this.timeStamp = timestamp;
 }
-
+Question.prototype.getType = function(){
+    return "Question";
+};
 

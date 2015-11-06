@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
    //Only ask if there are annotations already
    if(session.getAnnotations().length == 0) return;
 
-    var r = confirm("This will reset current session. Are you sure?");
+    var r = confirm("This will reset the current session. Are you sure?");
     if (r == true) {
         chrome.extension.sendMessage({
                type: "clearSession"
