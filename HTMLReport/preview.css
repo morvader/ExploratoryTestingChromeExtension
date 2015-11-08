@@ -1,0 +1,23 @@
+#canvasHolder {
+    height:300px;
+    width:400px;
+
+}
+.canvasjs-chart-canvas {
+    border: 1px solid;
+}
+
+a.canvasjs-chart-credit {
+    display: none;
+}
+#sessionData {
+    font-size:20px;
+    font-weight:bold;
+    border: 1px solid;
+    float: left;
+}
+
+#sessionResults{
+    clear:both;
+    float: left;
+}

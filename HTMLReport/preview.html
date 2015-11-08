@@ -1,5 +1,9 @@
+<!doctype html>
 <html>
 <head>
+    <title>Exploratory Session Report</title>
+    <link rel="stylesheet" type="text/css" href="preview.css">
+
     <script src="loadData.js" type="text/javascript"></script>
     <script src="../src/Session.js" type="text/javascript"></script>
     <script src="../src/Annotation.js" type="text/javascript"></script>
@@ -8,18 +12,24 @@
     <script src="../lib/canvasjs.min.js" type="text/javascript"></script>
 </head>
 <body>
+
 <button id="fakeData">Init</button>
-<div>
+<h1>Exploratory Session Report</h1>
+
+<div id="sessionData">
     <label>Exploratory Session</label>
-    <label>Date: </label>
-    <label id="sessionDate">Date</label>
-    <label>Browser: </label>
-    <label id="browserInfo">Browser</label>
+
+    <div id="browserInfo"><label>Browser: </label>
+        <label class="info">Browser</label>
+    </div>
+    <div id="sessionDate"><label>Date: </label>
+        <label class="data">Date</label>
+    </div>
+
+
 </div>
 
-<div id="canvasHolder">
-
-</div>
+<div id="canvasHolder"></div>
 
 <div id="sessionResults">
     <label>Data Table</label>

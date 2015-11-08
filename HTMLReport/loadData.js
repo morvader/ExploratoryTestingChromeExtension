@@ -98,7 +98,7 @@ function drawPieChart(){
     var ideas = {y: session.getIdeas().length, name: "Ideas",color: "#97c4fe",indexLabel: session.getIdeas().length == 0 ? "" :"#percent%"};
     var questions = {y: session.getQuestions().length, name: "Questions",color: "#e184f3",indexLabel: session.getQuestions().length == 0 ? "" :"#percent%"};
 
-    var datos = [bugs, notes,ideas,questions];
+    var data = [bugs, notes,ideas,questions];
 
     var chart = new CanvasJS.Chart("canvasHolder",
 	{
@@ -124,7 +124,7 @@ function drawPieChart(){
 			indexLabelPlacement: "inside",
 			toolTipContent: "{name}: {y}",
 			showInLegend: true,
-			dataPoints: datos
+			dataPoints: data
 		}
 		]
 	});
