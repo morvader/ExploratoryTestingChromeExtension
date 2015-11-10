@@ -1,8 +1,14 @@
 {
   "manifest_version": 2,
   "name": "Exploratory Testing Chrome Extension",
+  "short_name": "Chrome Exploratory Testing",
   "description": "Exploratory testing session using Chrome",
   "version": "1.0",
+  "icons": {
+    "16": "/icons/iconbig.png",
+    "48": "/icons/iconbig.png",
+    "128": "/icons/iconbig.png"
+  },
   "background": {
     "scripts": [
       "lib/browserInfo.js",
@@ -10,49 +16,16 @@
       "src/Annotation.js",
       "src/Session.js",
       "src/ExportSessionCSV.js",
-      "src/ExportSessionHTML.js",
       "background.js"
     ],
-    "persistent": false
+    "persistent": true
   },
   "permissions": [
     "activeTab",
     "tabs"
   ],
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": "/icons/icon.png",
     "default_popup": "popup.html"
   }
-  //  "commands": {
-  //    "New_Bug": {
-  //      "suggested_key": {
-  //        "default": "Alt+B"
-  //      },
-  //      "description": "Report new Bug"
-  //    },
-  //    "New_Idea": {
-  //      "suggested_key": {
-  //        "default": "Alt+I"
-  //      },
-  //      "description": "Report new Idea"
-  //    },
-  //    "New_Note": {
-  //      "suggested_key": {
-  //        "default": "Alt+N"
-  //      },
-  //      "description": "Report new Note"
-  //    },
-  //    "New_Question": {
-  //      "suggested_key": {
-  //        "default": "Alt+Q"
-  //      },
-  //      "description": "Report new Question"
-  //    },
-  //    "_execute_browser_action": {
-  //      "suggested_key": {
-  //        "default": "Ctrl+Shift+E",
-  //        "mac": "MacCtrl+Shift+E"
-  //      }
-  //    }
-  //  }
 }
