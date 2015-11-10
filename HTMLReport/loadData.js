@@ -6,9 +6,9 @@ function initData(){
     var url = "http://www.google.com/images"
     session = new Session(currentDateTime, BrowserInfo);
 
-    session.addBug(new Bug("Add Bug",url,currentDateTime));
+    session.addBug(new Bug("Sigo viendo fallos en los informes. Adjunto dos pantallazos.","http://www.ministryoftesting.com/resources/exploratory-testing/",currentDateTime));
     session.addIdea(new Idea("Aded Idea",url,currentDateTime));
-    session.addNote(new Note("Add Note",url,currentDateTime));
+    session.addNote(new Note("No hemos validado con el cliente porque nos hemos encontrado con el siguiente error (ver email abajo).",url,currentDateTime));
     session.addBug(new Bug("Add Bug2",url,currentDateTime));
     session.addQuestion(new Question("Add Question",url,currentDateTime));
     session.addNote(new Note("Add Note2",url,currentDateTime));
@@ -27,8 +27,8 @@ function loadData(data){
 }
 
 function loadSessionInfo(){
-    document.getElementById("sessionDate").innerHTML = session.getStartDateTime().toString('dd-MM-yyyy HH:mm');
-    document.getElementById("browserInfo").innerHTML = session.getBrowserInfo();
+    document.getElementById("sessionDate").innerHTML = "Exploratory Session " + session.getStartDateTime().toString('dd-MM-yyyy HH:mm');
+    document.getElementById("browserInfo").innerHTML = "Browser Version: " + session.getBrowserInfo();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -42,23 +42,31 @@ function loadTable() {
 
     myTableDiv.innerHTML = "";
 
-    var table = document.createElement('TABLE')
-    var tableBody = document.createElement('TBODY')
+    var table = document.createElement('TABLE');
+    table.setAttribute('id', 'sessionActivityTable');
 
-    table.border = '1'
-    table.appendChild(tableBody);
+//    var caption = document.createElement("caption");
+//    caption.innerHTML ="Session Activity";
+//    table.appendChild(caption);
+
+    var tableHead = document.createElement('THEAD');
+
+    //table.border = '1'
+    table.appendChild(tableHead);
+
+
 
     var heading = new Array();
-    heading[0] = "Date Time"
-    heading[1] = "Type"
-    heading[2] = "Description"
-    heading[3] = "URL"
+    heading[0] = "Type"
+    heading[1] = "Description"
+    heading[2] = "URL"
+   // heading[3] = "Date Time"
 
     var annotaions = session.getAnnotations();
 
     //TABLE COLUMNS
     var tr = document.createElement('TR');
-    tableBody.appendChild(tr);
+    tableHead.appendChild(tr);
     for (i = 0; i < heading.length; i++) {
         var th = document.createElement('TH')
         //th.width = '75';
@@ -66,16 +74,19 @@ function loadTable() {
         tr.appendChild(th);
     }
 
+    var tableBody = document.createElement('TBODY');
+    table.appendChild(tableBody);
+
+
     //TABLE ROWS
     for (i = 0; i < annotaions.length; i++) {
         var tr = document.createElement('TR');
 
         td = document.createElement('TD');
-        td.appendChild(document.createTextNode(annotaions[i].getTimeStamp().toString('dd-MM-yyyy HH:mm')));
-        tr.appendChild(td);
-
-        td = document.createElement('TD');
-        td.appendChild(document.createTextNode(annotaions[i].getType()));
+        td.setAttribute('class', 'centered');
+        //td.appendChild(document.createTextNode(annotaions[i].getType()));
+        var icon = getIconType(annotaions[i].getType());
+        td.appendChild(icon);
         tr.appendChild(td);
 
         td = document.createElement('TD');
@@ -83,12 +94,75 @@ function loadTable() {
         tr.appendChild(td);
 
         td = document.createElement('TD');
-        td.appendChild(document.createTextNode(annotaions[i].getURL()));
+
+        var a = document.createElement('a');
+        var linkText = document.createTextNode(annotaions[i].getURL());
+        a.appendChild(linkText);
+        a.title = annotaions[i].getURL();
+        a.href = annotaions[i].getURL();
+
+        td.appendChild(a);
         tr.appendChild(td);
+
+//        td = document.createElement('TD');
+//        td.setAttribute('class', 'centered');
+//        td.appendChild(document.createTextNode(annotaions[i].getTimeStamp().toString('dd-MM-yyyy HH:mm')));
+//        tr.appendChild(td);
 
         tableBody.appendChild(tr);
     }
+
     myTableDiv.appendChild(table);
+
+    addTableFilters();
+}
+
+function addTableFilters(){
+    var sessionActivityTable_Props = {
+        col_0: "select",
+        col_1: "none",
+        col_2: "none",
+        custom_cell_data_cols: [0],
+        custom_cell_data: function(o, c, i){
+            if(i==0){
+               var img = c.getElementsByTagName('img')[0];
+                 if(!img) return '';
+                  return img.alt;
+            }
+        },
+        display_all_text: " [ Show all ] ",
+        sort_select: true
+    };
+
+    var tf2 = setFilterGrid("sessionActivityTable", sessionActivityTable_Props);
+}
+
+function getIconType(type){
+    var DOM_img = document.createElement("img");
+    switch(type){
+        case "Bug":
+            DOM_img.src = "../images/bug.png";
+            DOM_img.alt = "Bug";
+            DOM_img.title = "Bug";
+            break;
+        case "Note":
+            DOM_img.src = "../images/note.png";
+            DOM_img.alt = "Note";
+            DOM_img.title = "Note";
+            break;
+        case "Idea":
+            DOM_img.src = "../images/idea.png";
+            DOM_img.alt = "Idea";
+            DOM_img.title = "Idea";
+            break;
+        case "Question":
+            DOM_img.src = "../images/question.png";
+            DOM_img.alt = "Question";
+            DOM_img.title = "Question";
+            break;
+    }
+
+    return DOM_img;
 }
 
 function drawPieChart(){
@@ -106,7 +180,7 @@ function drawPieChart(){
 			text: "Session Activity",
 			fontFamily: "arial black"
 		},
-                animationEnabled: true,
+            animationEnabled: true,
 		legend: {
 			verticalAlign: "bottom",
 			horizontalAlign: "center"
@@ -116,7 +190,7 @@ function drawPieChart(){
 		{
 			type: "pie",
 			indexLabelFontFamily: "Garamond",
-			indexLabelFontSize: 20,
+			indexLabelFontSize: 14,
 			indexLabelFontWeight: "bold",
 			startAngle:0,
 			indexLabelFontColor: "White",
@@ -130,4 +204,18 @@ function drawPieChart(){
 	});
 	chart.render();
 
+	resizeSessionDataHeight();
+
+}
+
+function resizeSessionDataHeight(){
+    var sessionInfo = document.getElementById("sessionInfo");
+	var canvasHolder = document.getElementsByClassName("canvasjs-chart-canvas")[0];
+
+    if(canvasHolder == null) return;
+	sessionData.style.height = sessionInfo.offsetHeight + canvasHolder.offsetHeight + "px";
+}
+
+window.onload = window.onresize = function () {
+    resizeSessionDataHeight();
 }
