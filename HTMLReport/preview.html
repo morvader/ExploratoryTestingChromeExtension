@@ -3,6 +3,7 @@
 <head>
     <title>Exploratory Session Report</title>
     <link rel="stylesheet" type="text/css" href="preview.css">
+    <link rel="stylesheet" type="text/css" href="../popUp.css">
 
     <script src="loadData.js" type="text/javascript"></script>
     <script src="../lib/tablefilter_all_min.js" type="text/javascript"></script>
@@ -33,9 +34,14 @@
 </div>
 
 
-<div id="sessionResults">
-    <label>Data Table</label>
+<div>
+    <div id="sessionResults">
+        <label>Data Table</label>
+    </div>
+    <button id="export" class="actionButton" title="Get report in a plain HTML file">Export Activity to HTML</button>
 </div>
+<div id=exportHTML style="display: none;"></div>
+
 </body>
 
 </html>

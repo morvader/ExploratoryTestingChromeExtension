@@ -27,6 +27,11 @@ a.canvasjs-chart-credit {
     width:77%;
 }
 
+#export{
+    clear:both;
+    margin-left:5px;
+    margin-top: 4px;
+}
 .info{
     float:left;
     clear: both;
