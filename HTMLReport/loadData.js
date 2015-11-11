@@ -60,7 +60,7 @@ function loadTable() {
     heading[0] = "Type"
     heading[1] = "Description"
     heading[2] = "URL"
-   // heading[3] = "Date Time"
+    heading[3] = "Screenshot"
 
     var annotaions = session.getAnnotations();
 
@@ -100,15 +100,31 @@ function loadTable() {
         a.appendChild(linkText);
         a.title = annotaions[i].getURL();
         a.href = annotaions[i].getURL();
+        a.target ="_blank";
 
         td.appendChild(a);
         tr.appendChild(td);
 
-//        td = document.createElement('TD');
-//        td.setAttribute('class', 'centered');
-//        td.appendChild(document.createTextNode(annotaions[i].getTimeStamp().toString('dd-MM-yyyy HH:mm')));
-//        tr.appendChild(td);
+        td = document.createElement('TD');
+        td.setAttribute('class', 'centered');
 
+        var screenshotLink = annotaions[i].getImageURL();
+
+        if(screenshotLink != ""){
+            var img = document.createElement('img'), link = document.createElement('a');
+
+            img.src = "../images/screenshot.png";
+            img.style.width = "28px";
+
+            link.href = screenshotLink;
+            link.appendChild(img);
+            link.target ="_blank";
+
+            td.appendChild(link);
+
+        }
+
+        tr.appendChild(td);
         tableBody.appendChild(tr);
     }
 
@@ -122,6 +138,7 @@ function addTableFilters(){
         col_0: "select",
         col_1: "none",
         col_2: "none",
+        col_3: "none",
         custom_cell_data_cols: [0],
         custom_cell_data: function(o, c, i){
             if(i==0){

@@ -27,16 +27,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   var addNewBugBtn = document.getElementById("addNewBugBtn");
-  addNewBugBtn.addEventListener('click', addNewBug);
+  addNewBugBtn.addEventListener('click',  function() {
+    addNewBug("");
+  },false);
 }, false);
 
-function addNewBug(){
+document.addEventListener('DOMContentLoaded', function() {
+  var addNewBugBtn = document.getElementById("addNewBugSCBtn");
+  addNewBugBtn.addEventListener('click', function() {
+    chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+        addNewBug(screenshotUrl);
+    });
+    });
+ });
+
+
+
+function addNewBug(imageURL){
     var bugName = document.getElementById("newBugDescription").value;
     if(bugName == "") return;
 
     chrome.extension.sendMessage({
       type: "addBug",
-      name: bugName
+      name: bugName,
+      imageURL: imageURL
     },function(response) {
         updateCounters();
     });
@@ -45,13 +59,14 @@ function addNewBug(){
     hideAllReports();
 };
 
-function addNewNote(){
+function addNewNote(imageURL){
     var noteName = document.getElementById("newNoteDescription").value;
     if(noteName == "") return;
 
     chrome.extension.sendMessage({
       type: "addNote",
       name: noteName,
+      imageURL: imageURL
     },function(response) {
        updateCounters();
     });
@@ -60,12 +75,13 @@ function addNewNote(){
     hideAllReports();
 };
 
-function addNewIdea(){
+function addNewIdea(imageURL){
  var ideaName = document.getElementById("newIdeaDescription").value;
     if(ideaName == "") return;
     chrome.extension.sendMessage({
       type: "addIdea",
-      name: ideaName
+      name: ideaName,
+      imageURL: imageURL
     },function(response) {
         updateCounters();
     });
@@ -74,12 +90,13 @@ function addNewIdea(){
     hideAllReports();
 };
 
-function addNewQuestion(){
+function addNewQuestion(imageURL){
 var questionName = document.getElementById("newQuestionDescription").value;
     if(questionName == "") return;
     chrome.extension.sendMessage({
       type: "addQuestion",
-      name: questionName
+      name: questionName,
+      imageURL: imageURL
     },function(response) {
        updateCounters();
     });
@@ -95,8 +112,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   var addNewNoteBtn = document.getElementById("addNewNoteBtn");
-  addNewNoteBtn.addEventListener('click', addNewNote);
+  addNewNoteBtn.addEventListener('click',  function() {
+    addNewNote("");
+  },false);
 }, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var addNewNoteBtn = document.getElementById("addNewNoteSCBtn");
+  addNewNoteBtn.addEventListener('click', function() {
+    chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+        addNewNote(screenshotUrl);
+    });
+    });
+ });
 
 document.addEventListener('DOMContentLoaded', function() {
   var questionBtn = document.getElementById("QuestionBtn");
@@ -104,9 +132,20 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
-  var addNewQuestionBtn = document.getElementById("addNewQuestionBtn");
-  addNewQuestionBtn.addEventListener('click', addNewQuestion)
+  var questionBtn = document.getElementById("addNewQuestionBtn");
+  questionBtn.addEventListener('click',  function() {
+    addNewQuestion("");
+  },false);
 }, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var questionBtn = document.getElementById("addNewQuestionSCBtn");
+  questionBtn.addEventListener('click', function() {
+    chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+        addNewQuestion(screenshotUrl);
+    });
+    });
+ });
 
 document.addEventListener('DOMContentLoaded', function() {
   var ideaBtn = document.getElementById("IdeaBtn");
@@ -114,9 +153,20 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function() {
-  var addNewIdeaBtn = document.getElementById("addNewIdeaBtn");
-  addNewIdeaBtn.addEventListener('click',addNewIdea)
+  var ideaBtn = document.getElementById("addNewIdeaBtn");
+  ideaBtn.addEventListener('click',  function() {
+    addNewIdea("");
+  },false);
 }, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var ideaBtn = document.getElementById("addNewIdeaSCBtn");
+  ideaBtn.addEventListener('click', function() {
+    chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+        addNewIdea(screenshotUrl);
+    });
+    });
+ });
 
 function exportSessionCSV(){
    chrome.extension.sendMessage({

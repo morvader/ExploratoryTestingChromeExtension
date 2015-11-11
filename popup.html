@@ -21,8 +21,9 @@
                 <textarea id="newBugDescription" rows="2" cols="30" placeholder="Bug description..."></textarea>
 
                 <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton">Cancel</button>
-                    <button id="addNewBugBtn" class="actionButton">Add</button>
+                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                    <button id="addNewBugBtn" class="actionButton" title="Add new Bug">Add</button>
+                    <button id="addNewBugSCBtn" class="actionButton" title="Add new Bug with screenshot">Add+SC</button>
                 </div>
             </div>
         </li>
@@ -34,8 +35,10 @@
                 <textarea id="newNoteDescription" rows="2" cols="30" placeholder="Note description..."></textarea>
 
                 <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton">Cancel</button>
-                    <button id="addNewNoteBtn" class="actionButton">Add</button>
+                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                    <button id="addNewNoteBtn" class="actionButton" title="Add new Note">Add</button>
+                    <button id="addNewNoteSCBtn" class="actionButton" title="Add new Note with screenshot">Add+SC
+                    </button>
                 </div>
             </div>
         </li>
@@ -48,8 +51,11 @@
                           placeholder="Question description..."></textarea>
 
                 <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton">Cancel</button>
-                    <button id="addNewQuestionBtn" class="actionButton">Add</button>
+                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                    <button id="addNewQuestionBtn" class="actionButton" title="Add new Question">Add</button>
+                    <button id="addNewQuestionSCBtn" class="actionButton" title="Add new Question with screenshot">
+                        Add+SC
+                    </button>
                 </div>
             </div>
         </li>
@@ -61,8 +67,10 @@
                 <textarea id="newIdeaDescription" rows="2" cols="30" placeholder="Idea description..."></textarea>
 
                 <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton">Cancel</button>
-                    <button id="addNewIdeaBtn" class="actionButton">Add</button>
+                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                    <button id="addNewIdeaBtn" class="actionButton" title="Add new Idea">Add</button>
+                    <button id="addNewIdeaSCBtn" class="actionButton" title="Add new Idea with screenshot">Add+SC
+                    </button>
                 </div>
             </div>
         </li>
@@ -72,10 +80,10 @@
 
 <div class="footer">
     <div>
-        <button id="resetBtn" class="cancelButton">Reset</button>
+        <button id="resetBtn" class="cancelButton" title="Reset session data">Reset</button>
         <div class="sessionOptions">
-            <button id="previewBtn" class="actionButton">Preview</button>
-            <button id="exportCSVBtn" class="actionButton">Export CSV</button>
+            <button id="previewBtn" class="actionButton" title="Session report">Report</button>
+            <button id="exportCSVBtn" class="actionButton" title="Export session to CSV">Export CSV</button>
         </div>
     </div>
 </div>

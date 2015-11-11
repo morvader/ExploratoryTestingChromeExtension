@@ -4,16 +4,16 @@ var session = new Session();
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     switch(request.type) {
         case "addBug":
-            addAnnotation("Bug",request.name);
+            addAnnotation("Bug",request.name,request.imageURL);
             break;
         case "addIdea":
-            addAnnotation("Idea",request.name);
+            addAnnotation("Idea",request.name,request.imageURL);
             break;
         case "addNote":
-            addAnnotation("Note",request.name);
+            addAnnotation("Note",request.name,request.imageURL);
             break;
         case "addQuestion":
-            addAnnotation("Question",request.name);
+            addAnnotation("Question",request.name,request.imageURL);
             break;
         case "exportSessionCSV":
             if(!exportSessionCSV())
@@ -27,7 +27,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     return true;
 });
 
-function addAnnotation(type, name){
+function addAnnotation(type, name, imageURL){
 
     var currentUrl;
     var now = Date.now();
@@ -40,19 +40,19 @@ function addAnnotation(type, name){
          //alert(currentUrl);
         switch(type){
           case "Bug":
-            var newBug = new Bug(name,currentUrl, now);
+            var newBug = new Bug(name,currentUrl, now,imageURL);
             session.addBug(newBug);
             break;
           case "Note":
-            var newNote = new Note(name,currentUrl, now);
+            var newNote = new Note(name,currentUrl, now,imageURL);
             session.addNote(newNote);
             break;
           case "Idea":
-            var newIdea = new Idea(name,currentUrl, now);
+            var newIdea = new Idea(name,currentUrl, now,imageURL);
             session.addIdea(newIdea);
             break;
           case "Question":
-            var newQuestion = new Question(name,currentUrl, now);
+            var newQuestion = new Question(name,currentUrl, now,imageURL);
             session.addQuestion(newQuestion);
             break;
         }
