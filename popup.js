@@ -5,19 +5,23 @@ window.onload = function() {
 function showBugReport(){
     hideAllReports();
     document.getElementById("addNewBug").style.display = 'block'; // show clicked element
+    document.getElementById("newBugDescription").focus();
 };
 
 function showIdeaReport(){
     hideAllReports();
     document.getElementById("addNewIdea").style.display = 'block'; // show clicked element
+    document.getElementById("newIdeaDescription").focus();
 };
 function showNoteReport(){
     hideAllReports();
     document.getElementById("addNewNote").style.display = 'block'; // show clicked element
+    document.getElementById("newNoteDescription").focus();
 };
 function showQuestionReport(){
     hideAllReports();
     document.getElementById("addNewQuestion").style.display = 'block'; // show clicked element
+    document.getElementById("newQuestionDescription").focus();
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -286,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
   exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
-        addNewBug();             // code for enter
+        addNewBug("");             // code for enter
     }
   });
 }, false);
@@ -296,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
   exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
-        addNewIdea();             // code for enter
+        addNewIdea("");             // code for enter
     }
   });
 }, false);
@@ -306,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
   exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
-        addNewNote();             // code for enter
+        addNewNote("");             // code for enter
     }
   });
 }, false);
@@ -316,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
   exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
-        addNewQuestion();             // code for enter
+        addNewQuestion("");             // code for enter
     }
   });
 }, false);
