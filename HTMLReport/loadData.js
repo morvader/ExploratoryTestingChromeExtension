@@ -1,5 +1,9 @@
 var session;
 
+document.addEventListener('DOMContentLoaded', function () {
+    loadData();
+}, false);
+
 function initData(){
     var BrowserInfo = "TestBrowser 10.0.1.3";
     var currentDateTime = new Date(2015, 10, 30, 6, 51);
@@ -19,7 +23,10 @@ function initData(){
 }
 
 function loadData(data){
-        session = data;
+        //session = data;
+
+        var background = chrome.extension.getBackgroundPage();
+        session = background.session;
 
         loadSessionInfo();
         loadTable();
