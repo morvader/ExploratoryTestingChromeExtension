@@ -252,109 +252,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var exportbtn = document.getElementById("export");
   exportbtn.addEventListener('click',function(){
 
-    createExportableTable();
+    var browserInfo = session.getBrowserInfo();
+    //Take the timestamp of the first Annotation
+    var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
+    var fileName = "ExploratorySession_" + browserInfo + "_" + startDateTime;
 
-    var elHtml =  document.getElementById("exportHTML").innerHTML;
+    var exportHTMLService = new ExportSessionHTML(session);
+    var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
+
     var link = document.createElement('a');
     mimeType = 'text/html' || 'text/plain';
 
-    link.setAttribute('download', "sessionActivity.html");
+    link.setAttribute('download', fileName + ".html");
     link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
     link.click();
 
-//    window.open('data:application/vnd.ms-excel,' + encodeURIComponent(document.getElementById('sessionResults').innerHTML));
-//    e.preventDefault();
   })
 }, false);
-
-function createExportableTable() {
-
-        var myTableDiv = document.getElementById("exportHTML");
-
-        myTableDiv.innerHTML = "";
-
-        var table = document.createElement('TABLE');
-
-        table.setAttribute('id', 'exportActivityTable');
-        table.style.width = "100%";
-
-        var caption = document.createElement("caption");
-        caption.innerHTML ="Session Activity Report";
-        table.appendChild(caption);
-
-        var tableHead = document.createElement('THEAD');
-
-        table.border = '1'
-        table.appendChild(tableHead);
-
-        var heading = new Array();
-        heading[0] = "Type"
-        heading[1] = "Description"
-        heading[2] = "URL"
-        heading[3] = "Screenshot"
-
-        var annotaions = session.getAnnotations();
-
-        //TABLE COLUMNS
-        var tr = document.createElement('TR');
-        tableHead.appendChild(tr);
-        for (i = 0; i < heading.length; i++) {
-            var th = document.createElement('TH')
-            //th.width = '75';
-            th.appendChild(document.createTextNode(heading[i]));
-            tr.appendChild(th);
-        }
-
-        var tableBody = document.createElement('TBODY');
-        table.appendChild(tableBody);
-
-
-        //TABLE ROWS
-        for (i = 0; i < annotaions.length; i++) {
-            var tr = document.createElement('TR');
-
-            td = document.createElement('TD');
-            td.setAttribute('class', 'centered');
-
-            td.appendChild(document.createTextNode(annotaions[i].getType()));
-
-//            var icon = getIconType(annotaions[i].getType());
-//            td.appendChild(icon);
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-            td.appendChild(document.createTextNode(annotaions[i].getName()));
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-
-            var a = document.createElement('a');
-            var linkText = document.createTextNode(annotaions[i].getURL());
-            a.appendChild(linkText);
-            a.title = annotaions[i].getURL();
-            a.href = annotaions[i].getURL();
-            a.target ="_blank";
-
-            td.appendChild(a);
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-            td.setAttribute('class', 'centered');
-
-            var screenshotLink = annotaions[i].getImageURL();
-
-            if(screenshotLink != ""){
-                var img = document.createElement('img');
-                img.src =screenshotLink;
-                img.style.width = "720px";
-                td.appendChild(img);
-            }
-
-            tr.appendChild(td);
-            tableBody.appendChild(tr);
-        }
-
-        myTableDiv.appendChild(table);
-
-
-}
