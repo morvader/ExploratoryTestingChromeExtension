@@ -154,7 +154,9 @@ function addStyleCSS(doc){
                      } \
                      .centered{ \
                          text-align:center; \
-                         vertical-align: middle; \
+                     } \
+                     td{ \
+                        vertical-align: top; \
                      } \
                      .noWrap{ \
                       white-space: nowrap; \
