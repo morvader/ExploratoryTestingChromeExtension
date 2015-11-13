@@ -11,6 +11,8 @@ ExportSessionHTML.prototype.getHTML = function(fileName) {
     meta.content = 'text/html; charset=utf-8';
     doc.head.appendChild(meta);
 
+    addStyleCSS(doc);
+
     var h1 = doc.createElement("h1");
     h1.innerHTML = fileName;
 
@@ -114,4 +116,52 @@ function createExportableTable(doc) {
 
         tableDiv.appendChild(table);
 
+}
+
+function addStyleCSS(doc){
+    var css = document.createElement("style");
+    css.type = "text/css";
+    css.innerHTML = "#exportActivityTable { \
+                     border: 1px solid #B0B0B0; \
+                     } \
+                     #exportActivityTable tbody { \
+                     margin: 0; \
+                     padding: 0; \
+                     border: 0; \
+                     outline: 0; \
+                     font-size: 100%; \
+                     vertical-align: baseline; \
+                     background: transparent; \
+                     } \
+                     #exportActivityTable thead { \
+                     text-align: center; \
+                     } \
+                     #exportActivityTable thead th { \
+                     background: -moz-linear-gradient(top, #F0F0F0 0, #DBDBDB 100%); \
+                     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F0F0F0), color-stop(100%, #DBDBDB)); \
+                     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F0F0F0', endColorstr='#DBDBDB', GradientType=0); \
+                     border: 1px solid #B0B0B0; \
+                     color: #444; \
+                     font-size: 16px; \
+                     font-weight: bold; \
+                     padding: 3px 10px; \
+                     } \
+                     #exportActivityTable td { \
+                     padding: 3px 10px;\
+                     } \
+                     #exportActivityTable tr:nth-child(even) { \
+                     background: #F2F2F2; \
+                     } \
+                     .centered{ \
+                         text-align:center; \
+                         vertical-align: middle; \
+                     } \
+                     .noWrap{ \
+                      white-space: nowrap; \
+                     } \
+                     TH{ \
+                         padding:5px; \
+                     } \
+     ";
+    doc.head.appendChild(css);
 }
