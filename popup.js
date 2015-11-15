@@ -230,35 +230,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
-  var resetBtn = document.getElementById('resetBtn');
-  resetBtn.addEventListener('click', function() {
-   var background = chrome.extension.getBackgroundPage();
-   var session = background.session;
-
-   //Only ask if there are annotations already
-   if(session.getAnnotations().length == 0) return;
-
-    var r = confirm("This will reset the current session. Are you sure?");
-    if (r == true) {
-        chrome.extension.sendMessage({
-               type: "clearSession"
-        },function(response) {
-
-         alert("Session cleared");
-
-         document.getElementById('bugCounter').innerHTML  = "";
-         document.getElementById('ideaCounter').innerHTML  = "";
-         document.getElementById('noteCounter').innerHTML  = "";
-         document.getElementById('questionCounter').innerHTML  = "";
-        });
-
-    } else {
-        return;
-    }
-  }, false);
-}, false);
-
 function updateCounters(){
     var background = chrome.extension.getBackgroundPage();
     var session = background.session;
@@ -269,19 +240,19 @@ function updateCounters(){
     var questions = session.getQuestions().length;
 
     if(bugs > 0){
-      document.getElementById('bugCounter').innerHTML  = "(" + bugs + ")";
+      $("#bugCounter").html("(" + bugs + ")");
     }
 
     if(notes > 0){
-      document.getElementById('noteCounter').innerHTML  = "(" + notes + ")";
+      $("#noteCounter").html("(" + notes + ")");
     }
 
     if(ideas > 0 ){
-      document.getElementById('ideaCounter').innerHTML  = "(" + ideas + ")";
+      $("#ideaCounter").html("(" + ideas + ")");
     }
 
     if(questions > 0 ){
-      document.getElementById('questionCounter').innerHTML  = "(" + questions + ")";
+      $("#questionCounter").html("(" + questions + ")");
     }
 };
 
@@ -324,4 +295,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 }, false);
+
+document.addEventListener('DOMContentLoaded', function() {
+  var resetBtn = document.getElementById('resetBtn');
+  resetBtn.addEventListener('click', function() {
+    var background = chrome.extension.getBackgroundPage();
+    var session = background.session;
+    if(session.getAnnotations().length == 0) return;
+
+    var resetConfirmation = document.getElementById('resetConfirmation');
+    $("#resetConfirmation").toggle();
+});
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  var resetBtnNo = document.getElementById('resetNo');
+  resetBtnNo.addEventListener('click', function() {
+    $("#resetConfirmation").toggle();
+});
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  var resetBtnNo = document.getElementById('resetYes');
+  resetBtnNo.addEventListener('click', function() {
+     var background = chrome.extension.getBackgroundPage();
+     var session = background.session;
+     if(session.getAnnotations().length == 0) return;
+     chrome.extension.sendMessage({
+         type: "clearSession"
+     },function(response) {
+         $("#bugCounter").html("");
+         $("#ideaCounter").html("");
+         $("#noteCounter").html("");
+         $("#questionCounter").html("");
+     });
+    $("#resetConfirmation").toggle();
+});
+});
 

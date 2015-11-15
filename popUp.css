@@ -253,3 +253,46 @@ li{
 .annotaionOptions{
  float: right;
 }
+
+#resetConfirmation{
+     clear:both;
+     margin-top:20px;
+     font-style: italic
+}
+
+#resetConfirmation button{
+    font-size: 10px;
+}
+#resetNo{
+    margin-left: 8px;
+}
+
+.addNewAnnotaionBtn{
+height: 22px;
+width: 22px;
+background-image: url( './images/add139.png' );
+background-size: 16px 16px;
+background-position: center center;
+background-repeat: no-repeat;
+}
+
+.addNewAnnotaionBtn:hover {
+background-image: url( './images/add139.png' );
+background-position: center center;
+background-repeat: no-repeat;
+}
+
+.addNewAnnotaionScreenshotBtn{
+height: 22px;
+width: 30px;
+background-image: url( './images/camera25.png' );
+background-size: 16px 16px;
+background-position: center center;
+background-repeat: no-repeat;
+}
+
+.addNewAnnotaionScreenshotBtn:hover {
+background-image: url( './images/camera25.png' );
+background-position: center center;
+background-repeat: no-repeat;
+}

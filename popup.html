@@ -4,6 +4,7 @@
     <title>Exploratory Testing Chrome Extension</title>
     <link rel="stylesheet" type="text/css" href="popUp.css">
     <script src="popup.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
 
 </head>
 
@@ -22,8 +23,9 @@
 
                 <div class="annotaionOptions">
                     <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewBugBtn" class="actionButton" title="Add new Bug">Add</button>
-                    <button id="addNewBugSCBtn" class="actionButton" title="Add new Bug with screenshot">Add+SS</button>
+                    <button id="addNewBugBtn" class="actionButton addNewAnnotaionBtn" title="Add new Bug"></button>
+                    <button id="addNewBugSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
+                            title="Add new Bug with screenshot"></button>
                 </div>
             </div>
         </li>
@@ -36,9 +38,9 @@
 
                 <div class="annotaionOptions">
                     <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewNoteBtn" class="actionButton" title="Add new Note">Add</button>
-                    <button id="addNewNoteSCBtn" class="actionButton" title="Add new Note with screenshot">Add+SS
-                    </button>
+                    <button id="addNewNoteBtn" class="actionButton addNewAnnotaionBtn" title="Add new Note"></button>
+                    <button id="addNewNoteSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
+                            title="Add new Note with screenshot"></button>
                 </div>
             </div>
         </li>
@@ -52,10 +54,10 @@
 
                 <div class="annotaionOptions">
                     <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewQuestionBtn" class="actionButton" title="Add new Question">Add</button>
-                    <button id="addNewQuestionSCBtn" class="actionButton" title="Add new Question with screenshot">
-                        Add+SS
+                    <button id="addNewQuestionBtn" class="actionButton addNewAnnotaionBtn" title="Add new Question">
                     </button>
+                    <button id="addNewQuestionSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
+                            title="Add new Question with screenshot"></button>
                 </div>
             </div>
         </li>
@@ -68,8 +70,9 @@
 
                 <div class="annotaionOptions">
                     <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewIdeaBtn" class="actionButton" title="Add new Idea">Add</button>
-                    <button id="addNewIdeaSCBtn" class="actionButton" title="Add new Idea with screenshot">Add+SS
+                    <button id="addNewIdeaBtn" class="actionButton addNewAnnotaionBtn" title="Add new Idea"></button>
+                    <button id="addNewIdeaSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
+                            title="Add new Idea with screenshot">
                     </button>
                 </div>
             </div>
@@ -85,6 +88,12 @@
             <button id="previewBtn" class="actionButton" title="Session report">Report</button>
             <button id="exportCSVBtn" class="actionButton" title="Export session to CSV">Export CSV</button>
         </div>
+    </div>
+    <div id="resetConfirmation" style="display:none">
+        <span style="display:block">This will reset the current session.</span>
+        <span>Are you sure?</span>
+        <button id="resetNo" class="cancelButton" title="Cancel reset">No</button>
+        <button id="resetYes" class="actionButton" title="Reset current session">Yes</button>
     </div>
 </div>
 
