@@ -11,7 +11,7 @@ A Chrome extension designed for making web exploratory testing easier
  - Export session to CSV or HTML
 
 
-Install from Chrome Store: https://chrome.google.com/webstore/detail/exploratory-testing-chrom/khigmghadjljgjpamimgjjmpmlbgmekj
+Install from [Chrome Store](https://chrome.google.com/webstore/detail/exploratory-testing-chrom/khigmghadjljgjpamimgjjmpmlbgmekj)
 
 _PS: I'm not a web designer, so any help with web design or UX will be appreciated._
 
