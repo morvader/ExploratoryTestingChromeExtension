@@ -3,7 +3,7 @@
   "name": "Exploratory Testing Chrome Extension",
   "short_name": "Chrome Exploratory Testing",
   "description": "Exploratory testing session using Chrome",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "icons": {
     "16": "/icons/iconbig.png",
     "48": "/icons/iconbig.png",
