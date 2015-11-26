@@ -4,23 +4,23 @@ window.onload = function() {
 
 function showBugReport(){
     hideAllReports();
-    document.getElementById("addNewBug").style.display = 'block'; // show clicked element
+    $("#addNewBug").fadeIn();
     document.getElementById("newBugDescription").focus();
 };
 
 function showIdeaReport(){
     hideAllReports();
-    document.getElementById("addNewIdea").style.display = 'block'; // show clicked element
+    $("#addNewIdea").fadeIn();
     document.getElementById("newIdeaDescription").focus();
 };
 function showNoteReport(){
     hideAllReports();
-    document.getElementById("addNewNote").style.display = 'block'; // show clicked element
+    $("#addNewNote").fadeIn();
     document.getElementById("newNoteDescription").focus();
 };
 function showQuestionReport(){
     hideAllReports();
-    document.getElementById("addNewQuestion").style.display = 'block'; // show clicked element
+    $("#addNewQuestion").fadeIn();
     document.getElementById("newQuestionDescription").focus();
 };
 
@@ -203,10 +203,10 @@ function clearAllReports(){
 };
 
 function hideAllReports(){
-    document.getElementById("addNewBug").style.display = 'none';
-    document.getElementById("addNewIdea").style.display = 'none';
-    document.getElementById("addNewNote").style.display = 'none';
-    document.getElementById("addNewQuestion").style.display = 'none';
+    $("#addNewBug").slideUp();
+    $("#addNewIdea").slideUp();
+    $("#addNewNote").slideUp();
+    $("#addNewQuestion").slideUp();
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -304,14 +304,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if(session.getAnnotations().length == 0) return;
 
     var resetConfirmation = document.getElementById('resetConfirmation');
-    $("#resetConfirmation").toggle();
+    $("#resetConfirmation").fadeIn();
 });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
   var resetBtnNo = document.getElementById('resetNo');
   resetBtnNo.addEventListener('click', function() {
-    $("#resetConfirmation").toggle();
+    $("#resetConfirmation").slideUp();
 });
 });
 
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
          $("#noteCounter").html("");
          $("#questionCounter").html("");
      });
-    $("#resetConfirmation").toggle();
+    $("#resetConfirmation").slideUp();
 });
 });
 

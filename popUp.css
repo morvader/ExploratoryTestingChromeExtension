@@ -234,6 +234,7 @@ li{
 .reportAnnotation{
     float:left;
     display:none;
+    margin-top: 2px;
 }
 .heading{
     font-size:14px;
