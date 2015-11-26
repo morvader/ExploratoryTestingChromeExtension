@@ -6,7 +6,7 @@ A Chrome extension designed for making web exploratory testing easier
 
  - Report bugs, ideas, notes and questions easily
  - Take screenshots during the session. Keep focused 
- - URL with be tracked automatically
+ - URL will be tracked automatically
  - See session results in a report
  - Export session to CSV or HTML
 
