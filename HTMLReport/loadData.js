@@ -1,46 +1,46 @@
 var session;
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     loadData();
 }, false);
 
-function initData(){
+function initData() {
     var BrowserInfo = "TestBrowser 10.0.1.3";
     var currentDateTime = new Date(2015, 10, 30, 6, 51);
     var url = "http://www.google.com/images"
     session = new Session(currentDateTime, BrowserInfo);
 
-    session.addBug(new Bug("Sigo viendo fallos en los informes. Adjunto dos pantallazos.","http://www.ministryoftesting.com/resources/exploratory-testing/",currentDateTime));
-    session.addIdea(new Idea("Aded Idea",url,currentDateTime));
-    session.addNote(new Note("No hemos validado con el cliente porque nos hemos encontrado con el siguiente error (ver email abajo).",url,currentDateTime));
-    session.addBug(new Bug("Add Bug2",url,currentDateTime));
-    session.addQuestion(new Question("Add Question",url,currentDateTime));
-    session.addNote(new Note("Add Note2",url,currentDateTime));
-    session.addBug(new Bug("Add Bug3",url,currentDateTime));
+    session.addBug(new Bug("Sigo viendo fallos en los informes. Adjunto dos pantallazos.", "http://www.ministryoftesting.com/resources/exploratory-testing/", currentDateTime));
+    session.addIdea(new Idea("Aded Idea", url, currentDateTime));
+    session.addNote(new Note("No hemos validado con el cliente porque nos hemos encontrado con el siguiente error (ver email abajo).", url, currentDateTime));
+    session.addBug(new Bug("Add Bug2", url, currentDateTime));
+    session.addQuestion(new Question("Add Question", url, currentDateTime));
+    session.addNote(new Note("Add Note2", url, currentDateTime));
+    session.addBug(new Bug("Add Bug3", url, currentDateTime));
 
 
     loadData(session);
 }
 
-function loadData(data){
-        //session = data;
+function loadData(data) {
+    //session = data;
 
-        var background = chrome.extension.getBackgroundPage();
-        session = background.session;
+    var background = chrome.extension.getBackgroundPage();
+    session = background.session;
 
-        loadSessionInfo();
-        loadTable();
-        drawPieChart();
+    loadSessionInfo();
+    loadTable();
+    drawPieChart();
 }
 
-function loadSessionInfo(){
+function loadSessionInfo() {
     document.getElementById("sessionDate").innerHTML = "Exploratory Session " + session.getStartDateTime().toString('dd-MM-yyyy HH:mm');
     document.getElementById("browserInfo").innerHTML = "Browser Version: " + session.getBrowserInfo();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var addNewIdeaBtn = document.getElementById("fakeData");
-  addNewIdeaBtn.addEventListener('click',initData)
+    var addNewIdeaBtn = document.getElementById("fakeData");
+    addNewIdeaBtn.addEventListener('click', initData)
 }, false);
 
 function loadTable() {
@@ -52,9 +52,6 @@ function loadTable() {
     var table = document.createElement('TABLE');
     table.setAttribute('id', 'sessionActivityTable');
 
-//    var caption = document.createElement("caption");
-//    caption.innerHTML ="Session Activity";
-//    table.appendChild(caption);
 
     var tableHead = document.createElement('THEAD');
 
@@ -76,7 +73,7 @@ function loadTable() {
     tableHead.appendChild(tr);
     for (i = 0; i < heading.length; i++) {
         var th = document.createElement('TH')
-        //th.width = '75';
+            //th.width = '75';
         th.appendChild(document.createTextNode(heading[i]));
         tr.appendChild(th);
     }
@@ -88,15 +85,17 @@ function loadTable() {
     //TABLE ROWS
     for (i = 0; i < annotaions.length; i++) {
         var tr = document.createElement('TR');
+        tr.setAttribute('annotationID', i);
 
         td = document.createElement('TD');
         td.setAttribute('class', 'centered');
-        //td.appendChild(document.createTextNode(annotaions[i].getType()));
         var icon = getIconType(annotaions[i].getType());
         td.appendChild(icon);
         tr.appendChild(td);
 
         td = document.createElement('TD');
+        td.setAttribute('class', 'annotationDescription');
+        td.setAttribute('title', 'Double click to edit description');
         td.appendChild(document.createTextNode(annotaions[i].getName()));
         tr.appendChild(td);
 
@@ -107,7 +106,7 @@ function loadTable() {
         a.appendChild(linkText);
         a.title = annotaions[i].getURL();
         a.href = annotaions[i].getURL();
-        a.target ="_blank";
+        a.target = "_blank";
 
         td.appendChild(a);
         tr.appendChild(td);
@@ -117,15 +116,16 @@ function loadTable() {
 
         var screenshotLink = annotaions[i].getImageURL();
 
-        if(screenshotLink != ""){
-            var img = document.createElement('img'), link = document.createElement('a');
+        if (screenshotLink != "") {
+            var img = document.createElement('img'),
+                link = document.createElement('a');
 
             img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAETAAABEwGpfUaAAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAIRQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvSgy4QAAACt0Uk5TAAEFBgsOEBcYHSwuMDU4REZOUFhebnB/gISIj5CYqK2wu77Fyc7Q0uHo7zP+WRIAAADASURBVDhPvdPZEoIgFIDhk+GSWpq5tkiamMn7v18qDYqBXdT03+DANx7GGQG+zivrhUoPGrpYA5TiozJMaQcC9fzgBfyrNJ+DVD4//SFI5CDhwDpIszhArtAGVk6/Ig6i+3lSTsAZRkQcxJfp19nV4A4g/iu4xZNO78AMhLaw3veryYEyBtqHsrYDBV2sABSO1yNsk4w7IRJG5gzkiht9ALphGJgB3D3qs2Otmt+u0gRgz88ptcVXZET850gGv+oJeV5V7sRlQoMAAAAASUVORK5CYII=";
             img.style.width = "28px";
 
             link.href = screenshotLink;
             link.appendChild(img);
-            link.target ="_blank";
+            link.target = "_blank";
 
             td.appendChild(link);
 
@@ -138,20 +138,21 @@ function loadTable() {
     myTableDiv.appendChild(table);
 
     addTableFilters();
+    addTableListeners();
 }
 
-function addTableFilters(){
+function addTableFilters() {
     var sessionActivityTable_Props = {
         col_0: "select",
         col_1: "none",
         col_2: "none",
         col_3: "none",
         custom_cell_data_cols: [0],
-        custom_cell_data: function(o, c, i){
-            if(i==0){
-               var img = c.getElementsByTagName('img')[0];
-                 if(!img) return '';
-                  return img.alt;
+        custom_cell_data: function(o, c, i) {
+            if (i == 0) {
+                var img = c.getElementsByTagName('img')[0];
+                if (!img) return '';
+                return img.alt;
             }
         },
         display_all_text: " [ Show all ] ",
@@ -161,9 +162,9 @@ function addTableFilters(){
     var tf2 = setFilterGrid("sessionActivityTable", sessionActivityTable_Props);
 }
 
-function getIconType(type){
+function getIconType(type) {
     var DOM_img = document.createElement("img");
-    switch(type){
+    switch (type) {
         case "Bug":
             //DOM_img.src = "../images/bug.png";
             DOM_img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAugAAALoBTx5ghQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGZSURBVEiJtZY9SwNBEIafCUG0k0BixMrKykbEL47EKtrbpNPKRgVrq6uDWKs/RVIE7URs7IVANFgIaoQUEtYic7C53N2eng683O18vDOzs+ydGGNwiYhMA/vAkqrugUtjzJsz2BiTCMADOoAJoQN4zngHeQHoRpAH6AKFJI6co8FDoJxgL6tPrOQARKQmInci4oXsK44CxnxExFOuGkCwFXWGLfew9hWYACYdmAjNq6dc9ZEZAL6VpJqCOIyqRe5HDtlKkgV+4ikCmgnBbUWcvRnmy0cM7TNqkioL+uzH2MdiXcc0s/x7gryIzAGLlq6Uga8kItvW+gGShxZGcCTT+rcF2AM2rawVYD6mwil9xg25DbSsdSvqmPoZOjhPc9ndxlSXRp7Cir9OcDOmifkOPPPzLXoExLlFInICzP6i+iKwkdgBsKvV9IELYJCigwFwre8fwHrkZQdsAV8asKO6ZeDKSmQnGKhtTX1PVf8OrI4kYDjsV3U4ipjJDMP7PqeoAMUIv4ZyvAD5cAdnwIHrLyHFX8gx0AjW334V9JGY6/lGAAAAAElFTkSuQmCC";
@@ -193,79 +194,145 @@ function getIconType(type){
     return DOM_img;
 }
 
-function drawPieChart(){
+function drawPieChart() {
 
-    var bugs = {y: session.getBugs().length, name: "Bugs",color:"#f5978e",indexLabel: session.getBugs().length == 0 ? "" :"#percent%"};
-    var notes = {y: session.getNotes().length, name: "Notes",color: "#FFEC56",indexLabel: session.getNotes().length == 0 ? "" :"#percent%"};
-    var ideas = {y: session.getIdeas().length, name: "Ideas",color: "#97c4fe",indexLabel: session.getIdeas().length == 0 ? "" :"#percent%"};
-    var questions = {y: session.getQuestions().length, name: "Questions",color: "#e184f3",indexLabel: session.getQuestions().length == 0 ? "" :"#percent%"};
+    var bugs = {
+        y: session.getBugs().length,
+        name: "Bugs",
+        color: "#f5978e",
+        indexLabel: session.getBugs().length == 0 ? "" : "#percent%"
+    };
+    var notes = {
+        y: session.getNotes().length,
+        name: "Notes",
+        color: "#FFEC56",
+        indexLabel: session.getNotes().length == 0 ? "" : "#percent%"
+    };
+    var ideas = {
+        y: session.getIdeas().length,
+        name: "Ideas",
+        color: "#97c4fe",
+        indexLabel: session.getIdeas().length == 0 ? "" : "#percent%"
+    };
+    var questions = {
+        y: session.getQuestions().length,
+        name: "Questions",
+        color: "#e184f3",
+        indexLabel: session.getQuestions().length == 0 ? "" : "#percent%"
+    };
 
-    var data = [bugs, notes,ideas,questions];
+    var data = [bugs, notes, ideas, questions];
 
-    var chart = new CanvasJS.Chart("canvasHolder",
-	{
-		title:{
-			text: "Session Activity",
-			fontFamily: "arial black"
-		},
-            animationEnabled: true,
-		legend: {
-			verticalAlign: "bottom",
-			horizontalAlign: "center"
-		},
-		theme: "theme1",
-		data: [
-		{
-			type: "pie",
-			indexLabelFontFamily: "Garamond",
-			indexLabelFontSize: 14,
-			indexLabelFontWeight: "bold",
-			startAngle:0,
-			indexLabelFontColor: "White",
-			indexLabelLineColor: "darkgrey",
-			indexLabelPlacement: "inside",
-			toolTipContent: "{name}: {y}",
-			showInLegend: true,
-			dataPoints: data
-		}
-		]
-	});
-	chart.render();
+    var chart = new CanvasJS.Chart("canvasHolder", {
+        title: {
+            text: "Session Activity",
+            fontFamily: "arial black"
+        },
+        animationEnabled: true,
+        legend: {
+            verticalAlign: "bottom",
+            horizontalAlign: "center"
+        },
+        theme: "theme1",
+        data: [{
+            type: "pie",
+            indexLabelFontFamily: "Garamond",
+            indexLabelFontSize: 14,
+            indexLabelFontWeight: "bold",
+            startAngle: 0,
+            indexLabelFontColor: "White",
+            indexLabelLineColor: "darkgrey",
+            indexLabelPlacement: "inside",
+            toolTipContent: "{name}: {y}",
+            showInLegend: true,
+            dataPoints: data
+        }]
+    });
+    chart.render();
 
-	resizeSessionDataHeight();
+    resizeSessionDataHeight();
 
 }
 
-function resizeSessionDataHeight(){
+function resizeSessionDataHeight() {
     var sessionInfo = document.getElementById("sessionInfo");
-	var canvasHolder = document.getElementsByClassName("canvasjs-chart-canvas")[0];
+    var canvasHolder = document.getElementsByClassName("canvasjs-chart-canvas")[0];
 
-    if(canvasHolder == null) return;
-	sessionData.style.height = sessionInfo.offsetHeight + canvasHolder.offsetHeight + "px";
+    if (canvasHolder == null) return;
+    sessionData.style.height = sessionInfo.offsetHeight + canvasHolder.offsetHeight + "px";
 }
 
-window.onload = window.onresize = function () {
+window.onload = window.onresize = function() {
     resizeSessionDataHeight();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var exportbtn = document.getElementById("export");
-  exportbtn.addEventListener('click',function(){
+    var exportbtn = document.getElementById("export");
+    exportbtn.addEventListener('click', function() {
 
-    var browserInfo = session.getBrowserInfo();
-    //Take the timestamp of the first Annotation
-    var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
-    var fileName = "ExploratorySession_" + browserInfo + "_" + startDateTime;
+        var browserInfo = session.getBrowserInfo();
+        //Take the timestamp of the first Annotation
+        var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
+        var fileName = "ExploratorySession_" + browserInfo + "_" + startDateTime;
 
-    var exportHTMLService = new ExportSessionHTML(session);
-    var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
+        var exportHTMLService = new ExportSessionHTML(session);
+        var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
 
-    var link = document.createElement('a');
-    mimeType = 'text/html' || 'text/plain';
+        var link = document.createElement('a');
+        mimeType = 'text/html' || 'text/plain';
 
-    link.setAttribute('download', fileName + ".html");
-    link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
-    link.click();
+        link.setAttribute('download', fileName + ".html");
+        link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+        link.click();
 
-  })
+    })
 }, false);
+
+
+function addTableListeners(){
+    //var descriptionElements = document.getElementsByClassName('annotationDescription');
+    $('.annotationDescription').each(function(index, el) {
+        el.addEventListener('dblclick', function(e) {
+            e.stopPropagation();
+            var currentEle = $(this);
+            var value = $(this).html();
+            updateVal(currentEle, value);
+
+        });
+    });
+
+};
+
+
+function updateVal(currentEle, value) {
+    var annotationID = currentEle[0].parentNode.getAttribute('annotationID');
+    $(document).off('click');
+    //$(currentEle).html('<textarea class="thVal" value="' + value + '" />');
+    $(currentEle).html('<textarea class="updatethVal" >' + value +  '</textarea>');
+    $(".updatethVal").focus();
+    $(".updatethVal").keyup(function(event) {
+        if (event.keyCode == 13) {
+            var text = $(".updatethVal").val();
+            $(currentEle).html(text);
+
+            updateSessionAnnotation(annotationID, text);
+        }
+    });
+
+    // $(document).click(function() {
+    //     var text = $(".updatethVal").val();
+    //     $(currentEle).html(text);
+
+    //     updateSessionAnnotation(annotationID, text);
+    // });
+
+
+}
+
+function updateSessionAnnotation(annotationID, text) {
+    chrome.extension.sendMessage({
+        type: "updateAnnotationName",
+        annotationID: annotationID,
+        newName: text
+    });
+}

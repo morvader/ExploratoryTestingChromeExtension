@@ -1,7 +1,7 @@
-describe("Exploratory Session", function(){
+describe("Exploratory Session", function() {
 
-	describe("when Session starts", function(){
-		it("should store sarting DateTime and Browser Info", function(){
+	describe("when Session starts", function() {
+		it("should store sarting DateTime and Browser Info", function() {
 
 			var BrowserInfo = "TestBrowser 10.0.1.3";
 			var currentDateTime = new Date(2015, 10, 30, 6, 51);
@@ -15,7 +15,7 @@ describe("Exploratory Session", function(){
 
 	});
 
-	describe("shloud store annotations: bugs, ideas, questions and notes", function(){
+	describe("shloud store annotations: bugs, ideas, questions and notes", function() {
 
 		var session;
 
@@ -26,17 +26,17 @@ describe("Exploratory Session", function(){
 			session = new Session(currentDateTime, BrowserInfo);
 		});
 
-		it("annotations should be empty at the begining", function(){
+		it("annotations should be empty at the begining", function() {
 			var annotations = session.getAnnotations();
 
 			expect(annotations.length).toEqual(0);
 		});
 
-		it("when a bug is added there is one more annotation", function(){
+		it("when a bug is added there is one more annotation", function() {
 			var bugName = "Add a new bug test";
-            var url = "http://myTestPage.com"
+			var url = "http://myTestPage.com"
 
-			var newBug = new Bug(bugName,url);
+			var newBug = new Bug(bugName, url);
 
 			session.addBug(newBug);
 
@@ -50,11 +50,11 @@ describe("Exploratory Session", function(){
 
 		});
 
-		it("when a idea is added there is one more annotation", function(){
+		it("when a idea is added there is one more annotation", function() {
 			var ideaName = "Add a new idea test";
-            var url = "http://myTestPage.com"
+			var url = "http://myTestPage.com"
 
-			var newIdea = new Idea(ideaName,url);
+			var newIdea = new Idea(ideaName, url);
 
 			session.addIdea(newIdea);
 
@@ -68,11 +68,11 @@ describe("Exploratory Session", function(){
 
 		});
 
-		it("when a note is added there is one more annotation", function(){
+		it("when a note is added there is one more annotation", function() {
 			var noteName = "Add a new note test";
-            var url = "http://myTestPage.com"
+			var url = "http://myTestPage.com"
 
-			var newNote = new Note(noteName,url);
+			var newNote = new Note(noteName, url);
 
 			session.addNote(newNote);
 
@@ -86,11 +86,11 @@ describe("Exploratory Session", function(){
 
 		});
 
-		it("when a question is added there is one more annotation", function(){
+		it("when a question is added there is one more annotation", function() {
 			var questionName = "Add a new question test";
-            var url = "http://myTestPage.com"
+			var url = "http://myTestPage.com"
 
-			var newQuestion = new Question(questionName,url);
+			var newQuestion = new Question(questionName, url);
 
 			session.addQuestion(newQuestion);
 
@@ -104,7 +104,7 @@ describe("Exploratory Session", function(){
 
 		});
 
-		it("different types of annotations can be added", function(){
+		it("different types of annotations can be added", function() {
 
 			session.addBug(new Bug("Add Bug"));
 			session.addIdea(new Idea("Aded Idea"));
@@ -122,28 +122,60 @@ describe("Exploratory Session", function(){
 			expect(annotations[3] instanceof Question).toBeTruthy();
 
 		});
-		it("retrieve annotations by type", function(){
 
-        	session.addBug(new Bug("Add Bug"));
-        	session.addIdea(new Idea("Aded Idea"));
-        	session.addNote(new Note("Add Note"));
-        	session.addBug(new Bug("Add Bug2"));
-        	//session.addQuestion(new Question("Add Question"));
-        	session.addNote(new Note("Add Note2"));
-        	session.addBug(new Bug("Add Bug3"));
+		it("retrieve annotations by type", function() {
 
-        	var bugs = session.getBugs();
-        	var notes = session.getNotes();
-        	var ideas = session.getIdeas();
-        	var questions = session.getQuestions();
+			session.addBug(new Bug("Add Bug"));
+			session.addIdea(new Idea("Aded Idea"));
+			session.addNote(new Note("Add Note"));
+			session.addBug(new Bug("Add Bug2"));
+			//session.addQuestion(new Question("Add Question"));
+			session.addNote(new Note("Add Note2"));
+			session.addBug(new Bug("Add Bug3"));
 
-        	expect(bugs.length).toEqual(3);
-        	expect(notes.length).toEqual(2);
-        	expect(ideas.length).toEqual(1);
-        	expect(questions.length).toEqual(0);
+			var bugs = session.getBugs();
+			var notes = session.getNotes();
+			var ideas = session.getIdeas();
+			var questions = session.getQuestions();
 
-        });
+			expect(bugs.length).toEqual(3);
+			expect(notes.length).toEqual(2);
+			expect(ideas.length).toEqual(1);
+			expect(questions.length).toEqual(0);
 
+		});
+
+		it("should change any annotaion description", function() {
+			session.addBug(new Bug("Add Bug"));
+			session.addIdea(new Idea("Aded Idea"));
+			session.addNote(new Note("Add Note"));
+			session.addBug(new Bug("Add Bug2"));
+			session.addNote(new Note("Add Note2"));
+			session.addBug(new Bug("Add Bug3"));
+			session.addQuestion(new Question("Add Question"));
+
+			var annotations = session.getAnnotations();
+			expect(annotations.length).toEqual(7);
+
+			var newBugName = "new bug name";
+			var newIdeaName = "new idea name";
+			var newNoteName = "new note name";
+			var newQuestionName = "new question name";
+
+			annotations[0].setName(newBugName);
+			annotations[1].setName(newIdeaName);
+			annotations[2].setName(newNoteName);
+			annotations[6].setName(newQuestionName);
+
+			expect(annotations.length).toEqual(7);
+
+			expect(annotations[0].getName()).toEqual(newBugName);
+			expect(annotations[1].getName()).toEqual(newIdeaName);
+			expect(annotations[2].getName()).toEqual(newNoteName);
+			expect(annotations[6].getName()).toEqual(newQuestionName);
+
+
+		});
 
 	});
 

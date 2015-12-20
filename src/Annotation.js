@@ -11,6 +11,10 @@ Annotation.prototype.getName = function() {
 	return this.name;
 };
 
+Annotation.prototype.setName = function(newName) {
+    this.name = newName;
+};
+
 Annotation.prototype.getURL = function() {
 	return this.URL;
 };

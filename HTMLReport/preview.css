@@ -84,3 +84,6 @@ padding: 3px 10px;
 #sessionActivityTable tr:nth-child(even) {
 background: #F2F2F2;
 }
+.updatethVal{
+    width: 100%;
+}

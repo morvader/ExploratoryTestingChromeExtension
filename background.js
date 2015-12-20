@@ -15,6 +15,15 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         case "addQuestion":
             addAnnotation("Question",request.name,request.imageURL);
             break;
+        case "updateAnnotationName":
+            var AnnotationID = request.annotationID;
+            var newName = request.newName;
+
+            var annotations = session.getAnnotations();
+            var annotation = annotations[AnnotationID];
+            annotation.setName(newName);
+
+            break;
         case "exportSessionCSV":
             if(!exportSessionCSV())
                 sendResponse({status: "nothing to export"});

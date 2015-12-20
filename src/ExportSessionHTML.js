@@ -1,5 +1,5 @@
 function ExportSessionHTML(session) {
-	this.session = session;
+    this.session = session;
 }
 
 ExportSessionHTML.prototype.getHTML = function(fileName) {
@@ -41,97 +41,97 @@ ExportSessionHTML.prototype.addJavaScriptFiles = function(doc) {
 
 ExportSessionHTML.prototype.createExportableTable = function(doc) {
 
-        var tableDiv = doc.createElement("div");
-        doc.body.appendChild(tableDiv);
+    var tableDiv = doc.createElement("div");
+    doc.body.appendChild(tableDiv);
 
-        tableDiv.innerHTML = "";
+    tableDiv.innerHTML = "";
 
-        var table = document.createElement('TABLE');
+    var table = document.createElement('TABLE');
 
-        table.setAttribute('id', "exportActivityTable");
-        table.style.width = "100%";
+    table.setAttribute('id', "exportActivityTable");
+    table.style.width = "100%";
 
-        var caption = document.createElement("caption");
-        caption.innerHTML ="Session Activity Report";
-        table.appendChild(caption);
+    var caption = document.createElement("caption");
+    caption.innerHTML = "Session Activity Report";
+    table.appendChild(caption);
 
-        var tableHead = document.createElement('THEAD');
+    var tableHead = document.createElement('THEAD');
 
-        table.border = '1'
-        table.appendChild(tableHead);
+    table.border = '1'
+    table.appendChild(tableHead);
 
-        var heading = new Array();
-        heading[0] = "Type"
-        heading[1] = "Description"
-        heading[2] = "URL"
-        heading[3] = "Screenshot"
+    var heading = new Array();
+    heading[0] = "Type"
+    heading[1] = "Description"
+    heading[2] = "URL"
+    heading[3] = "Screenshot"
 
-        var annotaions = session.getAnnotations();
+    var annotaions = session.getAnnotations();
 
-        //TABLE COLUMNS
-        var tr = document.createElement('TR');
-        tableHead.appendChild(tr);
-        for (i = 0; i < heading.length; i++) {
-            var th = document.createElement('TH')
+    //TABLE COLUMNS
+    var tr = document.createElement('TR');
+    tableHead.appendChild(tr);
+    for (i = 0; i < heading.length; i++) {
+        var th = document.createElement('TH')
             //th.width = '75';
-            th.appendChild(document.createTextNode(heading[i]));
-            tr.appendChild(th);
+        th.appendChild(document.createTextNode(heading[i]));
+        tr.appendChild(th);
+    }
+
+    var tableBody = document.createElement('TBODY');
+    table.appendChild(tableBody);
+
+
+    //TABLE ROWS
+    for (i = 0; i < annotaions.length; i++) {
+        var tr = document.createElement('TR');
+
+        td = document.createElement('TD');
+        td.setAttribute('class', 'centered');
+
+        td.appendChild(document.createTextNode(annotaions[i].getType()));
+
+        //            var icon = getIconType(annotaions[i].getType());
+        //            td.appendChild(icon);
+        tr.appendChild(td);
+
+        td = document.createElement('TD');
+        td.appendChild(document.createTextNode(annotaions[i].getName()));
+        tr.appendChild(td);
+
+        td = document.createElement('TD');
+
+        var a = document.createElement('a');
+        var linkText = document.createTextNode(annotaions[i].getURL());
+        a.appendChild(linkText);
+        a.title = annotaions[i].getURL();
+        a.href = annotaions[i].getURL();
+        a.target = "_blank";
+
+        td.appendChild(a);
+        tr.appendChild(td);
+
+        td = document.createElement('TD');
+        td.setAttribute('class', 'centered');
+
+        var screenshotLink = annotaions[i].getImageURL();
+
+        if (screenshotLink != "") {
+            var img = document.createElement('img');
+            img.src = screenshotLink;
+            img.style.width = "720px";
+            td.appendChild(img);
         }
 
-        var tableBody = document.createElement('TBODY');
-        table.appendChild(tableBody);
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+    }
 
-
-        //TABLE ROWS
-        for (i = 0; i < annotaions.length; i++) {
-            var tr = document.createElement('TR');
-
-            td = document.createElement('TD');
-            td.setAttribute('class', 'centered');
-
-            td.appendChild(document.createTextNode(annotaions[i].getType()));
-
-//            var icon = getIconType(annotaions[i].getType());
-//            td.appendChild(icon);
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-            td.appendChild(document.createTextNode(annotaions[i].getName()));
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-
-            var a = document.createElement('a');
-            var linkText = document.createTextNode(annotaions[i].getURL());
-            a.appendChild(linkText);
-            a.title = annotaions[i].getURL();
-            a.href = annotaions[i].getURL();
-            a.target ="_blank";
-
-            td.appendChild(a);
-            tr.appendChild(td);
-
-            td = document.createElement('TD');
-            td.setAttribute('class', 'centered');
-
-            var screenshotLink = annotaions[i].getImageURL();
-
-            if(screenshotLink != ""){
-                var img = document.createElement('img');
-                img.src =screenshotLink;
-                img.style.width = "720px";
-                td.appendChild(img);
-            }
-
-            tr.appendChild(td);
-            tableBody.appendChild(tr);
-        }
-
-        tableDiv.appendChild(table);
+    tableDiv.appendChild(table);
 
 }
 
-ExportSessionHTML.prototype.addStyleCSS = function(doc){
+ExportSessionHTML.prototype.addStyleCSS = function(doc) {
     var css = document.createElement("style");
     css.type = "text/css";
     css.innerHTML = "#exportActivityTable { \
@@ -174,7 +174,7 @@ ExportSessionHTML.prototype.addStyleCSS = function(doc){
     doc.head.appendChild(css);
 }
 
-ExportSessionHTML.prototype.addTableFilters = function(doc){
+ExportSessionHTML.prototype.addTableFilters = function(doc) {
     var script = document.createElement("script");
 
     // Add script content

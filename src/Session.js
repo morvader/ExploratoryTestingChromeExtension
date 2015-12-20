@@ -1,8 +1,8 @@
-function Session(dateTime,BrowserInfo) {
-	this.BrowserInfo = BrowserInfo;
-	this.StartDateTime = dateTime;
+function Session(dateTime, BrowserInfo) {
+  this.BrowserInfo = BrowserInfo;
+  this.StartDateTime = dateTime;
 
-	this.annotations = new Array();
+  this.annotations = new Array();
 }
 
 Session.prototype.getBrowserInfo = function() {
@@ -17,32 +17,36 @@ Session.prototype.clearAnnotations = function() {
   this.annotations = new Array();
 };
 
+Session.prototype.setAnnotations = function(newAnnotations) {
+  this.annotations = newAnnotations;
+};
+
 Session.prototype.getAnnotations = function() {
   return this.annotations;
 };
 
 Session.prototype.getBugs = function() {
-  return this.annotations.filter(function(item){
-       return (item instanceof Bug);
-   });
+  return this.annotations.filter(function(item) {
+    return (item instanceof Bug);
+  });
 };
 
 Session.prototype.getNotes = function() {
-  return this.annotations.filter(function(item){
-         return (item instanceof Note);
-     });
+  return this.annotations.filter(function(item) {
+    return (item instanceof Note);
+  });
 };
 
 Session.prototype.getIdeas = function() {
-  return this.annotations.filter(function(item){
-         return (item instanceof Idea);
-     });
+  return this.annotations.filter(function(item) {
+    return (item instanceof Idea);
+  });
 };
 
 Session.prototype.getQuestions = function() {
-   return this.annotations.filter(function(item){
-        return (item instanceof Question);
-    });
+  return this.annotations.filter(function(item) {
+    return (item instanceof Question);
+  });
 };
 
 
