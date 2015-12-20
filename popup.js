@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function addNewBug(imageURL) {
-  var bugName = document.getElementById("newBugDescription").value;
+  //var bugName = document.getElementById("newBugDescription").value;
+  var bugName = $('#newBugDescription').val().trim();
   if (bugName == "") return;
 
   chrome.extension.sendMessage({
@@ -63,7 +64,8 @@ function addNewBug(imageURL) {
 };
 
 function addNewNote(imageURL) {
-  var noteName = document.getElementById("newNoteDescription").value;
+  //var noteName = document.getElementById("newNoteDescription").value;
+  var noteName = $('#newNoteDescription').val().trim();
   if (noteName == "") return;
 
   chrome.extension.sendMessage({
@@ -79,7 +81,8 @@ function addNewNote(imageURL) {
 };
 
 function addNewIdea(imageURL) {
-  var ideaName = document.getElementById("newIdeaDescription").value;
+  //var ideaName = document.getElementById("newIdeaDescription").value;
+  var ideaName = $('#newIdeaDescription').val().trim();
   if (ideaName == "") return;
   chrome.extension.sendMessage({
     type: "addIdea",
@@ -94,7 +97,8 @@ function addNewIdea(imageURL) {
 };
 
 function addNewQuestion(imageURL) {
-  var questionName = document.getElementById("newQuestionDescription").value;
+  //var questionName = document.getElementById("newQuestionDescription").value;
+  var questionName = $('#newQuestionDescription').val().trim();
   if (questionName == "") return;
   chrome.extension.sendMessage({
     type: "addQuestion",

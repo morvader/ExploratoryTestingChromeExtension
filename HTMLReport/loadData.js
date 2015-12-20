@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 
-function addTableListeners(){
+function addTableListeners() {
     //var descriptionElements = document.getElementsByClassName('annotationDescription');
     $('.annotationDescription').each(function(index, el) {
         el.addEventListener('dblclick', function(e) {
@@ -307,26 +307,17 @@ function addTableListeners(){
 function updateVal(currentEle, value) {
     var annotationID = currentEle[0].parentNode.getAttribute('annotationID');
     $(document).off('click');
-    //$(currentEle).html('<textarea class="thVal" value="' + value + '" />');
-    $(currentEle).html('<textarea class="updatethVal" >' + value +  '</textarea>');
+    if (!currentEle.children().is('textarea'))
+        $(currentEle).html('<textarea class="updatethVal" >' + value + '</textarea>');
     $(".updatethVal").focus();
     $(".updatethVal").keyup(function(event) {
         if (event.keyCode == 13) {
-            var text = $(".updatethVal").val();
+            var text = $(".updatethVal").val().trim();
             $(currentEle).html(text);
 
             updateSessionAnnotation(annotationID, text);
         }
     });
-
-    // $(document).click(function() {
-    //     var text = $(".updatethVal").val();
-    //     $(currentEle).html(text);
-
-    //     updateSessionAnnotation(annotationID, text);
-    // });
-
-
 }
 
 function updateSessionAnnotation(annotationID, text) {

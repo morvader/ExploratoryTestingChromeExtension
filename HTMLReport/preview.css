@@ -22,7 +22,7 @@ a.canvasjs-chart-credit {
 
 #sessionResults{
     /*clear:both;*/
-    float: left;
+    float: right;
     margin-left:5px;
     width:77%;
 }
