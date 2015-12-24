@@ -55,16 +55,14 @@ function loadTable() {
 
     var tableHead = document.createElement('THEAD');
 
-    //table.border = '1'
     table.appendChild(tableHead);
 
-
-
     var heading = new Array();
-    heading[0] = "Type"
-    heading[1] = "Description"
-    heading[2] = "URL"
-    heading[3] = "Screenshot"
+    heading[0] = "";
+    heading[1] = "Type"
+    heading[2] = "Description"
+    heading[3] = "URL"
+    heading[4] = "Screenshot"
 
     var annotaions = session.getAnnotations();
 
@@ -86,6 +84,25 @@ function loadTable() {
     for (i = 0; i < annotaions.length; i++) {
         var tr = document.createElement('TR');
         tr.setAttribute('annotationID', i);
+
+        td = document.createElement('TD');
+        td.setAttribute('class', 'centered');
+
+
+        var img = document.createElement('img');
+        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA268pkAAAAJ3RSTlMAAggLEhUXGB0gLC0wNjhDR1BZWmVwfoeJkKCot7vAwcfIzdTZ3uBJhIXDAAAAb0lEQVR42qXI2RZAIBSF4WOWzBKZMpT3f0RJLDeufBdnnf3DJZ/nHB5uEG5RtIW+q6c9rouxjrYKZQOPplQn40lsJDw7MxW9ISicCgYGKz4DcdLUIa8wobpG07/QeVXldXfAgwWaNeDraeWuyVaNAwLmC7rL1abXAAAAAElFTkSuQmCC";
+        var annotationType = annotaions[i].getType();
+        img.alt = "Delete " + annotationType;
+        img.title = "Delete " + annotationType;
+
+        img.setAttribute('class', 'deleteBtn');
+
+        td.appendChild(img);
+
+        //var deleteDialog = getDeleteConfirmationDialog(annotationType);
+        //td.appendChild(deleteDialog);
+
+        tr.appendChild(td);
 
         td = document.createElement('TD');
         td.setAttribute('class', 'centered');
@@ -143,13 +160,14 @@ function loadTable() {
 
 function addTableFilters() {
     var sessionActivityTable_Props = {
-        col_0: "select",
-        col_1: "none",
+        col_0: "none",
+        col_1: "select",
         col_2: "none",
         col_3: "none",
-        custom_cell_data_cols: [0],
+        col_4: "none",
+        custom_cell_data_cols: [1],
         custom_cell_data: function(o, c, i) {
-            if (i == 0) {
+            if (i == 1) {
                 var img = c.getElementsByTagName('img')[0];
                 if (!img) return '';
                 return img.alt;
@@ -288,9 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 }, false);
 
-
 function addTableListeners() {
-    //var descriptionElements = document.getElementsByClassName('annotationDescription');
     $('.annotationDescription').each(function(index, el) {
         el.addEventListener('dblclick', function(e) {
             e.stopPropagation();
@@ -301,6 +317,7 @@ function addTableListeners() {
         });
     });
 
+    deleteAnnotationListener();
 };
 
 
@@ -325,5 +342,67 @@ function updateSessionAnnotation(annotationID, text) {
         type: "updateAnnotationName",
         annotationID: annotationID,
         newName: text
+    });
+}
+
+function deleteAnnotationListener() {
+
+    $('.deleteBtn').each(function(index, el) {
+        el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var row = $(this).parent().parent('tr');
+
+            var $divOverlay = $('#divOverlay');
+            var bottomWidth = row.css('width');
+            var bottomHeight = row.css('height');
+            var bottomTop = row.offset().top;
+            var bottomLeft = row.offset().left;
+            var rowPos = row.position();
+            bottomTop = rowPos.top;
+            bottomLeft = rowPos.left;
+
+            $divOverlay.css({
+                position: 'absolute',
+                top: bottomTop,
+                height: bottomHeight,
+                left: bottomLeft,
+                width: bottomWidth,
+            });
+
+            var annotationID = row.attr('annotationid')
+
+            $('#divOverlay #deleteYes').attr('idAnnotation', annotationID);
+
+            $divOverlay.slideDown();
+
+        });
+    });
+
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    var cancelDeleteBtn = document.getElementById("cancelDelete");
+    cancelDeleteBtn.addEventListener('click', function() {
+        $('#divOverlay').slideUp();
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var exportbtn = document.getElementById("deleteYes");
+    exportbtn.addEventListener('click', function(e) {
+        var idAnnotation = $('#divOverlay #deleteYes').attr('idAnnotation');
+
+        deleteAnnotation(idAnnotation);
+
+        $('#divOverlay').slideUp();
+    });
+});
+
+function deleteAnnotation(annotationID) {
+    chrome.extension.sendMessage({
+        type: "deleteAnnotation",
+        annotationID: annotationID
+    }, function(response) {
+        loadData();
     });
 }
