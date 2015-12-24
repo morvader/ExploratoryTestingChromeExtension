@@ -15,7 +15,7 @@ describe("Exploratory Session", function() {
 
 	});
 
-	describe("shloud store annotations: bugs, ideas, questions and notes", function() {
+	describe("should manage annotations: bugs, ideas, questions and notes", function() {
 
 		var session;
 
@@ -173,6 +173,30 @@ describe("Exploratory Session", function() {
 			expect(annotations[1].getName()).toEqual(newIdeaName);
 			expect(annotations[2].getName()).toEqual(newNoteName);
 			expect(annotations[6].getName()).toEqual(newQuestionName);
+
+
+		});
+
+		it("session annotaitons can be deleted", function() {
+
+			session.addBug(new Bug("Add Bug"));
+			session.addIdea(new Idea("Add Idea"));
+			session.addNote(new Note("Add Note"));
+			session.addQuestion(new Question("Add Question"));
+
+			var annotations = session.getAnnotations();
+
+			expect(annotations.length).toEqual(4);
+
+			session.deleteAnnotation(1);
+
+			annotations = session.getAnnotations();
+
+			expect(annotations.length).toEqual(3);
+
+			expect(annotations[0].getName()).toEqual("Add Bug");
+			expect(annotations[1].getName()).toEqual("Add Note");
+			expect(annotations[2].getName()).toEqual("Add Question");
 
 
 		});

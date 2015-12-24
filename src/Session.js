@@ -21,6 +21,12 @@ Session.prototype.setAnnotations = function(newAnnotations) {
   this.annotations = newAnnotations;
 };
 
+Session.prototype.deleteAnnotation = function(annotationID) {
+  if (annotationID > -1) {
+    this.annotations.splice(annotationID, 1);
+  }
+};
+
 Session.prototype.getAnnotations = function() {
   return this.annotations;
 };
