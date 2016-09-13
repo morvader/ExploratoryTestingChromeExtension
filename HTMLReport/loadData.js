@@ -296,12 +296,20 @@ document.addEventListener('DOMContentLoaded', function() {
         var exportHTMLService = new ExportSessionHTML(session);
         var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
 
-        var link = document.createElement('a');
+        
         mimeType = 'text/html' || 'text/plain';
 
+        /*
+        var link = document.createElement('a');
         link.setAttribute('download', fileName + ".html");
         link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
         link.click();
+        */
+
+        var a = window.document.createElement('a');
+        a.href = window.URL.createObjectURL(new Blob([elHtml], {type: mimeType}));
+        a.download = fileName + '.html';
+        a.click();
 
     })
 }, false);
