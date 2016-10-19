@@ -21,12 +21,21 @@
     ],
     "persistent": true
   },
+  "web_accessible_resources": [
+    "popUp.css",
+    "popup.html",
+    "popup.js",
+    "images/*.png"
+  ],
   "permissions": [
+    "http://*/",
+    "https://*/",
     "activeTab",
-    "tabs"
+    "tabs",
+    "<all_urls>"
   ],
   "browser_action": {
     "default_icon": "/icons/icon.png",
-    "default_popup": "popup.html"
+    "default_title": "Exploratory Testing Chrome Extension"
   }
 }

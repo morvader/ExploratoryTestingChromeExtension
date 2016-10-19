@@ -1,5 +1,13 @@
 var session = new Session();
 
+chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.tabs.insertCSS(null, {file: "popUp.css"});
+
+    chrome.tabs.executeScript(null, { file: "lib/jquery-1.11.3.min.js" }, function() {
+        chrome.tabs.executeScript(null, { file: "popup.js" });
+    });
+});
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     switch (request.type) {
         case "addBug":
@@ -25,6 +33,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
             break;
         case "deleteAnnotation":
             session.deleteAnnotation(request.annotationID);
+            chrome.tabs.sendMessage(session.getTabId(), {type: "updateGui"});
             break;
         case "exportSessionCSV":
             if (!exportSessionCSV())
@@ -35,6 +44,46 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         case "clearSession":
             clearSession();
             break;
+        case "getCounters":
+            var counters = {
+              bugs: session.getBugs().length,
+              notes: session.getNotes().length,
+              ideas: session.getIdeas().length,
+              questions: session.getQuestions().length
+            };
+            sendResponse(counters);
+            break;
+        case "createReport":
+            session.setTabId(sender.tab.id);
+            chrome.tabs.create({
+              url: chrome.extension.getURL("HTMLReport/preview.html"),
+                'active': true
+              }, function(tab) {
+                var selfTabId = tab.id;
+                chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+                  if (changeInfo.status == "complete" && tabId == selfTabId) {
+                    // send the data to the page's script:
+                    var tabs = chrome.extension.getViews({
+                      type: "tab"
+                    });
+                    tabs[0].loadData();
+                  }
+                });
+            });
+            break;
+        case "getAnnotationsCount":
+          sendResponse({count: session.getAnnotations().length});
+          break;
+        case "captureVisibleTab":
+          chrome.tabs.captureVisibleTab(null, function(screenshotUrl) {
+            chrome.tabs.sendMessage(sender.tab.id,
+              {type: "screenshot", url: screenshotUrl, name: request.name}
+            );
+          });
+          sendResponse({
+              status: "ok"
+          });
+          break;
     }
     sendResponse({
         status: "ok"

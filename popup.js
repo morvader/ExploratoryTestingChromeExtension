@@ -1,53 +1,154 @@
-window.onload = function() {
+$.get(chrome.extension.getURL('/popup.html'), function(data) {
+  if ($("#ExploratoryTestingSession").length != 0) {
+    $("#ExploratoryTestingSession").toggle();
+    return;
+  }
+  var popUpWrapper = $('<div id="ExploratoryTestingSession"></div>');
+  $($.parseHTML(data)).appendTo(popUpWrapper);
+
+  $('body').prepend(popUpWrapper);
+
+  $("#BugBtn").click(showBugReport);
+  $("#NoteBtn").click(showNoteReport);
+  $("#QuestionBtn").click(showQuestionReport);
+  $("#IdeaBtn").click(showIdeaReport);
+
+  $("#newBugDescription").keypress(function(e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("bug");
+      } else {
+        addNewBug(""); // code for enter
+      }
+    }
+  });
+
+  $("#newIdeaDescription").keypress(function(e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("idea");
+      } else {
+        addNewIdea(""); // code for enter
+      }
+    }
+  });
+
+  $("#newNoteDescription").keypress(function(e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("note");
+      } else {
+        addNewNote(""); // code for enter
+      }
+    }
+  });
+
+  $("#newQuestionDescription").keypress(function(e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("question");
+      } else {
+        addNewQuestion(""); // code for enter
+      }
+    }
+  });
+
+  $("#addNewBugBtn").click(function() {
+    addNewBug("");
+  });
+
+  $("#addNewBugSCBtn").click(function() {
+    addNewAnnotationWithScreenShot("bug");
+  });
+
+  $("#addNewNoteBtn").click(function() {
+    addNewNote("");
+  });
+
+  $("#addNewNoteSCBtn").click(function() {
+    addNewAnnotationWithScreenShot("note");
+  });
+
+  $("#addNewQuestionBtn").click(function() {
+    addNewQuestion("");
+  });
+
+  $("#addNewQuestionSCBtn").click(function() {
+    addNewAnnotationWithScreenShot("question");
+  });
+
+  $("#addNewIdeaBtn").click(function() {
+    addNewIdea("");
+  });
+
+  $("#addNewIdeaSCBtn").click(function() {
+    addNewAnnotationWithScreenShot("idea");
+  });
+
+  $("#previewBtn").click(createReport);
+
+  $("#exportCSVBtn").click(exportSessionCSV);
+
+  $('[name="Cancel"]').click(cancelAnnotation);
+
+  $("#resetBtn").click(function() {
+    chrome.extension.sendMessage({
+      type: "getAnnotationsCount"
+    }, function(response) {
+      if (response.count == 0) return;
+      $("#resetConfirmation").fadeIn();
+    })
+  });
+
+  $("#resetNo").click(function() {
+    $("#resetConfirmation").slideUp();
+  });
+
+  $("#resetYes").click(function() {
+    chrome.extension.sendMessage({
+      type: "clearSession"
+    }, function(response) {
+      $("#bugCounter").html("");
+      $("#ideaCounter").html("");
+      $("#noteCounter").html("");
+      $("#questionCounter").html("");
+    });
+    $("#resetConfirmation").slideUp();
+  });
+
   updateCounters();
-}
+
+});
 
 function showBugReport() {
   hideAllReports();
   $("#addNewBug").fadeIn();
-  document.getElementById("newBugDescription").focus();
+  $("#newBugDescription").focus();
 };
 
 function showIdeaReport() {
   hideAllReports();
   $("#addNewIdea").fadeIn();
-  document.getElementById("newIdeaDescription").focus();
+  $("#newIdeaDescription").focus();
 };
 
 function showNoteReport() {
   hideAllReports();
   $("#addNewNote").fadeIn();
-  document.getElementById("newNoteDescription").focus();
+  $("#newNoteDescription").focus();
 };
 
 function showQuestionReport() {
   hideAllReports();
   $("#addNewQuestion").fadeIn();
-  document.getElementById("newQuestionDescription").focus();
+  $("#newQuestionDescription").focus();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  var bugBtn = document.getElementById("BugBtn");
-  bugBtn.addEventListener('click', showBugReport);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var addNewBugBtn = document.getElementById("addNewBugBtn");
-  addNewBugBtn.addEventListener('click', function() {
-    addNewBug("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var addNewBugBtn = document.getElementById("addNewBugSCBtn");
-  addNewBugBtn.addEventListener('click', function() {
-    addNewAnnotationWithScreenShot("bug");
-  }, false);
-}, false);
-
-
 function addNewBug(imageURL) {
-  //var bugName = document.getElementById("newBugDescription").value;
   var bugName = $('#newBugDescription').val().trim();
   if (bugName == "") return;
 
@@ -64,7 +165,6 @@ function addNewBug(imageURL) {
 };
 
 function addNewNote(imageURL) {
-  //var noteName = document.getElementById("newNoteDescription").value;
   var noteName = $('#newNoteDescription').val().trim();
   if (noteName == "") return;
 
@@ -81,7 +181,6 @@ function addNewNote(imageURL) {
 };
 
 function addNewIdea(imageURL) {
-  //var ideaName = document.getElementById("newIdeaDescription").value;
   var ideaName = $('#newIdeaDescription').val().trim();
   if (ideaName == "") return;
   chrome.extension.sendMessage({
@@ -97,7 +196,6 @@ function addNewIdea(imageURL) {
 };
 
 function addNewQuestion(imageURL) {
-  //var questionName = document.getElementById("newQuestionDescription").value;
   var questionName = $('#newQuestionDescription').val().trim();
   if (questionName == "") return;
   chrome.extension.sendMessage({
@@ -112,88 +210,35 @@ function addNewQuestion(imageURL) {
   hideAllReports();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  var noteBtn = document.getElementById("NoteBtn");
-  noteBtn.addEventListener('click', showNoteReport);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var addNewNoteBtn = document.getElementById("addNewNoteBtn");
-  addNewNoteBtn.addEventListener('click', function() {
-    addNewNote("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var addNewNoteBtn = document.getElementById("addNewNoteSCBtn");
-  addNewNoteBtn.addEventListener('click', function() {
-    addNewAnnotationWithScreenShot("note");
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  var questionBtn = document.getElementById("QuestionBtn");
-  questionBtn.addEventListener('click', showQuestionReport)
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var questionBtn = document.getElementById("addNewQuestionBtn");
-  questionBtn.addEventListener('click', function() {
-    addNewQuestion("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var questionBtn = document.getElementById("addNewQuestionSCBtn");
-  questionBtn.addEventListener('click', function() {
-    addNewAnnotationWithScreenShot("question");
-  }, false);
-}, false);
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  var ideaBtn = document.getElementById("IdeaBtn");
-  ideaBtn.addEventListener('click', showIdeaReport)
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var ideaBtn = document.getElementById("addNewIdeaBtn");
-  ideaBtn.addEventListener('click', function() {
-    addNewIdea("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var ideaBtn = document.getElementById("addNewIdeaSCBtn");
-  ideaBtn.addEventListener('click', function() {
-    addNewAnnotationWithScreenShot("idea");
-  }, false);
-}, false);
-
-
 function addNewAnnotationWithScreenShot(type) {
-  switch (type) {
+  captureVisibleTab(type);
+}
+
+function createNewAnnotationWithScreenShot(request) {
+  switch (request.name) {
     case "bug":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
-        addNewBug(screenshotUrl);
-      });
+      addNewBug(request.url);
       break;
     case "idea":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
-        addNewIdea(screenshotUrl);
-      });
+      addNewIdea(request.url);
       break;
     case "question":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
-        addNewQuestion(screenshotUrl);
-      });
+      addNewQuestion(request.url);
       break;
     case "note":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
-        addNewNote(screenshotUrl);
-      });
+      addNewNote(request.url);
       break;
   }
+}
+
+
+function captureVisibleTab(annotationName) {
+  // temporarly hide extension to allow screenshot without it
+  $("#ExploratoryTestingSession").hide();
+  chrome.extension.sendMessage({
+    type: "captureVisibleTab",
+    name: annotationName
+  });
 }
 
 function exportSessionCSV() {
@@ -201,18 +246,6 @@ function exportSessionCSV() {
     type: "exportSessionCSV"
   });
 };
-
-document.addEventListener('DOMContentLoaded', function() {
-  var exportCSVBtn = document.getElementById("exportCSVBtn");
-  exportCSVBtn.addEventListener('click', exportSessionCSV)
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var cancelAnnotationBtn = document.getElementsByName("Cancel");
-  for (var i = 0; i < cancelAnnotationBtn.length; i++) {
-    cancelAnnotationBtn[i].addEventListener('click', cancelAnnotation);
-  }
-}, false);
 
 function cancelAnnotation() {
   clearAllReports();
@@ -238,147 +271,57 @@ function hideAllReports() {
   $("#addNewQuestion").slideUp();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  var previewBtn = document.getElementById('previewBtn');
-  previewBtn.addEventListener('click', function() {
-    var background = chrome.extension.getBackgroundPage();
-    var session = background.session;
 
-    if (session.getAnnotations().length == 0) return;
-
-    chrome.tabs.create({
-      url: chrome.extension.getURL("HTMLReport/preview.html"),
-      'active': false
-    }, function(tab) {
-      var selfTabId = tab.id;
-      chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        if (changeInfo.status == "complete" && tabId == selfTabId) {
-          // send the data to the page's script:
-          var tabs = chrome.extension.getViews({
-            type: "tab"
-          });
-          tabs[0].loadData();
-        }
-      });
-    });
-  }, false);
-}, false);
+function createReport() {
+  chrome.extension.sendMessage({
+    type: "createReport"
+  }, function(response) {
+  });
+}
 
 function updateCounters() {
-  var background = chrome.extension.getBackgroundPage();
-  var session = background.session;
+  chrome.extension.sendMessage({
+    type: "getCounters"
+  }, function(response) {
+    var bugs = response.bugs;
+    var notes = response.notes;
+    var ideas = response.ideas;
+    var questions = response.questions;
 
-  var bugs = session.getBugs().length;
-  var notes = session.getNotes().length;
-  var ideas = session.getIdeas().length;
-  var questions = session.getQuestions().length;
+    if (bugs > 0) {
+      $("#bugCounter").html("(" + bugs + ")");
+    } else {
+      $("#bugCounter").html("");
+    }
 
-  if (bugs > 0) {
-    $("#bugCounter").html("(" + bugs + ")");
-  }
+    if (notes > 0) {
+      $("#noteCounter").html("(" + notes + ")");
+    } else {
+      $("#noteCounter").html("");
+    }
 
-  if (notes > 0) {
-    $("#noteCounter").html("(" + notes + ")");
-  }
+    if (ideas > 0) {
+      $("#ideaCounter").html("(" + ideas + ")");
+    } else {
+      $("#ideaCounter").html("");
+    }
 
-  if (ideas > 0) {
-    $("#ideaCounter").html("(" + ideas + ")");
-  }
-
-  if (questions > 0) {
-    $("#questionCounter").html("(" + questions + ")");
-  }
+    if (questions > 0) {
+      $("#questionCounter").html("(" + questions + ")");
+    } else {
+      $("#questionCounter").html("");
+    }
+  });
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  var exportCSVBtn = document.getElementById("newBugDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
-    var key = e.which || e.keyCode;
-    if (key == 13) { // 13 is enter
-      if (e.shiftKey == true) {
-        addNewAnnotationWithScreenShot("bug");
-      } else {
-        addNewBug(""); // code for enter
-      }
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    switch (request.type) {
+      case "updateGui":
+        updateCounters();
+        break;
+      case "screenshot":
+        $("#ExploratoryTestingSession").show();
+        createNewAnnotationWithScreenShot(request);
     }
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var exportCSVBtn = document.getElementById("newIdeaDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
-    var key = e.which || e.keyCode;
-    if (key == 13) { // 13 is enter
-      if (e.shiftKey == true) {
-        addNewAnnotationWithScreenShot("idea");
-      } else {
-        addNewIdea(""); // code for enter
-      }
-    }
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var exportCSVBtn = document.getElementById("newNoteDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
-    var key = e.which || e.keyCode;
-    if (key == 13) { // 13 is enter
-      if (e.shiftKey == true) {
-        addNewAnnotationWithScreenShot("note");
-      } else {
-        addNewNote(""); // code for enter
-      }
-    }
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var exportCSVBtn = document.getElementById("newQuestionDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
-    var key = e.which || e.keyCode;
-    if (key == 13) { // 13 is enter
-      if (e.shiftKey == true) {
-        addNewAnnotationWithScreenShot("question");
-      } else {
-        addNewQuestion(""); // code for enter
-      }
-    }
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var resetBtn = document.getElementById('resetBtn');
-  resetBtn.addEventListener('click', function() {
-    var background = chrome.extension.getBackgroundPage();
-    var session = background.session;
-    if (session.getAnnotations().length == 0) return;
-
-    var resetConfirmation = document.getElementById('resetConfirmation');
-    $("#resetConfirmation").fadeIn();
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function() {
-  var resetBtnNo = document.getElementById('resetNo');
-  resetBtnNo.addEventListener('click', function() {
-    $("#resetConfirmation").slideUp();
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  var resetBtnNo = document.getElementById('resetYes');
-  resetBtnNo.addEventListener('click', function() {
-    var background = chrome.extension.getBackgroundPage();
-    var session = background.session;
-    if (session.getAnnotations().length == 0) return;
-    chrome.extension.sendMessage({
-      type: "clearSession"
-    }, function(response) {
-      $("#bugCounter").html("");
-      $("#ideaCounter").html("");
-      $("#noteCounter").html("");
-      $("#questionCounter").html("");
-    });
-    $("#resetConfirmation").slideUp();
-  });
+    return true;
 });

@@ -1,3 +1,14 @@
+#ExploratoryTestingSession {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  padding-bottom: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  z-index: 1000;
+}
+
 .BugButton {
     width: 150px;
 	-moz-box-shadow:inset 0px 1px 0px 0px #f5978e;
@@ -223,7 +234,6 @@
   list-style-type: none;
   padding-left: 5px;
   min-width:180px;
-  float: left;
   margin-bottom: 5px;
   margin-top: 5px;
 }
@@ -239,6 +249,8 @@ li{
 .heading{
     font-size:14px;
     margin: auto;
+    padding: 5px;
+    background-color: #eee;
 }
 .menuTittle{
     margin-top: 5px;
@@ -271,14 +283,14 @@ li{
 .addNewAnnotaionBtn{
 height: 22px;
 width: 22px;
-background-image: url( './images/add139.png' );
+background-image: url( 'chrome-extension://__MSG_@@extension_id__/images/add139.png' );
 background-size: 16px 16px;
 background-position: center center;
 background-repeat: no-repeat;
 }
 
 .addNewAnnotaionBtn:hover {
-background-image: url( './images/add139.png' );
+background-image: url( 'chrome-extension://__MSG_@@extension_id__/images/add139.png' );
 background-position: center center;
 background-repeat: no-repeat;
 }
@@ -286,14 +298,14 @@ background-repeat: no-repeat;
 .addNewAnnotaionScreenshotBtn{
 height: 22px;
 width: 30px;
-background-image: url( './images/camera25.png' );
+background-image: url( 'chrome-extension://__MSG_@@extension_id__/images/camera25.png' );
 background-size: 16px 16px;
 background-position: center center;
 background-repeat: no-repeat;
 }
 
 .addNewAnnotaionScreenshotBtn:hover {
-background-image: url( './images/camera25.png' );
+background-image: url( 'chrome-extension://__MSG_@@extension_id__/images/camera25.png' );
 background-position: center center;
 background-repeat: no-repeat;
 }
