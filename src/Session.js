@@ -3,6 +3,7 @@ function Session(dateTime, BrowserInfo) {
   this.StartDateTime = dateTime;
 
   this.annotations = new Array();
+  this.selectedTabId = -1;
 }
 
 Session.prototype.getBrowserInfo = function() {
@@ -71,3 +72,11 @@ Session.prototype.addNote = function(newNote) {
 Session.prototype.addQuestion = function(newQuestion) {
   this.annotations.push(newQuestion);
 };
+
+Session.prototype.getTabId = function() {
+  return this.selectedTabId;
+}
+
+Session.prototype.setTabId = function(tabId) {
+  this.selectedTabId = tabId;
+}
