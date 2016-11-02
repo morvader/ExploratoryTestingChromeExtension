@@ -1,12 +1,32 @@
 $.get(chrome.extension.getURL('/popup.html'), function(data) {
   if ($("#ExploratoryTestingSession").length != 0) {
-    $("#ExploratoryTestingSession").toggle();
+    $("#ExploratoryTestingSession").toggle();  
+    positionPopup();
     return;
   }
   var popUpWrapper = $('<div id="ExploratoryTestingSession"></div>');
   $($.parseHTML(data)).appendTo(popUpWrapper);
 
   $('body').prepend(popUpWrapper);
+  $("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+
+  $(window).scroll(function() {
+    clearTimeout($.data(this, 'scrollTimer'));
+    $.data(this, 'scrollTimer', setTimeout(function() {
+      positionPopup();
+    }, 250));
+  });
+
+  $("#minMaxButton").click(function() {
+    $(this).toggleClass("resize-min");
+    $("#ExploratoryTestingSession").toggleClass("resize-popup");
+
+    var title = 'Minimize' ;
+    if( $(this).hasClass('resize-min')){
+       title = 'Maximize';
+    }
+    $(this).attr('title', title);
+  });
 
   $("#BugBtn").click(showBugReport);
   $("#NoteBtn").click(showNoteReport);
@@ -123,6 +143,12 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
   updateCounters();
 
 });
+
+function positionPopup() {
+  if ($("#ExploratoryTestingSession").css("display") != 'none') {
+    $("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+  }
+}
 
 function showBugReport() {
   hideAllReports();

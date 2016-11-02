@@ -1,5 +1,6 @@
 #ExploratoryTestingSession {
   position: absolute;
+  display: block;
   top: 0;
   right: 0;
   width: 300px;
@@ -7,6 +8,29 @@
   border: 1px solid #ccc;
   background-color: #fff;
   z-index: 1000;
+}
+
+.resizeButton {
+  display:block;
+  float:right;
+  width: 24px;
+  background-color: #aaa;
+  background-image: url( 'chrome-extension://__MSG_@@extension_id__/images/min_max.png' );
+  background-position: top;
+}
+
+.resizeButton:hover {
+  text-decoration: none;
+}
+
+.resize-min {
+  background-position: bottom;
+}
+
+.resize-popup {
+  height: 34px;
+  padding-bottom: 0 !important;
+  overflow: hidden;
 }
 
 .BugButton {
@@ -251,6 +275,8 @@ li{
     margin: auto;
     padding: 5px;
     background-color: #eee;
+    line-height: 24px;
+    height: 24px;
 }
 .menuTittle{
     margin-top: 5px;
