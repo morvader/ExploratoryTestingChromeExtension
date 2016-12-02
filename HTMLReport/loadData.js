@@ -1,6 +1,6 @@
 var session;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadData();
 }, false);
 
@@ -34,11 +34,15 @@ function loadData(data) {
 }
 
 function loadSessionInfo() {
-    document.getElementById("sessionDate").innerHTML = "Exploratory Session " + session.getStartDateTime().toString('dd-MM-yyyy HH:mm');
-    document.getElementById("browserInfo").innerHTML = "Browser Version: " + session.getBrowserInfo();
+    var browserInfo = session.getBrowserInfo();
+
+    $("#sessionDate").text("Exploratory Session " + session.getStartDateTime().toString('dd-MM-yyyy HH:mm'));
+    $("#browserInfo").text("Browser: " + browserInfo.browser + " " + browserInfo.browserVersion);
+    $("#osInfo").text("Os: " + browserInfo.os + " " + browserInfo.osVersion);
+    $("#miscInfo").text("Cookies Enabled: " + browserInfo.cookies);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var addNewIdeaBtn = document.getElementById("fakeData");
     addNewIdeaBtn.addEventListener('click', initData)
 }, false);
@@ -166,7 +170,7 @@ function addTableFilters() {
         col_3: "none",
         col_4: "none",
         custom_cell_data_cols: [1],
-        custom_cell_data: function(o, c, i) {
+        custom_cell_data: function (o, c, i) {
             if (i == 1) {
                 var img = c.getElementsByTagName('img')[0];
                 if (!img) return '';
@@ -280,23 +284,24 @@ function resizeSessionDataHeight() {
     sessionData.style.height = sessionInfo.offsetHeight + canvasHolder.offsetHeight + "px";
 }
 
-window.onload = window.onresize = function() {
+window.onload = window.onresize = function () {
     resizeSessionDataHeight();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var exportbtn = document.getElementById("export");
-    exportbtn.addEventListener('click', function() {
+    exportbtn.addEventListener('click', function () {
 
         var browserInfo = session.getBrowserInfo();
+        var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
         //Take the timestamp of the first Annotation
         var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
-        var fileName = "ExploratorySession_" + browserInfo + "_" + startDateTime;
+        var fileName = "ExploratorySession_" + browserInfoString + "_" + startDateTime;
 
         var exportHTMLService = new ExportSessionHTML(session);
         var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
 
-        
+
         mimeType = 'text/html' || 'text/plain';
 
         /*
@@ -307,7 +312,9 @@ document.addEventListener('DOMContentLoaded', function() {
         */
 
         var a = window.document.createElement('a');
-        a.href = window.URL.createObjectURL(new Blob([elHtml], {type: mimeType}));
+        a.href = window.URL.createObjectURL(new Blob([elHtml], {
+            type: mimeType
+        }));
         a.download = fileName + '.html';
         a.click();
 
@@ -315,8 +322,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 function addTableListeners() {
-    $('.annotationDescription').each(function(index, el) {
-        el.addEventListener('dblclick', function(e) {
+    $('.annotationDescription').each(function (index, el) {
+        el.addEventListener('dblclick', function (e) {
             e.stopPropagation();
             var currentEle = $(this);
             var value = $(this).html();
@@ -335,7 +342,7 @@ function updateVal(currentEle, value) {
     if (!currentEle.children().is('textarea'))
         $(currentEle).html('<textarea class="updatethVal" >' + value + '</textarea>');
     $(".updatethVal").focus();
-    $(".updatethVal").keyup(function(event) {
+    $(".updatethVal").keyup(function (event) {
         if (event.keyCode == 13) {
             var text = $(".updatethVal").val().trim();
             $(currentEle).html(text);
@@ -355,8 +362,8 @@ function updateSessionAnnotation(annotationID, text) {
 
 function deleteAnnotationListener() {
 
-    $('.deleteBtn').each(function(index, el) {
-        el.addEventListener('click', function(e) {
+    $('.deleteBtn').each(function (index, el) {
+        el.addEventListener('click', function (e) {
             e.stopPropagation();
             var row = $(this).parent().parent('tr');
 
@@ -388,16 +395,16 @@ function deleteAnnotationListener() {
 
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var cancelDeleteBtn = document.getElementById("cancelDelete");
-    cancelDeleteBtn.addEventListener('click', function() {
+    cancelDeleteBtn.addEventListener('click', function () {
         $('#divOverlay').slideUp();
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var exportbtn = document.getElementById("deleteYes");
-    exportbtn.addEventListener('click', function(e) {
+    exportbtn.addEventListener('click', function (e) {
         var idAnnotation = $('#divOverlay #deleteYes').attr('idAnnotation');
 
         deleteAnnotation(idAnnotation);
@@ -410,7 +417,7 @@ function deleteAnnotation(annotationID) {
     chrome.extension.sendMessage({
         type: "deleteAnnotation",
         annotationID: annotationID
-    }, function(response) {
+    }, function (response) {
         loadData();
     });
 }

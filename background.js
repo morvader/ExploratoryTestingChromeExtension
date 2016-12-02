@@ -78,10 +78,8 @@ function addAnnotation(type, name, imageURL) {
 }
 
 function startSession() {
-    var browser = get_browser_info();
-    var browserInfoString = browser.name + "_" + browser.version;
-
-    session = new Session(Date.now(), browserInfoString);
+    var systemInfo = getSystemInfo();
+    session = new Session(Date.now(), systemInfo);
 };
 
 function clearSession() {
@@ -97,10 +95,12 @@ function exportSessionCSV() {
 
     var browserInfo = session.getBrowserInfo();
 
+    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+
     //Take the timestamp of the first Annotation
     var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
 
-    var fileName = "ExploratorySession_" + browserInfo + "_" + startDateTime + ".csv";
+    var fileName = "ExploratorySession_" + browserInfoString + "_" + startDateTime + ".csv";
 
     var pom = document.createElement('a');
     var blob = new Blob([csvData], {

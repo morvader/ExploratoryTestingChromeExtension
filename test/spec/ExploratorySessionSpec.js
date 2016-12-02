@@ -1,38 +1,69 @@
-describe("Exploratory Session", function() {
+describe("Exploratory Session", function () {
 
-	describe("when Session starts", function() {
-		it("should store sarting DateTime and Browser Info", function() {
+	describe("when Session starts", function () {
+		it("should store sarting DateTime and Browser Info", function () {
 
-			var BrowserInfo = "TestBrowser 10.0.1.3";
+			var browserName = "TestBrowser";
+			var browserVersion = "0.987.1";
+			var os = "Test Os";
+			var osVersion = "1.2.3";
+			var cookiesEnabled = true;
+			var flashVersion = "flash 21";
+
+			var BrowserInfo = {
+				browser: browserName,
+				browserVersion: browserVersion,
+				os: os,
+				osVersion: osVersion,
+				cookies: cookiesEnabled,
+				flashVersion: flashVersion
+			};
 			var currentDateTime = new Date(2015, 10, 30, 6, 51);
 
 			var session = new Session(currentDateTime, BrowserInfo);
 
-			expect(session.getBrowserInfo()).toEqual(BrowserInfo);
+			expect(session.getBrowserInfo().browser).toEqual(browserName);
+			expect(session.getBrowserInfo().os).toEqual(os);
+			expect(session.getBrowserInfo().osVersion).toEqual(osVersion);
 			expect(session.getStartDateTime()).toEqual(currentDateTime);
 		});
 
 
 	});
 
-	describe("should manage annotations: bugs, ideas, questions and notes", function() {
+	describe("should manage annotations: bugs, ideas, questions and notes", function () {
 
 		var session;
+		var browserName = "TestBrowser";
+			var browserVersion = "0.987.1";
+			var os = "Test Os";
+			var osVersion = "1.2.3";
+			var cookiesEnabled = true;
+			var flashVersion = "flash 21";
 
-		beforeEach(function() {
+			var BrowserInfo = {
+				browser: browserName,
+				browserVersion: browserVersion,
+				os: os,
+				osVersion: osVersion,
+				cookies: cookiesEnabled,
+				flashVersion: flashVersion
+			};
+
+		beforeEach(function () {
 			var BrowserInfo = "TestBrowser 10.0.1.3";
 			var currentDateTime = new Date(2015, 10, 30, 6, 51);
 
 			session = new Session(currentDateTime, BrowserInfo);
 		});
 
-		it("annotations should be empty at the begining", function() {
+		it("annotations should be empty at the begining", function () {
 			var annotations = session.getAnnotations();
 
 			expect(annotations.length).toEqual(0);
 		});
 
-		it("when a bug is added there is one more annotation", function() {
+		it("when a bug is added there is one more annotation", function () {
 			var bugName = "Add a new bug test";
 			var url = "http://myTestPage.com"
 
@@ -50,7 +81,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("when a idea is added there is one more annotation", function() {
+		it("when a idea is added there is one more annotation", function () {
 			var ideaName = "Add a new idea test";
 			var url = "http://myTestPage.com"
 
@@ -68,7 +99,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("when a note is added there is one more annotation", function() {
+		it("when a note is added there is one more annotation", function () {
 			var noteName = "Add a new note test";
 			var url = "http://myTestPage.com"
 
@@ -86,7 +117,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("when a question is added there is one more annotation", function() {
+		it("when a question is added there is one more annotation", function () {
 			var questionName = "Add a new question test";
 			var url = "http://myTestPage.com"
 
@@ -104,7 +135,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("different types of annotations can be added", function() {
+		it("different types of annotations can be added", function () {
 
 			session.addBug(new Bug("Add Bug"));
 			session.addIdea(new Idea("Aded Idea"));
@@ -123,7 +154,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("retrieve annotations by type", function() {
+		it("retrieve annotations by type", function () {
 
 			session.addBug(new Bug("Add Bug"));
 			session.addIdea(new Idea("Aded Idea"));
@@ -145,7 +176,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("should change any annotaion description", function() {
+		it("should change any annotaion description", function () {
 			session.addBug(new Bug("Add Bug"));
 			session.addIdea(new Idea("Aded Idea"));
 			session.addNote(new Note("Add Note"));
@@ -177,7 +208,7 @@ describe("Exploratory Session", function() {
 
 		});
 
-		it("session annotaitons can be deleted", function() {
+		it("session annotaitons can be deleted", function () {
 
 			session.addBug(new Bug("Add Bug"));
 			session.addIdea(new Idea("Add Idea"));
