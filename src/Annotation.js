@@ -1,6 +1,7 @@
 
 //Annotation father class
 function Annotation(name, url, timestamp,imageURL) {
+    this.type = "";
 	this.name = name;
 	this.URL = url;
 	this.timeStamp = timestamp;
@@ -36,6 +37,7 @@ Annotation.prototype.getImageURL = function() {
 Bug.prototype = new Annotation();        // Here's where the inheritance occurs
 Bug.prototype.constructor=Bug;
 function Bug(name,url,timestamp,imageURL){
+    this.type = this.getType();
 	this.name = name;
     this.URL = url;
     this.timeStamp = timestamp;
@@ -49,6 +51,7 @@ Bug.prototype.getType = function(){
 Idea.prototype = new Annotation();        // Here's where the inheritance occurs
 Idea.prototype.constructor=Idea;
 function Idea(name,url,timestamp,imageURL){
+    this.type = this.getType();
 	this.name = name;
     this.URL = url;
     this.timeStamp = timestamp;
@@ -62,6 +65,7 @@ Idea.prototype.getType = function(){
 Note.prototype = new Annotation();        // Here's where the inheritance occurs
 Note.prototype.constructor=Note;
 function Note(name,url,timestamp,imageURL){
+    this.type = this.getType();
 	this.name = name;
     this.URL = url;
     this.timeStamp = timestamp;
@@ -75,6 +79,7 @@ Note.prototype.getType = function(){
 Question.prototype = new Annotation();        // Here's where the inheritance occurs
 Question.prototype.constructor=Question;
 function Question(name,url,timestamp,imageURL){
+    this.type = this.getType();
 	this.name = name;
     this.URL = url;
     this.timeStamp = timestamp;
