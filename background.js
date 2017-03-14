@@ -86,6 +86,7 @@ function clearSession() {
     session.clearAnnotations();
 };
 
+
 function exportSessionCSV() {
 
     if (session.getAnnotations().length == 0) return false;
@@ -110,4 +111,5 @@ function exportSessionCSV() {
     pom.href = url;
     pom.setAttribute('download', fileName);
     pom.click();
+    
 };

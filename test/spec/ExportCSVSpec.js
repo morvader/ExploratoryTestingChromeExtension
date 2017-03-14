@@ -13,9 +13,6 @@ describe("Export Session to CSV", function(){
 			session.addNote(new Note("Add Note","http://TestSite/NoteUrl.com",new Date("2015-10-30 08:10:00")));
 			session.addQuestion(new Question("Add Question","http://TestSite/QuestionUrl.com",new Date("2015-10-30 08:15:00")));
 
-			//expect(session.getBrowserInfo()).toEqual(BrowserInfo);
-			//expect(session.getStartDateTime()).toEqual(currentDateTime);
-
             var expectedCSV = "TimeStamp,Type,Name,URL\n" +
             			      "30-10-2015 08:00,Bug,Add Bug,http://TestSite/bugUrl.com\n" +
             			      "30-10-2015 08:05,Idea,Add Idea,http://TestSite/IdeaUrl.com\n" +
@@ -25,8 +22,6 @@ describe("Export Session to CSV", function(){
 			var actualCSV = new ExportSessionCSV(session).getCSVData();
 
 			expect(expectedCSV).toEqual(actualCSV);
-
-
 		});
 
 

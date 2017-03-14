@@ -75,7 +75,7 @@ function loadTable() {
     tableHead.appendChild(tr);
     for (i = 0; i < heading.length; i++) {
         var th = document.createElement('TH')
-            //th.width = '75';
+        //th.width = '75';
         th.appendChild(document.createTextNode(heading[i]));
         tr.appendChild(th);
     }
@@ -303,13 +303,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         mimeType = 'text/html' || 'text/plain';
-
-        /*
-        var link = document.createElement('a');
-        link.setAttribute('download', fileName + ".html");
-        link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
-        link.click();
-        */
 
         var a = window.document.createElement('a');
         a.href = window.URL.createObjectURL(new Blob([elHtml], {
