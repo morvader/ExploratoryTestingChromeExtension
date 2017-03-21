@@ -8,6 +8,7 @@ A Chrome extension designed for making web exploratory testing easier
  - Take screenshots during the session. Keep focused 
  - URL will be tracked automatically
  - See session results in a report
+ - Export and import sessions
  - Export session to CSV or HTML
 
 
