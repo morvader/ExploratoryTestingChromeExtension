@@ -17,6 +17,7 @@
       "src/Annotation.js",
       "src/Session.js",
       "src/ExportSessionCSV.js",
+      "src/JSonSessionService.js",
       "background.js"
     ],
     "persistent": true

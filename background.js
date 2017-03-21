@@ -1,6 +1,6 @@
 var session = new Session();
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.type) {
         case "addBug":
             addAnnotation("Bug", request.name, request.imageURL);
@@ -32,6 +32,19 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
                     status: "nothing to export"
                 });
             break;
+        case "exportSessionJSon":
+            if (!exportSessionJSon())
+                sendResponse({
+                    status: "nothing to export"
+                });
+            break;
+        case "importSessionJSon":
+            var fileData = request.jSonSession;
+            if (!importSessionJSon(fileData))
+                sendResponse({
+                    status: "nothing to import"
+                });
+            break;
         case "clearSession":
             clearSession();
             break;
@@ -53,7 +66,7 @@ function addAnnotation(type, name, imageURL) {
             currentWindow: true,
             active: true
         },
-        function(tabs) {
+        function (tabs) {
             currentUrl = tabs[0].url;
             //alert(currentUrl);
             switch (type) {
@@ -111,5 +124,47 @@ function exportSessionCSV() {
     pom.href = url;
     pom.setAttribute('download', fileName);
     pom.click();
-    
+
+};
+
+function exportSessionJSon() {
+
+    if (session.getAnnotations().length == 0) return false;
+
+    debugger;
+    var exportJSonService = new JSonSessionService();
+    var jsonData = exportJSonService.getJSon(session);
+
+    var browserInfo = session.getBrowserInfo();
+
+    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+
+    //Take the timestamp of the first Annotation
+    var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
+
+    var fileName = "ExploratorySession_" + browserInfoString + "_" + startDateTime + ".json";
+
+    var pom = document.createElement('a');
+    var blob = new Blob([jsonData], {
+        type: 'application/json'
+    });
+    var url = URL.createObjectURL(blob);
+    pom.href = url;
+    pom.setAttribute('download', fileName);
+    pom.click();
+
+};
+
+function importSessionJSon(JSonSessionData){
+    debugger;
+    var exportJSonService = new JSonSessionService();
+    var importedSession = exportJSonService.getSession(JSonSessionData);
+
+    if(importedSession == null)
+        return false;
+
+    clearSession();
+    session = importedSession;
+ 
+    return true;
 };

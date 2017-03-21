@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
   updateCounters();
 }
 
@@ -26,21 +26,21 @@ function showQuestionReport() {
   document.getElementById("newQuestionDescription").focus();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var bugBtn = document.getElementById("BugBtn");
   bugBtn.addEventListener('click', showBugReport);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var addNewBugBtn = document.getElementById("addNewBugBtn");
-  addNewBugBtn.addEventListener('click', function() {
+  addNewBugBtn.addEventListener('click', function () {
     addNewBug("");
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var addNewBugBtn = document.getElementById("addNewBugSCBtn");
-  addNewBugBtn.addEventListener('click', function() {
+  addNewBugBtn.addEventListener('click', function () {
     addNewAnnotationWithScreenShot("bug");
   }, false);
 }, false);
@@ -55,7 +55,7 @@ function addNewBug(imageURL) {
     type: "addBug",
     name: bugName,
     imageURL: imageURL
-  }, function(response) {
+  }, function (response) {
     updateCounters();
   });
 
@@ -72,7 +72,7 @@ function addNewNote(imageURL) {
     type: "addNote",
     name: noteName,
     imageURL: imageURL
-  }, function(response) {
+  }, function (response) {
     updateCounters();
   });
 
@@ -88,7 +88,7 @@ function addNewIdea(imageURL) {
     type: "addIdea",
     name: ideaName,
     imageURL: imageURL
-  }, function(response) {
+  }, function (response) {
     updateCounters();
   });
 
@@ -104,7 +104,7 @@ function addNewQuestion(imageURL) {
     type: "addQuestion",
     name: questionName,
     imageURL: imageURL
-  }, function(response) {
+  }, function (response) {
     updateCounters();
   });
 
@@ -112,60 +112,60 @@ function addNewQuestion(imageURL) {
   hideAllReports();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var noteBtn = document.getElementById("NoteBtn");
   noteBtn.addEventListener('click', showNoteReport);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var addNewNoteBtn = document.getElementById("addNewNoteBtn");
-  addNewNoteBtn.addEventListener('click', function() {
+  addNewNoteBtn.addEventListener('click', function () {
     addNewNote("");
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var addNewNoteBtn = document.getElementById("addNewNoteSCBtn");
-  addNewNoteBtn.addEventListener('click', function() {
+  addNewNoteBtn.addEventListener('click', function () {
     addNewAnnotationWithScreenShot("note");
   });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var questionBtn = document.getElementById("QuestionBtn");
   questionBtn.addEventListener('click', showQuestionReport)
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var questionBtn = document.getElementById("addNewQuestionBtn");
-  questionBtn.addEventListener('click', function() {
+  questionBtn.addEventListener('click', function () {
     addNewQuestion("");
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var questionBtn = document.getElementById("addNewQuestionSCBtn");
-  questionBtn.addEventListener('click', function() {
+  questionBtn.addEventListener('click', function () {
     addNewAnnotationWithScreenShot("question");
   }, false);
 }, false);
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var ideaBtn = document.getElementById("IdeaBtn");
   ideaBtn.addEventListener('click', showIdeaReport)
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var ideaBtn = document.getElementById("addNewIdeaBtn");
-  ideaBtn.addEventListener('click', function() {
+  ideaBtn.addEventListener('click', function () {
     addNewIdea("");
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var ideaBtn = document.getElementById("addNewIdeaSCBtn");
-  ideaBtn.addEventListener('click', function() {
+  ideaBtn.addEventListener('click', function () {
     addNewAnnotationWithScreenShot("idea");
   }, false);
 }, false);
@@ -174,40 +174,88 @@ document.addEventListener('DOMContentLoaded', function() {
 function addNewAnnotationWithScreenShot(type) {
   switch (type) {
     case "bug":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+      chrome.tabs.captureVisibleTab(function (screenshotUrl) {
         addNewBug(screenshotUrl);
       });
       break;
     case "idea":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+      chrome.tabs.captureVisibleTab(function (screenshotUrl) {
         addNewIdea(screenshotUrl);
       });
       break;
     case "question":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+      chrome.tabs.captureVisibleTab(function (screenshotUrl) {
         addNewQuestion(screenshotUrl);
       });
       break;
     case "note":
-      chrome.tabs.captureVisibleTab(function(screenshotUrl) {
+      chrome.tabs.captureVisibleTab(function (screenshotUrl) {
         addNewNote(screenshotUrl);
       });
       break;
   }
 }
 
+/* Export to CSV  */
 function exportSessionCSV() {
   chrome.extension.sendMessage({
     type: "exportSessionCSV"
   });
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var exportCSVBtn = document.getElementById("exportCSVBtn");
   exportCSVBtn.addEventListener('click', exportSessionCSV)
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+
+/* Export to JSon */
+function exportSessionJSon() {
+  chrome.extension.sendMessage({
+    type: "exportSessionJSon"
+  });
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  var exportJSonBtn = document.getElementById("exportJsonBtn");
+  exportJSonBtn.addEventListener('click', exportSessionJSon)
+}, false);
+
+/* Import from JSon */
+function importSessionJSon(evt) {
+  debugger;
+  var files = evt.target.files; // FileList object
+
+  var reader = new FileReader();
+  reader.onload = onReaderLoad;
+  reader.readAsText(files[0]);
+};
+
+function onReaderLoad(event) {
+
+  var importSession = event.target.result;
+  chrome.extension.sendMessage({
+    type: "importSessionJSon",
+    jSonSession: importSession
+  }, function (response) {
+    clearAllReports();
+    updateCounters();
+  });
+
+}
+document.addEventListener('DOMContentLoaded', function () {
+  var importJSonBtn = document.getElementById("importJsonBtn");
+  importJSonBtn.addEventListener('click', function () {
+    $('#importJsonInput').click();
+  })
+}, false);
+
+document.addEventListener('DOMContentLoaded', function () {
+  var importJSonBtn = document.getElementById("importJsonInput");
+  importJSonBtn.addEventListener('change', importSessionJSon)
+}, false);
+
+document.addEventListener('DOMContentLoaded', function () {
   var cancelAnnotationBtn = document.getElementsByName("Cancel");
   for (var i = 0; i < cancelAnnotationBtn.length; i++) {
     cancelAnnotationBtn[i].addEventListener('click', cancelAnnotation);
@@ -238,9 +286,9 @@ function hideAllReports() {
   $("#addNewQuestion").slideUp();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var previewBtn = document.getElementById('previewBtn');
-  previewBtn.addEventListener('click', function() {
+  previewBtn.addEventListener('click', function () {
     var background = chrome.extension.getBackgroundPage();
     var session = background.session;
 
@@ -249,9 +297,9 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.tabs.create({
       url: chrome.extension.getURL("HTMLReport/preview.html"),
       'active': false
-    }, function(tab) {
+    }, function (tab) {
       var selfTabId = tab.id;
-      chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+      chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (changeInfo.status == "complete" && tabId == selfTabId) {
           // send the data to the page's script:
           var tabs = chrome.extension.getViews({
@@ -290,9 +338,9 @@ function updateCounters() {
   }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var exportCSVBtn = document.getElementById("newBugDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
+  exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -304,9 +352,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var exportCSVBtn = document.getElementById("newIdeaDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
+  exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -318,9 +366,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var exportCSVBtn = document.getElementById("newNoteDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
+  exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -332,9 +380,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var exportCSVBtn = document.getElementById("newQuestionDescription");
-  exportCSVBtn.addEventListener("keypress", function(e) {
+  exportCSVBtn.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -346,9 +394,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var resetBtn = document.getElementById('resetBtn');
-  resetBtn.addEventListener('click', function() {
+  resetBtn.addEventListener('click', function () {
     var background = chrome.extension.getBackgroundPage();
     var session = background.session;
     if (session.getAnnotations().length == 0) return;
@@ -358,22 +406,22 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 }, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var resetBtnNo = document.getElementById('resetNo');
-  resetBtnNo.addEventListener('click', function() {
+  resetBtnNo.addEventListener('click', function () {
     $("#resetConfirmation").slideUp();
   });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   var resetBtnNo = document.getElementById('resetYes');
-  resetBtnNo.addEventListener('click', function() {
+  resetBtnNo.addEventListener('click', function () {
     var background = chrome.extension.getBackgroundPage();
     var session = background.session;
     if (session.getAnnotations().length == 0) return;
     chrome.extension.sendMessage({
       type: "clearSession"
-    }, function(response) {
+    }, function (response) {
       $("#bugCounter").html("");
       $("#ideaCounter").html("");
       $("#noteCounter").html("");

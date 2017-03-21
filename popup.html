@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <title>Exploratory Testing Chrome Extension</title>
     <link rel="stylesheet" type="text/css" href="popUp.css">
@@ -9,97 +10,94 @@
 </head>
 
 <body>
-<h1 class="heading">Exploratory Testing Session</h1>
+    <h1 class="heading">Exploratory Testing Session</h1>
 
-<div class="main">
-    <p class="menuTittle">Add new Annotation</p>
-    <ul class="menu">
-        <li>
-            <button id="BugBtn" class="BugButton">Bug</button>
-            <label id="bugCounter"></label>
+    <div class="main">
+        <p class="menuTittle">Add new Annotation</p>
+        <ul class="menu">
+            <li>
+                <button id="BugBtn" class="BugButton">Bug</button>
+                <label id="bugCounter"></label>
 
-            <div id="addNewBug" class="reportAnnotation">
-                <textarea id="newBugDescription" rows="2" cols="30" placeholder="Bug description..."></textarea>
+                <div id="addNewBug" class="reportAnnotation">
+                    <textarea id="newBugDescription" rows="2" cols="30" placeholder="Bug description..."></textarea>
 
-                <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewBugBtn" class="actionButton addNewAnnotaionBtn"
-                            title="Add new Bug [Enter]"></button>
-                    <button id="addNewBugSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
-                            title="Add new Bug with screenshot [Shift + Enter]"></button>
+                    <div class="annotaionOptions">
+                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                        <button id="addNewBugBtn" class="actionButton addNewAnnotaionBtn" title="Add new Bug [Enter]"></button>
+                        <button id="addNewBugSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Bug with screenshot [Shift + Enter]"></button>
+                    </div>
                 </div>
-            </div>
-        </li>
-        <li>
-            <button id="NoteBtn" class="NoteButton">Note</button>
-            <label id="noteCounter"></label>
+            </li>
+            <li>
+                <button id="NoteBtn" class="NoteButton">Note</button>
+                <label id="noteCounter"></label>
 
-            <div id="addNewNote" class="reportAnnotation">
-                <textarea id="newNoteDescription" rows="2" cols="30" placeholder="Note description..."></textarea>
+                <div id="addNewNote" class="reportAnnotation">
+                    <textarea id="newNoteDescription" rows="2" cols="30" placeholder="Note description..."></textarea>
 
-                <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewNoteBtn" class="actionButton addNewAnnotaionBtn"
-                            title="Add new Note [Enter]"></button>
-                    <button id="addNewNoteSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
-                            title="Add new Note with screenshot [Shift + Enter]"></button>
+                    <div class="annotaionOptions">
+                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                        <button id="addNewNoteBtn" class="actionButton addNewAnnotaionBtn" title="Add new Note [Enter]"></button>
+                        <button id="addNewNoteSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Note with screenshot [Shift + Enter]"></button>
+                    </div>
                 </div>
-            </div>
-        </li>
-        <li>
-            <button id="QuestionBtn" class="QuestionButton">Question</button>
-            <label id="questionCounter"></label>
+            </li>
+            <li>
+                <button id="QuestionBtn" class="QuestionButton">Question</button>
+                <label id="questionCounter"></label>
 
-            <div id="addNewQuestion" class="reportAnnotation">
-                <textarea id="newQuestionDescription" rows="2" cols="30"
-                          placeholder="Question description..."></textarea>
+                <div id="addNewQuestion" class="reportAnnotation">
+                    <textarea id="newQuestionDescription" rows="2" cols="30" placeholder="Question description..."></textarea>
 
-                <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewQuestionBtn" class="actionButton addNewAnnotaionBtn"
-                            title="Add new Question [Enter]">
+                    <div class="annotaionOptions">
+                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                        <button id="addNewQuestionBtn" class="actionButton addNewAnnotaionBtn" title="Add new Question [Enter]">
                     </button>
-                    <button id="addNewQuestionSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
-                            title="Add new Question with screenshot [Shift + Enter]"></button>
+                        <button id="addNewQuestionSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Question with screenshot [Shift + Enter]"></button>
+                    </div>
                 </div>
-            </div>
-        </li>
-        <li>
-            <button id="IdeaBtn" class="IdeaButton">Idea</button>
-            <label id="ideaCounter"></label>
+            </li>
+            <li>
+                <button id="IdeaBtn" class="IdeaButton">Idea</button>
+                <label id="ideaCounter"></label>
 
-            <div id="addNewIdea" class="reportAnnotation">
-                <textarea id="newIdeaDescription" rows="2" cols="30" placeholder="Idea description..."></textarea>
+                <div id="addNewIdea" class="reportAnnotation">
+                    <textarea id="newIdeaDescription" rows="2" cols="30" placeholder="Idea description..."></textarea>
 
-                <div class="annotaionOptions">
-                    <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                    <button id="addNewIdeaBtn" class="actionButton addNewAnnotaionBtn"
-                            title="Add new Idea [Enter]"></button>
-                    <button id="addNewIdeaSCBtn" class="actionButton addNewAnnotaionScreenshotBtn"
-                            title="Add new Idea with screenshot [Shift + Enter]">
+                    <div class="annotaionOptions">
+                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
+                        <button id="addNewIdeaBtn" class="actionButton addNewAnnotaionBtn" title="Add new Idea [Enter]"></button>
+                        <button id="addNewIdeaSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Idea with screenshot [Shift + Enter]">
                     </button>
+                    </div>
                 </div>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="footer">
+        <div>
+            <button id="resetBtn" class="cancelButton" title="Reset session data">Reset</button>
+            <div class="sessionOptions">
+                
+                <button id="exportCSVBtn" class="actionButton" title="Export session to CSV"></button>
+                <button id="exportJsonBtn" class="actionButton" title="Export session to JSon"></button>
+                <button id="importJsonBtn" class="actionButton" title="Import session from JSon">
+                    <input type="file" name = "jsonFile" class="file-input" id="importJsonInput" ></input>
+                </button>
+                <button id="previewBtn" class="actionButton" title="Session report"></button>
             </div>
-        </li>
-    </ul>
-</div>
-
-
-<div class="footer">
-    <div>
-        <button id="resetBtn" class="cancelButton" title="Reset session data">Reset</button>
-        <div class="sessionOptions">
-            <button id="previewBtn" class="actionButton" title="Session report">Report</button>
-            <button id="exportCSVBtn" class="actionButton" title="Export session to CSV">Export CSV</button>
+        </div>
+        <div id="resetConfirmation" style="display:none">
+            <span style="display:block">This will reset the current session.</span>
+            <span>Are you sure?</span>
+            <button id="resetNo" class="cancelButton" title="Cancel reset">No</button>
+            <button id="resetYes" class="actionButton" title="Reset current session">Yes</button>
         </div>
     </div>
-    <div id="resetConfirmation" style="display:none">
-        <span style="display:block">This will reset the current session.</span>
-        <span>Are you sure?</span>
-        <button id="resetNo" class="cancelButton" title="Cancel reset">No</button>
-        <button id="resetYes" class="actionButton" title="Reset current session">Yes</button>
-    </div>
-</div>
 
 </body>
+
 </html>
