@@ -8,18 +8,24 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
   $($.parseHTML(data)).appendTo(popUpWrapper);
 
   $('body').prepend(popUpWrapper);
-  $("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+  //$("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
 
   $(window).scroll(function() {
     clearTimeout($.data(this, 'scrollTimer'));
     $.data(this, 'scrollTimer', setTimeout(function() {
       positionPopup();
-    }, 250));
+    }, 150));
+  });
+
+  $(window).resize(function()
+  {
+    positionPopup();
   });
 
   $("#minMaxButton").click(function() {
     $(this).toggleClass("resize-min");
-    $("#ExploratoryTestingSession").toggleClass("resize-popup");
+    $("#ExploratoryTestingSession").toggleClass("resize-popup");      
+    positionPopup();
 
     var title = 'Minimize' ;
     if( $(this).hasClass('resize-min')){
@@ -141,36 +147,46 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
   });
 
   updateCounters();
+  positionPopup();
 
 });
 
 function positionPopup() {
-  if ($("#ExploratoryTestingSession").css("display") != 'none') {
-    $("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+  if ($("#ExploratoryTestingSession").css("display") != 'none') {    
+    //$("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+
+    var scrollBottom = $(window).scrollTop() + $(window).height();
+    var popupHeight = $("#ExploratoryTestingSession").outerHeight();
+
+    $("#ExploratoryTestingSession").css('top', (scrollBottom - popupHeight)+'px');
   }
 }
 
 function showBugReport() {
   hideAllReports();
   $("#addNewBug").fadeIn();
+  positionPopup();
   $("#newBugDescription").focus();
 };
 
 function showIdeaReport() {
   hideAllReports();
   $("#addNewIdea").fadeIn();
+  positionPopup();
   $("#newIdeaDescription").focus();
 };
 
 function showNoteReport() {
   hideAllReports();
   $("#addNewNote").fadeIn();
+  positionPopup();
   $("#newNoteDescription").focus();
 };
 
 function showQuestionReport() {
   hideAllReports();
   $("#addNewQuestion").fadeIn();
+  positionPopup();
   $("#newQuestionDescription").focus();
 };
 
@@ -274,8 +290,8 @@ function exportSessionCSV() {
 };
 
 function cancelAnnotation() {
-  clearAllReports();
-  hideAllReports();
+  clearAllReports();  
+  hideAllReports();  
 };
 
 function clearAllReports() {
@@ -295,6 +311,10 @@ function hideAllReports() {
   $("#addNewIdea").slideUp();
   $("#addNewNote").slideUp();
   $("#addNewQuestion").slideUp();
+
+  window.setTimeout(function() {
+    positionPopup();
+  }, 500);
 };
 
 
