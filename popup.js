@@ -8,7 +8,7 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
   $($.parseHTML(data)).appendTo(popUpWrapper);
 
   $('body').prepend(popUpWrapper);
-  //$("#ExploratoryTestingSession").css('top', $(window).scrollTop()+'px');
+  $("#ExploratoryTestingSession").maxZIndex({inc: 10});  
 
   $(window).scroll(function() {
     clearTimeout($.data(this, 'scrollTimer'));
@@ -127,11 +127,15 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
     }, function(response) {
       if (response.count == 0) return;
       $("#resetConfirmation").fadeIn();
+      positionPopup();
     })
   });
 
   $("#resetNo").click(function() {
     $("#resetConfirmation").slideUp();
+    window.setTimeout(function() {
+      positionPopup();
+    }, 500);  
   });
 
   $("#resetYes").click(function() {
@@ -144,6 +148,9 @@ $.get(chrome.extension.getURL('/popup.html'), function(data) {
       $("#questionCounter").html("");
     });
     $("#resetConfirmation").slideUp();
+    window.setTimeout(function() {
+      positionPopup();
+    }, 500);
   });
 
   updateCounters();
@@ -371,3 +378,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
     return true;
 });
+
+$.maxZIndex = $.fn.maxZIndex = function(opt) {
+    /// <summary>
+    /// Returns the max zOrder in the document (no parameter)
+    /// Sets max zOrder by passing a non-zero number
+    /// which gets added to the highest zOrder.
+    /// </summary>    
+    /// <param name="opt" type="object">
+    /// inc: increment value, 
+    /// group: selector for zIndex elements to find max for
+    /// </param>
+    /// <returns type="jQuery" />
+    var def = { inc: 10, group: "*" };
+    $.extend(def, opt);    
+    var zmax = 0;
+    $(def.group).each(function() {
+        var cur = parseInt($(this).css('z-index'));
+        zmax = cur > zmax ? cur : zmax;
+    });
+    if (!this.jquery)
+        return zmax;
+
+    return this.each(function() {
+        zmax += def.inc;
+        $(this).css("z-index", zmax);
+    });
+}
