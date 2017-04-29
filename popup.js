@@ -284,10 +284,12 @@ function createNewAnnotationWithScreenShot(request) {
 function captureVisibleTab(annotationName) {
   // temporarly hide extension to allow screenshot without it
   $("#ExploratoryTestingSession").hide();
-  chrome.extension.sendMessage({
-    type: "captureVisibleTab",
-    name: annotationName
-  });
+  window.setTimeout(function() {
+    chrome.extension.sendMessage({
+      type: "captureVisibleTab",
+      name: annotationName
+    });
+  }, 100);
 }
 
 function exportSessionCSV() {
