@@ -322,19 +322,19 @@ function updateCounters() {
   var questions = session.getQuestions().length;
 
   if (bugs > 0) {
-    $("#bugCounter").html("(" + bugs + ")");
+    $("#bugCounter").html(" " + bugs + " ");
   }
 
   if (notes > 0) {
-    $("#noteCounter").html("(" + notes + ")");
+    $("#noteCounter").html(" " + notes + " ");
   }
 
   if (ideas > 0) {
-    $("#ideaCounter").html("(" + ideas + ")");
+    $("#ideaCounter").html(" " + ideas + " ");
   }
 
   if (questions > 0) {
-    $("#questionCounter").html("(" + questions + ")");
+    $("#questionCounter").html(" " + questions + " ");
   }
 };
 

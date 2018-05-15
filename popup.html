@@ -3,73 +3,74 @@
 
 <head>
     <title>Exploratory Testing Chrome Extension</title>
-    <link rel="stylesheet" type="text/css" href="popUp.css">
-    <script src="popup.js"></script>
-    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/popUp.css">
+    <script src="js/popup.js"></script>
+    <script type="text/javascript" src="lib/jquery-1.11.3.min.js"></script>
 
 </head>
 
 <body>
-    <h1 class="heading">Exploratory Testing Session</h1>
-
     <div class="main">
-        <p class="menuTittle">Add new Annotation</p>
-        <ul class="menu">
-            <li>
-                <button id="BugBtn" class="BugButton">Bug</button>
-                <label id="bugCounter"></label>
+        <div class="card">
+        <div class="card-header"><h5>Add new Annotation</h5></div>
+        <ul class="menu list-group list-group-flush">
+            <li class="list-group-item">
+                <button id="BugBtn" class="BugButton btn btn-danger btn-block">Bug <span id="bugCounter" class="badge badge-light"></button>
 
                 <div id="addNewBug" class="reportAnnotation">
-                    <textarea id="newBugDescription" rows="2" cols="30" placeholder="Bug description..."></textarea>
-
-                    <div class="annotaionOptions">
-                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                        <button id="addNewBugBtn" class="actionButton addNewAnnotaionBtn" title="Add new Bug [Enter]"></button>
-                        <button id="addNewBugSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Bug with screenshot [Shift + Enter]"></button>
+                    <div class="form-group">
+                        <textarea id="newBugDescription" rows="4" placeholder="Bug description..." class="form-control-sm"></textarea>
+                    </div>
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button name="Cancel" class="btn btn-warning" title="Cancel annotation">Cancel</button>
+                        <button id="addNewBugBtn" class="btn btn-secondary" title="Add new Bug [Enter]">+</button>
+                        <button id="addNewBugSCBtn" class="btn btn-secondary" title="Add new Bug with screenshot [Shift + Enter]">S</button>
                     </div>
                 </div>
             </li>
-            <li>
-                <button id="NoteBtn" class="NoteButton">Note</button>
-                <label id="noteCounter"></label>
+            <li class="list-group-item">
+                <button id="NoteBtn" class="NoteButton btn btn-warning btn-block">Note <span id="noteCounter" class="badge badge-light"></span></button>
 
                 <div id="addNewNote" class="reportAnnotation">
-                    <textarea id="newNoteDescription" rows="2" cols="30" placeholder="Note description..."></textarea>
-
-                    <div class="annotaionOptions">
-                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                        <button id="addNewNoteBtn" class="actionButton addNewAnnotaionBtn" title="Add new Note [Enter]"></button>
-                        <button id="addNewNoteSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Note with screenshot [Shift + Enter]"></button>
+                    <div class="form-group">
+                        <textarea id="newNoteDescription" rows="4" placeholder="Note description..." class="form-control-sm"></textarea>
+                    </div>
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button name="Cancel" class="btn btn-warning" title="Cancel annotation">Cancel</button>
+                        <button id="addNewNoteBtn" class="btn btn-secondary" title="Add new Note [Enter]">+</button>
+                        <button id="addNewNoteSCBtn" class="btn btn-secondary" title="Add new Note with screenshot [Shift + Enter]">S</button>
                     </div>
                 </div>
             </li>
-            <li>
-                <button id="QuestionBtn" class="QuestionButton">Question</button>
-                <label id="questionCounter"></label>
 
+            <li class="list-group-item">
+                <button id="QuestionBtn" class="QuestionButton btn btn-success btn-block">Question <span id="questionCounter" class="badge badge-light"></span></button>
+                
                 <div id="addNewQuestion" class="reportAnnotation">
-                    <textarea id="newQuestionDescription" rows="2" cols="30" placeholder="Question description..."></textarea>
-
-                    <div class="annotaionOptions">
-                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                        <button id="addNewQuestionBtn" class="actionButton addNewAnnotaionBtn" title="Add new Question [Enter]">
-                    </button>
-                        <button id="addNewQuestionSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Question with screenshot [Shift + Enter]"></button>
+                    <div class="form-group">
+                        <textarea id="newQuestionDescription" rows="4" placeholder="Question description..." class="form-control-sm"></textarea>
+                    </div>
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button name="Cancel" class="btn btn-warning" title="Cancel annotation">Cancel</button>
+                        <button id="addNewQuestionBtn" class="btn btn-secondary" title="Add new Question [Enter]">+</button>
+                        <button id="addNewQuestionSCBtn" class="btn btn-secondary" title="Add new Question with screenshot [Shift + Enter]">S</button>
                     </div>
                 </div>
             </li>
-            <li>
-                <button id="IdeaBtn" class="IdeaButton">Idea</button>
-                <label id="ideaCounter"></label>
 
+            <li class="list-group-item">
+                <button id="IdeaBtn" class="IdeaButton btn btn-info btn-block">Idea <span id="ideaCounter" class="badge badge-light"></span></button>
+                
                 <div id="addNewIdea" class="reportAnnotation">
-                    <textarea id="newIdeaDescription" rows="2" cols="30" placeholder="Idea description..."></textarea>
-
-                    <div class="annotaionOptions">
-                        <button name="Cancel" class="cancelButton" title="Cancel annotation">Cancel</button>
-                        <button id="addNewIdeaBtn" class="actionButton addNewAnnotaionBtn" title="Add new Idea [Enter]"></button>
-                        <button id="addNewIdeaSCBtn" class="actionButton addNewAnnotaionScreenshotBtn" title="Add new Idea with screenshot [Shift + Enter]">
-                    </button>
+                    <div class="form-group">
+                        <textarea id="newIdeaDescription" rows="4" placeholder="Idea description..." class="form-control-sm"></textarea>
+                    </div>
+                    
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button name="Cancel" class="btn btn-warning" title="Cancel annotation">Cancel</button>
+                        <button id="addNewIdeaBtn" class="btn btn-secondary" title="Add new Idea [Enter]">+</button>
+                        <button id="addNewIdeaSCBtn" class="btn btn-secondary" title="Add new Idea with screenshot [Shift + Enter]">S</button>
                     </div>
                 </div>
             </li>
@@ -77,27 +78,27 @@
     </div>
 
 
-    <div class="footer">
+    <div class="footer card-footer">
         <div>
-            <button id="resetBtn" class="cancelButton" title="Reset session data">Reset</button>
-            <div class="sessionOptions">
+            <button id="resetBtn" class="btn btn-sm btn-outline-danger" title="Reset session data">Reset</button>
+            <div class="btn-group btn-group-sm session-group" role="group" aria-label="Session Options">
                 
-                <button id="exportCSVBtn" class="actionButton" title="Export session to CSV"></button>
-                <button id="exportJsonBtn" class="actionButton" title="Export session to JSon"></button>
-                <button id="importJsonBtn" class="actionButton" title="Import session from JSon">
+                <button id="exportCSVBtn" class="btn btn-secondary" title="Export session to CSV">Export CSV</button>
+                <button id="exportJsonBtn" class="btn btn-secondary" title="Export session to JSon">Export JSON</button>
+                <button id="importJsonBtn" class="btn btn-secondary" title="Import session from JSon">Import JSON
                     <input type="file" name = "jsonFile" class="file-input" id="importJsonInput" ></input>
                 </button>
-                <button id="previewBtn" class="actionButton" title="Session report"></button>
+                <button id="previewBtn" class="btn btn-secondary" title="Session report">HTML Report</button>
             </div>
         </div>
         <div id="resetConfirmation" style="display:none">
-            <span style="display:block">This will reset the current session.</span>
+            <span style="display:block" class="alert alert-danger">This will reset the current session.</span>
             <span>Are you sure?</span>
-            <button id="resetNo" class="cancelButton" title="Cancel reset">No</button>
-            <button id="resetYes" class="actionButton" title="Reset current session">Yes</button>
+            <button id="resetNo" class="cancelButton btn btn-success" title="Cancel reset">No</button>
+            <button id="resetYes" class="actionButton btn btn-outline-danger" title="Reset current session">Yes</button>
         </div>
     </div>
-
+</div>
 </body>
 
 </html>
