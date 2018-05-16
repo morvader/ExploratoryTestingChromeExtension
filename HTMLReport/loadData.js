@@ -246,7 +246,7 @@ function drawPieChart() {
         data: [{
             type: "pie",
             indexLabelFontFamily: "Arial",
-            indexLabelFontSize: 14,
+            indexLabelFontSize: 10,
             indexLabelFontWeight: "bold",
             startAngle: 0,
             indexLabelFontColor: "White",
