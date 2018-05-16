@@ -1,5 +1,8 @@
 window.onload = function () {
   updateCounters();
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 }
 
 function showBugReport() {
