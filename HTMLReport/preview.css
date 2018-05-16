@@ -1,90 +1,59 @@
-#canvasHolder {
-    float: left;
-    /*height:300px;*/
-    /*width:400px;*/
-    height:95%;
-    width:95%;
+#sessionInfo {
+    font-size: 0.7rem;
 }
-#sessionInfo{
-    height:auto;
-    overflow: auto;
+#sessionInfo ul li span {
+    font-weight: bold;
+    display: block;
+    font-size: 0.8rem;
 }
+
 a.canvasjs-chart-credit {
     display: none;
 }
-#sessionData {
-    font-size:16px;
-    /*font-weight:bold;*/
-    border: 1px solid #d3cdcd;
-    float: left;
-    width:22%;
-}
-
-#sessionResults{
-    /*clear:both;*/
-    float: right;
-    margin-left:5px;
-    width:77%;
-}
 
 #export{
-    float:left;
+    float: right;
     /*clear:both;*/
-    margin-left:5px;
-    margin-top: 4px;
+    margin-top: 10px;
 }
-.info{
-    float:left;
-    clear: both;
-    margin: 5px;
-}
+
 img{
     padding:2px;
 }
-.centered{
-    text-align:center;
-    vertical-align: middle;
+
+th {
+    
 }
-.noWrap{
- white-space: nowrap;
+.Type {
+    
 }
-TH{
-    padding:5px;
+.Description {
+    
+}
+.URL {
+    
+}
+.Screenshot {
+    
 }
 
-#sessionActivityTable {
-border: 1px solid #B0B0B0;
+.annotationDescription, .annotationUrl {
+    font-size: 0.7rem;
 }
-#sessionActivityTable tbody {
-/* Kind of irrelevant unless your .css is alreadt doing something else */
-margin: 0;
-padding: 0;
-border: 0;
-outline: 0;
-font-size: 100%;
-vertical-align: baseline;
-background: transparent;
-}
-#sessionActivityTable thead {
-text-align: center;
-}
-#sessionActivityTable thead th {
-background: -moz-linear-gradient(top, #F0F0F0 0, #DBDBDB 100%);
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F0F0F0), color-stop(100%, #DBDBDB));
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F0F0F0', endColorstr='#DBDBDB', GradientType=0);
-border: 1px solid #B0B0B0;
-color: #444;
-font-size: 16px;
-font-weight: bold;
-padding: 3px 10px;
-}
-#sessionActivityTable td {
-padding: 3px 10px;
 
+tr.Bug {
+    background-color: #f5c6cb;
 }
-#sessionActivityTable tr:nth-child(even) {
-background: #F2F2F2;
+tr.Note {
+    background-color: #ffeeba;
 }
+tr.Question {
+    background-color: #c3e6cb;
+}
+tr.Idea {
+    background-color: #bee5eb;
+}
+
 .updatethVal{
     width: 100%;
 }

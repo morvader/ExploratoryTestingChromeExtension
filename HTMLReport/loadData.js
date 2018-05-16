@@ -36,10 +36,10 @@ function loadData(data) {
 function loadSessionInfo() {
     var browserInfo = session.getBrowserInfo();
 
-    $("#sessionDate").text("Exploratory Session " + session.getStartDateTime().toString('dd-MM-yyyy HH:mm'));
-    $("#browserInfo").text("Browser: " + browserInfo.browser + " " + browserInfo.browserVersion);
-    $("#osInfo").text("Os: " + browserInfo.os + " " + browserInfo.osVersion);
-    $("#miscInfo").text("Cookies Enabled: " + browserInfo.cookies);
+    $("#sessionDate").html("<span>Date/Time: </span>" + session.getStartDateTime().toString('dd-MM-yyyy HH:mm'));
+    $("#browserInfo").html("<span>Browser: </span>" + browserInfo.browser + " " + browserInfo.browserVersion);
+    $("#osInfo").html("<span>OS: </span>" + browserInfo.os + " " + browserInfo.osVersion);
+    $("#miscInfo").html("<span>Cookies Enabled: </span>" + browserInfo.cookies);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -53,11 +53,12 @@ function loadTable() {
 
     myTableDiv.innerHTML = "";
 
-    var table = document.createElement('TABLE');
+    var table = document.createElement('table');
     table.setAttribute('id', 'sessionActivityTable');
+    table.setAttribute('class', 'table')
 
 
-    var tableHead = document.createElement('THEAD');
+    var tableHead = document.createElement('thead');
 
     table.appendChild(tableHead);
 
@@ -71,27 +72,25 @@ function loadTable() {
     var annotaions = session.getAnnotations();
 
     //TABLE COLUMNS
-    var tr = document.createElement('TR');
+    var tr = document.createElement('tr');
     tableHead.appendChild(tr);
     for (i = 0; i < heading.length; i++) {
-        var th = document.createElement('TH')
-        //th.width = '75';
+        var th = document.createElement('th')
+        th.setAttribute('class', heading[i]);
         th.appendChild(document.createTextNode(heading[i]));
         tr.appendChild(th);
     }
 
-    var tableBody = document.createElement('TBODY');
+    var tableBody = document.createElement('tbody');
     table.appendChild(tableBody);
-
 
     //TABLE ROWS
     for (i = 0; i < annotaions.length; i++) {
-        var tr = document.createElement('TR');
+        var tr = document.createElement('tr');
         tr.setAttribute('annotationID', i);
+        tr.setAttribute('class', annotaions[i].getType())
 
-        td = document.createElement('TD');
-        td.setAttribute('class', 'centered');
-
+        td = document.createElement('td');
 
         var img = document.createElement('img');
         img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA268pkAAAAJ3RSTlMAAggLEhUXGB0gLC0wNjhDR1BZWmVwfoeJkKCot7vAwcfIzdTZ3uBJhIXDAAAAb0lEQVR42qXI2RZAIBSF4WOWzBKZMpT3f0RJLDeufBdnnf3DJZ/nHB5uEG5RtIW+q6c9rouxjrYKZQOPplQn40lsJDw7MxW9ISicCgYGKz4DcdLUIa8wobpG07/QeVXldXfAgwWaNeDraeWuyVaNAwLmC7rL1abXAAAAAElFTkSuQmCC";
@@ -108,20 +107,19 @@ function loadTable() {
 
         tr.appendChild(td);
 
-        td = document.createElement('TD');
-        td.setAttribute('class', 'centered');
+        td = document.createElement('td');
         var icon = getIconType(annotaions[i].getType());
         td.appendChild(icon);
         tr.appendChild(td);
 
-        td = document.createElement('TD');
+        td = document.createElement('td');
         td.setAttribute('class', 'annotationDescription');
         td.setAttribute('title', 'Double click to edit description');
         td.appendChild(document.createTextNode(annotaions[i].getName()));
         tr.appendChild(td);
 
-        td = document.createElement('TD');
-
+        td = document.createElement('td');
+        td.setAttribute('class', 'annotationUrl');
         var a = document.createElement('a');
         var linkText = document.createTextNode(annotaions[i].getURL());
         a.appendChild(linkText);
@@ -132,7 +130,7 @@ function loadTable() {
         td.appendChild(a);
         tr.appendChild(td);
 
-        td = document.createElement('TD');
+        td = document.createElement('td');
         td.setAttribute('class', 'centered');
 
         var screenshotLink = annotaions[i].getImageURL();
@@ -146,10 +144,8 @@ function loadTable() {
 
             link.href = screenshotLink;
             link.appendChild(img);
-            link.target = "_blank";
 
             td.appendChild(link);
-
         }
 
         tr.appendChild(td);
@@ -177,7 +173,7 @@ function addTableFilters() {
                 return img.alt;
             }
         },
-        display_all_text: " [ Show all ] ",
+        display_all_text: " - All - ",
         sort_select: true
     };
 
@@ -221,44 +217,36 @@ function drawPieChart() {
     var bugs = {
         y: session.getBugs().length,
         name: "Bugs",
-        color: "#f5978e",
+        color: "#dc3545",
         indexLabel: session.getBugs().length == 0 ? "" : "#percent%"
     };
     var notes = {
         y: session.getNotes().length,
         name: "Notes",
-        color: "#FFEC56",
+        color: "#ffc107",
         indexLabel: session.getNotes().length == 0 ? "" : "#percent%"
     };
     var ideas = {
         y: session.getIdeas().length,
         name: "Ideas",
-        color: "#97c4fe",
+        color: "#17a2b8",
         indexLabel: session.getIdeas().length == 0 ? "" : "#percent%"
     };
     var questions = {
         y: session.getQuestions().length,
         name: "Questions",
-        color: "#e184f3",
+        color: "#28a745",
         indexLabel: session.getQuestions().length == 0 ? "" : "#percent%"
     };
 
     var data = [bugs, notes, ideas, questions];
 
     var chart = new CanvasJS.Chart("canvasHolder", {
-        title: {
-            text: "Session Activity",
-            fontFamily: "arial black"
-        },
         animationEnabled: true,
-        legend: {
-            verticalAlign: "bottom",
-            horizontalAlign: "center"
-        },
         theme: "theme1",
         data: [{
             type: "pie",
-            indexLabelFontFamily: "Garamond",
+            indexLabelFontFamily: "Arial",
             indexLabelFontSize: 14,
             indexLabelFontWeight: "bold",
             startAngle: 0,
@@ -266,7 +254,7 @@ function drawPieChart() {
             indexLabelLineColor: "darkgrey",
             indexLabelPlacement: "inside",
             toolTipContent: "{name}: {y}",
-            showInLegend: true,
+            showInLegend: false,
             dataPoints: data
         }]
     });
