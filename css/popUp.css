@@ -6,8 +6,34 @@ body {
 	width: 100%;
 }
 
-.annotation-group, .session-group {
+.screenshot {
+	background-image: url("../images/device-camera.svg");
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 4px 3px; 
+	min-width: 30px;
+}
+
+.add {
+	background-image: url("../images/diff-added.svg");
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 4px 3px; 
+	min-width: 30px;
+}
+.card-header {
+	padding: 4px 0 0 7px;
+}
+.card, .card-body, .card > .card > .card-header, .card-body > .card-footer {
+	padding: 2px 3px;
+}
+
+.cancel {
 	float: right;
+}
+
+.list-group-item > .card > .card-header, .list-group-item > .card > .card-footer, .list-group-item > .card > .card-body {
+	padding: 2px;
 }
 
 .reportAnnotation {
@@ -16,19 +42,8 @@ body {
 }
 
 #resetConfirmation {
-	clear: both;
 	margin-top: 20px;
-	font-style: italic
 }
-
-#resetConfirmation button {
-	font-size: 10px;
-}
-
-#resetNo {
-	margin-left: 8px;
-}
-
 
 button input.file-input {
 	display: none;
