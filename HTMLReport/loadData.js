@@ -23,7 +23,6 @@ function initData() {
 }
 
 function loadData(data) {
-    //session = data;
 
     var background = chrome.extension.getBackgroundPage();
     session = background.session;
@@ -31,6 +30,8 @@ function loadData(data) {
     loadSessionInfo();
     loadTable();
     drawPieChart();
+    
+    $(".fltrow td:nth-child(5)").html($("#export"));
 }
 
 function loadSessionInfo() {
@@ -86,15 +87,18 @@ function loadTable() {
 
     //TABLE ROWS
     for (i = 0; i < annotaions.length; i++) {
+        var annotationType = annotaions[i].getType();
+
         var tr = document.createElement('tr');
         tr.setAttribute('annotationID', i);
-        tr.setAttribute('class', annotaions[i].getType())
+        tr.setAttribute('class', annotationType)
 
         td = document.createElement('td');
 
         var img = document.createElement('img');
-        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA268pkAAAAJ3RSTlMAAggLEhUXGB0gLC0wNjhDR1BZWmVwfoeJkKCot7vAwcfIzdTZ3uBJhIXDAAAAb0lEQVR42qXI2RZAIBSF4WOWzBKZMpT3f0RJLDeufBdnnf3DJZ/nHB5uEG5RtIW+q6c9rouxjrYKZQOPplQn40lsJDw7MxW9ISicCgYGKz4DcdLUIa8wobpG07/QeVXldXfAgwWaNeDraeWuyVaNAwLmC7rL1abXAAAAAElFTkSuQmCC";
-        var annotationType = annotaions[i].getType();
+        img.src = img.src = "../images/trashcan.svg";
+        //img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA268pkAAAAJ3RSTlMAAggLEhUXGB0gLC0wNjhDR1BZWmVwfoeJkKCot7vAwcfIzdTZ3uBJhIXDAAAAb0lEQVR42qXI2RZAIBSF4WOWzBKZMpT3f0RJLDeufBdnnf3DJZ/nHB5uEG5RtIW+q6c9rouxjrYKZQOPplQn40lsJDw7MxW9ISicCgYGKz4DcdLUIa8wobpG07/QeVXldXfAgwWaNeDraeWuyVaNAwLmC7rL1abXAAAAAElFTkSuQmCC";
+        
         img.alt = "Delete " + annotationType;
         img.title = "Delete " + annotationType;
 
@@ -107,8 +111,8 @@ function loadTable() {
 
         tr.appendChild(td);
 
-        td = document.createElement('td');
-        var icon = getIconType(annotaions[i].getType());
+        td = document.createElement('td');  
+        var icon = getIconType(annotationType);
         td.appendChild(icon);
         tr.appendChild(td);
 
@@ -131,17 +135,19 @@ function loadTable() {
         tr.appendChild(td);
 
         td = document.createElement('td');
-
         var screenshotLink = annotaions[i].getImageURL();
 
         if (screenshotLink != "") {
-            var img = document.createElement('img'),
-                link = document.createElement('a');
+            
+            var img = document.createElement('img');
+            img.setAttribute('class', 'rounded mx-auto d-block');
+            var link = document.createElement('a');
 
             // img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAETAAABEwGpfUaAAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAIRQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvSgy4QAAACt0Uk5TAAEFBgsOEBcYHSwuMDU4REZOUFhebnB/gISIj5CYqK2wu77Fyc7Q0uHo7zP+WRIAAADASURBVDhPvdPZEoIgFIDhk+GSWpq5tkiamMn7v18qDYqBXdT03+DANx7GGQG+zivrhUoPGrpYA5TiozJMaQcC9fzgBfyrNJ+DVD4//SFI5CDhwDpIszhArtAGVk6/Ig6i+3lSTsAZRkQcxJfp19nV4A4g/iu4xZNO78AMhLaw3veryYEyBtqHsrYDBV2sABSO1yNsk4w7IRJG5gzkiht9ALphGJgB3D3qs2Otmt+u0gRgz88ptcVXZET850gGv+oJeV5V7sRlQoMAAAAASUVORK5CYII=";
             img.src = "../images/device-camera.svg";
+            link.onclick = function(){openNewWindow(annotationType,screenshotLink)};
 
-            link.href = screenshotLink;
+            link.href = "";
             link.appendChild(img);
 
             td.appendChild(link);
@@ -155,6 +161,16 @@ function loadTable() {
 
     addTableFilters();
     addTableListeners();
+}
+
+function openNewWindow (annotationType,data) {
+    var image = new Image();
+    image.src = data;
+
+    var w = window.open("");
+    
+    w.document.write('<title>' + annotationType + ' ScreenShot</title>');
+    w.document.write(image.outerHTML);
 }
 
 function addTableFilters() {
@@ -177,6 +193,7 @@ function addTableFilters() {
     };
 
     var tf2 = setFilterGrid("sessionActivityTable", sessionActivityTable_Props);
+   
 }
 
 function getIconType(type) {

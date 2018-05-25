@@ -4,7 +4,7 @@
     <title>Exploratory Session Report</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="preview.css">
-    <link rel="stylesheet" href="../css/popUp.css">
+    <!--<link rel="stylesheet" href="../css/popUp.css">-->
 
     <script src="loadData.js" type="text/javascript"></script>
     <script src="../lib/tablefilter_all_min.js" type="text/javascript"></script>
@@ -19,7 +19,11 @@
 
 </head>
 <body>
-
+    <div class="row">
+        <div class="col">
+            <button id="export" class="actionButton btn btn-primary" title="Get report in a plain HTML file">Export to HTML</button>
+        </div>
+    </div>
 <div class="container">
     <div class="row">
         <div class="col">
@@ -53,11 +57,7 @@
 
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <button id="export" class="actionButton btn btn-primary" title="Get report in a plain HTML file">Export Session to HTML</button>
-        </div>
-    </div>
+    
 </div>
 <div id="divOverlay">
     <div id='deleteDialog'>
