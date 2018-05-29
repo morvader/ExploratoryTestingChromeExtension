@@ -14,13 +14,15 @@ A Chrome extension designed for making web exploratory testing easier
 
 Install from [Chrome Store](https://chrome.google.com/webstore/detail/exploratory-testing-chrom/khigmghadjljgjpamimgjjmpmlbgmekj)
 
+
 **Annotate any thought while you test easily and take screenshots without changing context**
 
-![Add Annotation](./screenshots/new_Annotation.PNG "Add new Annotation easily")
+<img src="./screenshots/new_Annotation.PNG" width="440">
 
-**Watch session results in a report**
 
-![Session results](./screenshots/report.PNG "Session results")
+**View session results in a report**
+
+<img src="./screenshots/report.PNG" width="440">
 
 _PS: I'm not a web designer, so any help with web design or UX will be appreciated._
 
