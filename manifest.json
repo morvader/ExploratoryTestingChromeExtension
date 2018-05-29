@@ -4,7 +4,7 @@
   "short_name": "Chrome Exploratory Testing",
   "description": "Exploratory testing session using Chrome",
   "author": "@morvader",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "icons": {
     "16": "/icons/iconbig.png",
     "48": "/icons/iconbig.png",

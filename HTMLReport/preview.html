@@ -2,8 +2,9 @@
 <html>
 <head>
     <title>Exploratory Session Report</title>
-    <link rel="stylesheet" type="text/css" href="preview.css">
-    <link rel="stylesheet" type="text/css" href="../popUp.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="preview.css">
+    <!--<link rel="stylesheet" href="../css/popUp.css">-->
 
     <script src="loadData.js" type="text/javascript"></script>
     <script src="../lib/tablefilter_all_min.js" type="text/javascript"></script>
@@ -14,37 +15,46 @@
     <script src="../lib/date.js" type="text/javascript"></script>
     <script src="../lib/browserInfo.js" type="text/javascript"></script>
     <script src="../lib/canvasjs.min.js" type="text/javascript"></script>
-    <script src="../lib/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="../js/jquery-3.3.1.min.js" type="text/javascript"></script>
 
 </head>
 <body>
 
-<button id="fakeData" style="display: none;">Init</button>
-<h1>Exploratory Session Report</h1>
-
-<div id="sessionData">
-    <div id="sessionInfo">
-        <span class="info" id="sessionDate">Date</span>
-        <span class="info" id="browserInfo">Browser</span>
-        <span class="info" id="osInfo">OS</span>
-        <span class="info" id="miscInfo">MiscInfo</span>
-    </div>
-
-    <div id="graph">
-        <div id="canvasHolder">
-            <span>Graph</span>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Exploratory Session Report</h1>
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <div id="sessionData">
+                <div id="sessionInfo">
+                    <ul class="list-group">
+                    <li class="list-group-item" id="sessionDate">Date</li>
+                    <li class="list-group-item" id="browserInfo">Browser</li>
+                    <li class="list-group-item" id="osInfo">OS</li>
+                    <li class="list-group-item" id="miscInfo">MiscInfo</li>
+                </div>
+                <div id="graph">
+                    <div id="canvasHolder">
+                        <span>Graph</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-    </div>
+        <div class="col-9">
+            <div id="sessionResults">
+                <label>Data Table</label>
+            </div>
 
-<div>
-    <div id="sessionResults">
-        <label>Data Table</label>
+        </div>
     </div>
-
-    </div>
-<button id="export" class="actionButton" title="Get report in a plain HTML file">Export Session to HTML</button>
+    
+</div>
 <div id="divOverlay">
     <div id='deleteDialog'>
         <span>Delete this annotation?</span>

@@ -1,90 +1,65 @@
-#canvasHolder {
-    float: left;
-    /*height:300px;*/
-    /*width:400px;*/
-    height:95%;
-    width:95%;
+body{
+    min-width: 40%;
+    max-width: 100%; 
 }
-#sessionInfo{
-    height:auto;
-    overflow: auto;
+#sessionInfo {
+    font-size: 0.7rem;
 }
+#sessionInfo ul li span {
+    font-weight: bold;
+    display: block;
+    font-size: 0.8rem;
+}
+
 a.canvasjs-chart-credit {
     display: none;
 }
-#sessionData {
-    font-size:16px;
-    /*font-weight:bold;*/
-    border: 1px solid #d3cdcd;
-    float: left;
-    width:22%;
-}
-
-#sessionResults{
-    /*clear:both;*/
-    float: right;
-    margin-left:5px;
-    width:77%;
-}
 
 #export{
-    float:left;
-    /*clear:both;*/
-    margin-left:5px;
-    margin-top: 4px;
+    float: right;
+    clear:both;
 }
-.info{
-    float:left;
-    clear: both;
-    margin: 5px;
-}
+
 img{
     padding:2px;
-}
-.centered{
-    text-align:center;
-    vertical-align: middle;
-}
-.noWrap{
- white-space: nowrap;
-}
-TH{
-    padding:5px;
+    vertical-align: top;
 }
 
-#sessionActivityTable {
-border: 1px solid #B0B0B0;
+#sessionActivityTable.tr {
+    vertical-align: top;
 }
-#sessionActivityTable tbody {
-/* Kind of irrelevant unless your .css is alreadt doing something else */
-margin: 0;
-padding: 0;
-border: 0;
-outline: 0;
-font-size: 100%;
-vertical-align: baseline;
-background: transparent;
+.Type {
+    
 }
-#sessionActivityTable thead {
-text-align: center;
+.Description {
+    
 }
-#sessionActivityTable thead th {
-background: -moz-linear-gradient(top, #F0F0F0 0, #DBDBDB 100%);
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F0F0F0), color-stop(100%, #DBDBDB));
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F0F0F0', endColorstr='#DBDBDB', GradientType=0);
-border: 1px solid #B0B0B0;
-color: #444;
-font-size: 16px;
-font-weight: bold;
-padding: 3px 10px;
+.URL {
+    
 }
-#sessionActivityTable td {
-padding: 3px 10px;
+.Screenshot {
+    
+}
 
+.annotationDescription, .annotationUrl {
+    font-size: 0.7rem;
+    vertical-align: top;
+    white-space: pre; 
 }
-#sessionActivityTable tr:nth-child(even) {
-background: #F2F2F2;
+
+tr.Bug {
+    /*background-color: #f5c6cb;*/
 }
+tr.Note {
+    /*background-color: #ffeeba;*/
+}
+tr.Question {
+    /*background-color: #c3e6cb;*/
+}
+tr.Idea {
+    /*background-color: #bee5eb;*/
+}
+
 .updatethVal{
     width: 100%;
 }
