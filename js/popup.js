@@ -342,9 +342,12 @@ function updateCounters() {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-  var exportCSVBtn = document.getElementById("newBugDescription");
-  exportCSVBtn.addEventListener("keypress", function (e) {
+  var newBugDescription = document.getElementById("newBugDescription");
+  newBugDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      $('#newBugDescription').val($('#newBugDescription').val() + '\n');
+    }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("bug");
@@ -356,9 +359,12 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function () {
-  var exportCSVBtn = document.getElementById("newIdeaDescription");
-  exportCSVBtn.addEventListener("keypress", function (e) {
+  var newIdeaDescription = document.getElementById("newIdeaDescription");
+  newIdeaDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      $('#newIdeaDescription').val($('#newIdeaDescription').val() + '\n');
+    }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("idea");
@@ -370,9 +376,12 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function () {
-  var exportCSVBtn = document.getElementById("newNoteDescription");
-  exportCSVBtn.addEventListener("keypress", function (e) {
+  var newNoteDescription = document.getElementById("newNoteDescription");
+  newNoteDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      $('#newNoteDescription').val($('#newNoteDescription').val() + '\n');
+    }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("note");
@@ -384,9 +393,12 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 document.addEventListener('DOMContentLoaded', function () {
-  var exportCSVBtn = document.getElementById("newQuestionDescription");
-  exportCSVBtn.addEventListener("keypress", function (e) {
+  var newQuestionDescription = document.getElementById("newQuestionDescription");
+  newQuestionDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      $('#newQuestionDescription').val($('#newQuestionDescription').val() + '\n');
+    }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("question");

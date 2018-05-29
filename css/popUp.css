@@ -1,6 +1,6 @@
 body {
-	min-width: 500px;
-	max-width: 700px;
+	min-width: 300px;
+	max-width: 400px;
 }
 .form-control-sm {
 	width: 100%;
@@ -45,6 +45,18 @@ body {
 	margin-top: 20px;
 }
 
+.btn-secondary{
+	background-color: #f7f7f7;
+	border-color: #f7f7f7;
+	
+}
+#resetBtn{
+	
+	max-height: 30px;
+	margin-right: 100px;
+
+
+}
 button input.file-input {
 	display: none;
 	/*position: absolute;
@@ -56,4 +68,39 @@ button input.file-input {
   cursor: pointer;
   opacity: 0;
   filter: alpha(opacity=0);*/
+}
+#exportCSVBtn{
+	background-image: url("../images/003-csv.svg");
+	background-repeat: no-repeat;
+	background-size: 100%;
+	/*background-position: 4px 3px; */
+	min-width: 30px;
+	min-height: 30px;
+}
+#exportJsonBtn{
+	background-image: url("../images/002-download.svg");
+	background-repeat: no-repeat;
+	background-size: 100%;
+	/*background-position: 4px 3px; */
+	min-width: 30px;
+	min-height: 30px;
+	margin-left: 5px;
+}
+#importJsonBtn{
+	background-image: url("../images/004-up-arrow.svg");
+	background-repeat: no-repeat;
+	background-size: 100%;
+	/*background-position: 4px 3px; */
+	min-width: 30px;
+	min-height: 30px;
+	margin-left: 5px;
+}
+#previewBtn{
+	background-image: url("../images/001-graphic.svg");
+	background-repeat: no-repeat;
+	background-size: 100%;
+	/*background-position: 4px 3px; */
+	min-width: 30px;
+	min-height: 30px;
+	margin-left: 5px;
 }

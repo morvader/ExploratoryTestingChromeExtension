@@ -166,7 +166,7 @@ ExportSessionHTML.prototype.addStyleCSS = function(doc) {
                      background: #F2F2F2; \
                      } \
                      .centered{text-align:center;} \
-                     td{vertical-align: top;} \
+                     td{vertical-align: top;white-space: pre;} \
                      .noWrap{white-space: nowrap;} \
                      TH{padding:5px;} \
                      body{ font-family: 'Segoe UI', Tahoma, sans-serif;} \

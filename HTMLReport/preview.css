@@ -44,6 +44,7 @@ img{
 .annotationDescription, .annotationUrl {
     font-size: 0.7rem;
     vertical-align: top;
+    white-space: pre; 
 }
 
 tr.Bug {

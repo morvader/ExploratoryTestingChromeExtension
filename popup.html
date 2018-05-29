@@ -20,7 +20,7 @@
                 </div>
                 <div id="addNewBug" class="reportAnnotation card-body">
                     <div class="form-group">
-                        <textarea id="newBugDescription" rows="4" placeholder="Bug description..." class="form-control-sm"></textarea>
+                        <textarea id="newBugDescription" rows="4" placeholder="Bug description..." title="[Crtl + Enter] to add a new line" class="form-control-sm"></textarea>
                     </div>
                     <div class="card-footer">
                         <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
@@ -38,7 +38,7 @@
                 </div>
                 <div id="addNewNote" class="reportAnnotation card-body">
                     <div class="form-group">
-                        <textarea id="newNoteDescription" rows="4" placeholder="Note description..." class="form-control-sm"></textarea>
+                        <textarea id="newNoteDescription" rows="4" placeholder="Note description..." title="[Crtl + Enter] to add a new line" class="form-control-sm"></textarea>
                     </div>
                     <div class="card-footer">
                         <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
@@ -56,7 +56,7 @@
                 </div>
                 <div id="addNewQuestion" class="reportAnnotation card-body">
                     <div class="form-group">
-                        <textarea id="newQuestionDescription" rows="4" placeholder="Question description..." class="form-control-sm"></textarea>
+                        <textarea id="newQuestionDescription" rows="4" placeholder="Question description..." title="[Crtl + Enter] to add a new line" class="form-control-sm"></textarea>
                     </div>
                     <div class="card-footer">
                         <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
@@ -74,7 +74,7 @@
                 </div>
                 <div id="addNewIdea" class="reportAnnotation card-body">
                     <div class="form-group">
-                        <textarea id="newIdeaDescription" rows="4" placeholder="Idea description..." class="form-control-sm"></textarea>
+                        <textarea id="newIdeaDescription" rows="4" placeholder="Idea description..." title="[Crtl + Enter] to add a new line" class="form-control-sm"></textarea>
                     </div>
                     <div class="card-footer">
                         <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
@@ -90,14 +90,16 @@
     <div class="footer card-footer">
         <div>
             <div class="btn-group btn-group-sm session-group" role="group" aria-label="Session Options">
-                <button id="exportCSVBtn" class="btn btn-secondary" title="Export session to CSV" data-toggle="tooltip" data-placement="top">Export CSV</button>
-                <button id="exportJsonBtn" class="btn btn-secondary" title="Export session to JSon" data-toggle="tooltip" data-placement="top">Export JSON</button>
-                <button id="importJsonBtn" class="btn btn-secondary" title="Import session from JSON" data-toggle="tooltip" data-placement="top">Import JSON
+                    <button id="resetBtn" class="btn btn-sm btn-outline-danger" title="Reset session data">Reset</button>
+                <button id="exportCSVBtn" class="btn btn-secondary" title="Export session to CSV" data-toggle="tooltip" data-placement="top"></button>
+                <button id="exportJsonBtn" class="btn btn-secondary" title="Export session to JSON" data-toggle="tooltip" data-placement="top"></button>
+                <button id="importJsonBtn" class="btn btn-secondary" title="Import session from JSON" data-toggle="tooltip" data-placement="top">
                     <input type="file" name = "jsonFile" class="file-input" id="importJsonInput" ></input>
                 </button>
-                <button id="previewBtn" class="btn btn-secondary" title="Preview Session report" data-toggle="tooltip" data-placement="top">HTML Report</button>
+                <button id="previewBtn" class="btn btn-secondary" title="View Session report" data-toggle="tooltip" data-placement="top"></button>
+                
             </div>
-            <button id="resetBtn" class="btn btn-sm btn-outline-danger" title="Reset session data">Reset</button>
+           
         </div>
         <div id="resetConfirmation" class="card" style="display:none">
             <div class="card-header bg-danger text-white">This will reset the current session.</div>
