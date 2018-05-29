@@ -22,7 +22,7 @@ Install from [Chrome Store](https://chrome.google.com/webstore/detail/explorator
 
 **View session results in a report**
 
-<img src="./screenshots/report.PNG" width="440">
+<img src="./screenshots/report.PNG" width="800">
 
 _PS: I'm not a web designer, so any help with web design or UX will be appreciated._
 
