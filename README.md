@@ -9,7 +9,7 @@ A Chrome extension designed for making web exploratory testing easier
  - URL will be tracked automatically
  - See session results in a report
  - Export and import sessions
- - Export session to CSV or HTML
+ - Export session to JSON, CSV or HTML
 
 
 Install from [Chrome Store](https://chrome.google.com/webstore/detail/exploratory-testing-chrom/khigmghadjljgjpamimgjjmpmlbgmekj)
