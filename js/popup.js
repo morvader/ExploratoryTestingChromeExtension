@@ -1,56 +1,62 @@
 window.onload = function () {
-  updateCounters();
+  initElements();
+  
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   })
 }
 
+function initElements(){
+  annotationListeners();
+  exportListeners();
+  updateCounters();
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+}
+function annotationListeners(){
+  $(document).on('click', '#BugBtn' ,showBugReport);
+  $(document).on('click', '#IdeaBtn' ,showIdeaReport);
+  $(document).on('click', '#NoteBtn' ,showNoteReport);
+  $(document).on('click', '#QuestionBtn' ,showQuestionReport);
+
+  $(document).on('click', '#addNewBugBtn', () => {addNewBug("")});
+  $(document).on('click', '#addNewIdeaBtn', () => {addNewIdea("")});
+  $(document).on('click', '#addNewNoteBtn', () => {addNewNote("")});
+  $(document).on('click', '#addNewQuestionBtn', () => {addNewQuestion("")});
+
+  $(document).on('click', '#addNewBugSCBtn', () => {addNewAnnotationWithScreenShot("bug")});
+  $(document).on('click', '#addNewIdeaSCBtn', () => {addNewAnnotationWithScreenShot("idea")});
+  $(document).on('click', '#addNewNoteSCBtn', () =>{addNewAnnotationWithScreenShot("note")});
+  $(document).on('click', '#addNewQuestionSCBtn', ()=> { addNewAnnotationWithScreenShot("question")});
+}
+
 function showBugReport() {
   hideAllReports();
   $("#addNewBug").fadeIn();
-  document.getElementById("newBugDescription").focus();
+  $('#newBugDescription').focus();
 };
 
 function showIdeaReport() {
   hideAllReports();
   $("#addNewIdea").fadeIn();
-  document.getElementById("newIdeaDescription").focus();
+  $('#newIdeaDescription').focus();
 };
 
 function showNoteReport() {
   hideAllReports();
   $("#addNewNote").fadeIn();
-  document.getElementById("newNoteDescription").focus();
+  $('#newNoteDescription').focus();
 };
 
 function showQuestionReport() {
   hideAllReports();
   $("#addNewQuestion").fadeIn();
-  document.getElementById("newQuestionDescription").focus();
+  $('#newQuestionDescription').focus();
 };
-
-document.addEventListener('DOMContentLoaded', function () {
-  var bugBtn = document.getElementById("BugBtn");
-  bugBtn.addEventListener('click', showBugReport);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var addNewBugBtn = document.getElementById("addNewBugBtn");
-  addNewBugBtn.addEventListener('click', function () {
-    addNewBug("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var addNewBugBtn = document.getElementById("addNewBugSCBtn");
-  addNewBugBtn.addEventListener('click', function () {
-    addNewAnnotationWithScreenShot("bug");
-  }, false);
-}, false);
 
 
 function addNewBug(imageURL) {
-  //var bugName = document.getElementById("newBugDescription").value;
   var bugName = $('#newBugDescription').val().trim();
   if (bugName == "") return;
 
@@ -67,7 +73,6 @@ function addNewBug(imageURL) {
 };
 
 function addNewNote(imageURL) {
-  //var noteName = document.getElementById("newNoteDescription").value;
   var noteName = $('#newNoteDescription').val().trim();
   if (noteName == "") return;
 
@@ -84,7 +89,7 @@ function addNewNote(imageURL) {
 };
 
 function addNewIdea(imageURL) {
-  //var ideaName = document.getElementById("newIdeaDescription").value;
+
   var ideaName = $('#newIdeaDescription').val().trim();
   if (ideaName == "") return;
   chrome.extension.sendMessage({
@@ -100,7 +105,6 @@ function addNewIdea(imageURL) {
 };
 
 function addNewQuestion(imageURL) {
-  //var questionName = document.getElementById("newQuestionDescription").value;
   var questionName = $('#newQuestionDescription').val().trim();
   if (questionName == "") return;
   chrome.extension.sendMessage({
@@ -115,63 +119,6 @@ function addNewQuestion(imageURL) {
   hideAllReports();
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-  var noteBtn = document.getElementById("NoteBtn");
-  noteBtn.addEventListener('click', showNoteReport);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var addNewNoteBtn = document.getElementById("addNewNoteBtn");
-  addNewNoteBtn.addEventListener('click', function () {
-    addNewNote("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var addNewNoteBtn = document.getElementById("addNewNoteSCBtn");
-  addNewNoteBtn.addEventListener('click', function () {
-    addNewAnnotationWithScreenShot("note");
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-  var questionBtn = document.getElementById("QuestionBtn");
-  questionBtn.addEventListener('click', showQuestionReport)
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var questionBtn = document.getElementById("addNewQuestionBtn");
-  questionBtn.addEventListener('click', function () {
-    addNewQuestion("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var questionBtn = document.getElementById("addNewQuestionSCBtn");
-  questionBtn.addEventListener('click', function () {
-    addNewAnnotationWithScreenShot("question");
-  }, false);
-}, false);
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  var ideaBtn = document.getElementById("IdeaBtn");
-  ideaBtn.addEventListener('click', showIdeaReport)
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var ideaBtn = document.getElementById("addNewIdeaBtn");
-  ideaBtn.addEventListener('click', function () {
-    addNewIdea("");
-  }, false);
-}, false);
-
-document.addEventListener('DOMContentLoaded', function () {
-  var ideaBtn = document.getElementById("addNewIdeaSCBtn");
-  ideaBtn.addEventListener('click', function () {
-    addNewAnnotationWithScreenShot("idea");
-  }, false);
-}, false);
 
 
 function addNewAnnotationWithScreenShot(type) {
@@ -206,10 +153,13 @@ function exportSessionCSV() {
   });
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-  var exportCSVBtn = document.getElementById("exportCSVBtn");
-  exportCSVBtn.addEventListener('click', exportSessionCSV)
-}, false);
+function exportListeners(){
+  $(document).on('click','#exportCSVBtn', exportSessionCSV);
+  $(document).on('click','#exportJsonBtn', exportSessionJSon);
+  $(document).on('click','#importJsonBtn', ()=>{ $('#importJsonInput').click()});
+  $(document).on('change','#importJsonInput', importSessionJSon);
+}
+
 
 
 /* Export to JSon */
@@ -219,10 +169,6 @@ function exportSessionJSon() {
   });
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-  var exportJSonBtn = document.getElementById("exportJsonBtn");
-  exportJSonBtn.addEventListener('click', exportSessionJSon)
-}, false);
 
 /* Import from JSon */
 function importSessionJSon(evt) {
@@ -235,28 +181,19 @@ function importSessionJSon(evt) {
 };
 
 function onReaderLoad(event) {
-
+  clearAllReports();
   var importSession = event.target.result;
   chrome.extension.sendMessage({
     type: "importSessionJSon",
     jSonSession: importSession
   }, function (response) {
-    clearAllReports();
     updateCounters();
+    //Reset input value
+    $('#importJsonInput').val("");
   });
 
 }
-document.addEventListener('DOMContentLoaded', function () {
-  var importJSonBtn = document.getElementById("importJsonBtn");
-  importJSonBtn.addEventListener('click', function () {
-    $('#importJsonInput').click();
-  })
-}, false);
 
-document.addEventListener('DOMContentLoaded', function () {
-  var importJSonBtn = document.getElementById("importJsonInput");
-  importJSonBtn.addEventListener('change', importSessionJSon)
-}, false);
 
 document.addEventListener('DOMContentLoaded', function () {
   var cancelAnnotationBtn = document.getElementsByName("Cancel");
@@ -324,21 +261,12 @@ function updateCounters() {
   var ideas = session.getIdeas().length;
   var questions = session.getQuestions().length;
 
-  if (bugs > 0) {
-    $("#bugCounter").html(" " + bugs + " ");
-  }
+  bugs > 0? $("#bugCounter").html(" " + bugs + " "): $("#bugCounter").html("");
+  notes > 0? $("#noteCounter").html(" " + notes + " "): $("#noteCounter").html("");
+  ideas > 0? $("#ideaCounter").html(" " + ideas + " "): $("#ideaCounter").html("");
+  questions > 0? $("#questionCounter").html(" " + questions + " "): $("#questionCounter").html("");
 
-  if (notes > 0) {
-    $("#noteCounter").html(" " + notes + " ");
-  }
 
-  if (ideas > 0) {
-    $("#ideaCounter").html(" " + ideas + " ");
-  }
-
-  if (questions > 0) {
-    $("#questionCounter").html(" " + questions + " ");
-  }
 };
 
 document.addEventListener('DOMContentLoaded', function () {
