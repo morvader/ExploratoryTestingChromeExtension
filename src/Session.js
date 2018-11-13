@@ -1,7 +1,6 @@
 function Session(dateTime, BrowserInfo) {
   this.BrowserInfo = BrowserInfo;
   this.StartDateTime = dateTime;
-
   this.annotations = new Array();
 }
 
@@ -11,6 +10,9 @@ Session.prototype.getBrowserInfo = function() {
 
 Session.prototype.getStartDateTime = function() {
   return new Date(this.StartDateTime);
+};
+Session.prototype.getEndDateTime = function() {
+  return Date.now();
 };
 
 Session.prototype.clearAnnotations = function() {
@@ -55,6 +57,11 @@ Session.prototype.getQuestions = function() {
   });
 };
 
+Session.prototype.getCharter = function() {
+  return this.annotations.filter(function(item) {
+    return (item instanceof Charter);
+  });
+};
 
 Session.prototype.addBug = function(newBug) {
   this.annotations.push(newBug);
@@ -70,4 +77,8 @@ Session.prototype.addNote = function(newNote) {
 
 Session.prototype.addQuestion = function(newQuestion) {
   this.annotations.push(newQuestion);
+};
+
+Session.prototype.addCharter = function(newCharter) {
+  this.annotations.push(newCharter);
 };
