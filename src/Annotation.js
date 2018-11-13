@@ -89,3 +89,17 @@ Question.prototype.getType = function(){
     return "Question";
 };
 
+//Charter class inherit from annotation
+Charter.prototype = new Annotation();        // Here's where the inheritance occurs
+Charter.prototype.constructor=Charter;
+function Charter(name,url,timestamp,imageURL){
+    this.type = this.getType();
+	this.name = name;
+    this.URL = url;
+    this.timeStamp = timestamp;
+    this.imageURL = imageURL;
+}
+Charter.prototype.getType = function(){
+    return "Charter";
+};
+

@@ -10,7 +10,7 @@ body {
 	background-image: url("../images/device-camera.svg");
 	background-repeat: no-repeat;
 	background-size: 75%;
-	background-position: 4px 3px; 
+	background-position: 4px 3px;
 	min-width: 30px;
 }
 
@@ -18,7 +18,7 @@ body {
 	background-image: url("../images/diff-added.svg");
 	background-repeat: no-repeat;
 	background-size: 75%;
-	background-position: 4px 3px; 
+	background-position: 4px 3px;
 	min-width: 30px;
 }
 .card-header {
@@ -48,10 +48,22 @@ body {
 .btn-secondary{
 	background-color: #f7f7f7;
 	border-color: #f7f7f7;
-	
+
+}
+
+.charterButton {
+	color: #fff;
+	background-color: #bc49f4;
+	border-color: #4cae4c;
+}
+
+.btn-outline-charter{
+	color: #bc49f4;
+	background-color: transparent;
+	border-color: #bc49f4;
 }
 #resetBtn{
-	
+
 	max-height: 30px;
 	margin-right: 100px;
 

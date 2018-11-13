@@ -1,6 +1,6 @@
 window.onload = function () {
   initElements();
-  
+
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   })
@@ -15,11 +15,14 @@ function initElements(){
   })
 }
 function annotationListeners(){
+
+  $(document).on('click', '#CharterBtn' ,showCharterTitle);
   $(document).on('click', '#BugBtn' ,showBugReport);
   $(document).on('click', '#IdeaBtn' ,showIdeaReport);
   $(document).on('click', '#NoteBtn' ,showNoteReport);
   $(document).on('click', '#QuestionBtn' ,showQuestionReport);
 
+  $(document).on('click', '#addNewCharterBtn', () => {addNewCharter("")});
   $(document).on('click', '#addNewBugBtn', () => {addNewBug("")});
   $(document).on('click', '#addNewIdeaBtn', () => {addNewIdea("")});
   $(document).on('click', '#addNewNoteBtn', () => {addNewNote("")});
@@ -30,6 +33,12 @@ function annotationListeners(){
   $(document).on('click', '#addNewNoteSCBtn', () =>{addNewAnnotationWithScreenShot("note")});
   $(document).on('click', '#addNewQuestionSCBtn', ()=> { addNewAnnotationWithScreenShot("question")});
 }
+
+function showCharterTitle() {
+  hideAllReports();
+  $("#addNewCharter").fadeIn();
+  $('#newCharterDescription').focus();
+};
 
 function showBugReport() {
   hideAllReports();
@@ -119,6 +128,20 @@ function addNewQuestion(imageURL) {
   hideAllReports();
 };
 
+function addNewCharter() {
+  var charterName = $('#newCharterDescription').val().trim();
+  if (charterName == "") return;
+  chrome.extension.sendMessage({
+    type: "addCharter",
+    name: charterName
+  }, function (response) {
+    updateCounters();
+  });
+
+  clearAllReports();
+  hideAllReports();
+};
+
 
 
 function addNewAnnotationWithScreenShot(type) {
@@ -194,7 +217,6 @@ function onReaderLoad(event) {
 
 }
 
-
 document.addEventListener('DOMContentLoaded', function () {
   var cancelAnnotationBtn = document.getElementsByName("Cancel");
   for (var i = 0; i < cancelAnnotationBtn.length; i++) {
@@ -215,11 +237,13 @@ function clearAllReports() {
 };
 
 function hideAllReports() {
+  $("#newCharterDescription").val('');
   $("#newBugDescription").val('');
   $("#newIdeaDescription").val('');
   $("#newNoteDescription").val('');
   $("#newQuestionDescription").val('');
 
+  $("#addNewCharter").slideUp();
   $("#addNewBug").slideUp();
   $("#addNewIdea").slideUp();
   $("#addNewNote").slideUp();
@@ -268,6 +292,23 @@ function updateCounters() {
 
 
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+  var newCharterDescription = document.getElementById("newCharterDescription");
+  newCharterDescription.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      $('#newCharterDescription').val($('#newCharterDescription').val() + '\n');
+    }
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        // not sure what should go here
+      } else {
+        addNewCharter(""); // code for enter
+      }
+    }
+  }, false);
+}, false);
 
 document.addEventListener('DOMContentLoaded', function () {
   var newBugDescription = document.getElementById("newBugDescription");

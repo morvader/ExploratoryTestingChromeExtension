@@ -44,12 +44,17 @@ function loadData(data) {
   loadSessionInfo();
   loadTable();
   drawPieChart();
-  
+
   addExportBtn();
 }
 
 function loadSessionInfo() {
   var browserInfo = session.getBrowserInfo();
+
+  $("#charter-title").html(
+    "<span>Charter Title: </span>" +
+      session.getCharter()
+  );
 
   $("#sessionDate").html(
     "<span>Date/Time: </span>" +
@@ -65,6 +70,8 @@ function loadSessionInfo() {
     "<span>OS: </span>" + browserInfo.os + " " + browserInfo.osVersion
   );
   $("#miscInfo").html("<span>Cookies Enabled: </span>" + browserInfo.cookies);
+  $("#finishTime").html("<span>Finish Time: </span>" +
+    session.getEndDateTime().toString("dd-MM-yyyy HH:mm"));
 }
 
 document.addEventListener(
