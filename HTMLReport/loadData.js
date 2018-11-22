@@ -173,6 +173,7 @@ function loadTable() {
         openNewWindow(annotationType, screenshotLink);
       };
 
+      
       link.href = "";
       link.appendChild(img);
 
@@ -193,7 +194,7 @@ function openNewWindow(annotationType, data) {
   var image = new Image();
   image.src = data;
 
-  var w = window.open("");
+  var w = window.open(data,annotationType);
 
   w.document.write("<title>" + annotationType + " ScreenShot</title>");
   w.document.write(image.outerHTML);
@@ -354,11 +355,6 @@ function exportBtnAction(){
       a.click();
     });
 }
-document.addEventListener(
-  "DOMContentLoaded",
-  exportBtnAction,
-  false
-);
 
 function addTableListeners() {
   $(".annotationDescription").each(function(index, el) {
