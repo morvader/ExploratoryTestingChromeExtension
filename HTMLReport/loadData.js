@@ -1,9 +1,11 @@
 var session;
 
+
 document.addEventListener(
   "DOMContentLoaded",
   function() {
     loadData();
+  
   },
   false
 );
@@ -46,6 +48,7 @@ function loadData(data) {
   drawPieChart();
   
   addExportBtn();
+  imagePreview();
 }
 
 function loadSessionInfo() {
@@ -123,7 +126,6 @@ function loadTable() {
 
     var img = document.createElement("img");
     img.src = img.src = "../images/trashcan.svg";
-    //img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA268pkAAAAJ3RSTlMAAggLEhUXGB0gLC0wNjhDR1BZWmVwfoeJkKCot7vAwcfIzdTZ3uBJhIXDAAAAb0lEQVR42qXI2RZAIBSF4WOWzBKZMpT3f0RJLDeufBdnnf3DJZ/nHB5uEG5RtIW+q6c9rouxjrYKZQOPplQn40lsJDw7MxW9ISicCgYGKz4DcdLUIa8wobpG07/QeVXldXfAgwWaNeDraeWuyVaNAwLmC7rL1abXAAAAAElFTkSuQmCC";
 
     img.alt = "Delete " + annotationType;
     img.title = "Delete " + annotationType;
@@ -131,9 +133,6 @@ function loadTable() {
     img.setAttribute("class", "deleteBtn");
 
     td.appendChild(img);
-
-    //var deleteDialog = getDeleteConfirmationDialog(annotationType);
-    //td.appendChild(deleteDialog);
 
     tr.appendChild(td);
 
@@ -167,14 +166,15 @@ function loadTable() {
       var img = document.createElement("img");
       img.setAttribute("class", "rounded mx-auto d-block");
       var link = document.createElement("a");
+      link.setAttribute("class", "preview");
+      link.setAttribute("title", "Click to open in a new window");
 
       img.src = "../images/device-camera.svg";
       link.onclick = function() {
         openNewWindow(annotationType, screenshotLink);
       };
 
-      
-      link.href = "";
+      link.href = screenshotLink;
       link.appendChild(img);
 
       td.appendChild(link);
@@ -234,25 +234,21 @@ function getIconType(type) {
   switch (type) {
     case "Bug":
       DOM_img.src = "../images/bug.svg";
-      // DOM_img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAugAAALoBTx5ghQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGZSURBVEiJtZY9SwNBEIafCUG0k0BixMrKykbEL47EKtrbpNPKRgVrq6uDWKs/RVIE7URs7IVANFgIaoQUEtYic7C53N2eng683O18vDOzs+ydGGNwiYhMA/vAkqrugUtjzJsz2BiTCMADOoAJoQN4zngHeQHoRpAH6AKFJI6co8FDoJxgL6tPrOQARKQmInci4oXsK44CxnxExFOuGkCwFXWGLfew9hWYACYdmAjNq6dc9ZEZAL6VpJqCOIyqRe5HDtlKkgV+4ikCmgnBbUWcvRnmy0cM7TNqkioL+uzH2MdiXcc0s/x7gryIzAGLlq6Uga8kItvW+gGShxZGcCTT+rcF2AM2rawVYD6mwil9xg25DbSsdSvqmPoZOjhPc9ndxlSXRp7Cir9OcDOmifkOPPPzLXoExLlFInICzP6i+iKwkdgBsKvV9IELYJCigwFwre8fwHrkZQdsAV8asKO6ZeDKSmQnGKhtTX1PVf8OrI4kYDjsV3U4ipjJDMP7PqeoAMUIv4ZyvAD5cAdnwIHrLyHFX8gx0AjW334V9JGY6/lGAAAAAElFTkSuQmCC";
       DOM_img.alt = "Bug";
       DOM_img.title = "Bug";
       break;
     case "Note":
       DOM_img.src = "../images/note.svg";
-      // DOM_img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEBSURBVEiJvZW7DcIwEECfUSIKGAGJliEyAANkASaBKWAAihQZI2UGYYA0SBSmuYBlbPzB4qRrfOf3zo4io7WmVAIV0AHtvLagbCyBDdAppVqAkpNfgB2wBgbgAbQANXAARkAn5AQ0ItgCN0lT0iHwFPALLpMfBbizJCup500um3tZGyzJxbi+9+bEO+8t8SzZAlW2wAOf8+jojxcE4L3UmyxBLByYkgUpcJsTFMTApW9ycb4KYuHS6+SEBNcY+C+CPXAPwbMEwMkhccJzBdqSXH3wXwQvScRP6ORUeEJrrXy1lCj9ov1fAOnvQShH8xssgHPhgT94uW/yx+TCqc0TPAFFMPiqY8cw3gAAAABJRU5ErkJggg==";
       DOM_img.alt = "Note";
       DOM_img.title = "Note";
       break;
     case "Idea":
       DOM_img.src = "../images/light-bulb.svg";
-      // DOM_img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAKcQAACnEBtdha7wAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAH4SURBVEiJpdXBi81RFAfwzx0vnmaEjUkzpCkmK4kUZUeNjY2/wJ4iC4UVZaFsxhpTsxDKkp3NlEbsSBM1ZjPKEEImjZlr8c6bfp73e+/3mlO39zvnfM/3vHPvOffKOau68BJXe4np05tsxtZeAmo9JritUUVlSVF6Q0mplnP+UwpOaRBLOecvHfwrOedPq8aWPX6DB6gXbPtxB++RY73GOIYLuH34iEf/cLYkOItFnAn9HH4XiFvXZ5wM7DheYE9pggBuQx0XC0TvItlRHMclLBT8Y6WdV9KOu6OSjHvob4MZxFRg5jDQS4KJCHyLjR3mYghfA3u+lzk4GL83cs6LJRg553ncDfVQO8x/CVJKGzAa6nQZeUGac3GgUgIs4Vd8L1dI0MR8L02QUhpJKZ1OKZ3IOa/gWfjblt0izX8+FVwXUko3U0pj0Dys5xoHNRn65dAfd7n86pgJ7KmwXdFo4aerXYQR7CoEjuJbBF5HXxvyfjwMzCy2FHx9WFfapgE6gp9B8KTFV9No4Yx5jPQ0aAWiY0Ey12Zrchzs3o4c3R6MIPqBHQXb4bDPdIuv8h4sYwCzKaUPsb9D4Su92ptS5UVrTmoNOzGM1OJbU4J6B9/6rtEVzqDZru3WdLf4KhVMaLRrqyzg/poriCq245bGvf8K17CpSuxfOACsF3meNvIAAAAASUVORK5CYII=";
       DOM_img.alt = "Idea";
       DOM_img.title = "Idea";
       break;
     case "Question":
       DOM_img.src = "../images/question.svg";
-      // DOM_img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAXQAAAF0BVWAulAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHqSURBVEiJxdRPiE5RGAbw35mZxohk8pVJmZSdIjuzQzRRxoaVlWSnLCxslK2NnZItNrMhDaWUWFL+JpkVGmmYyEwaNVO8Fvdebsf9vvlDeer0nfO89zzPOe/7nVdEQB/O4Dlm8RpXMBgR/mZAN+4jGsY0Ni9RcBBncRBdcKIm+B4X8bLGjS1BfCU+1/aehNs1Yrj8sB/fSu7TEgwOZxl41IPLmMOLiLijwBqkcj5l8Vidr3siYhSjFZNSWo+7isLDWC02jJ3YgCe4ERHvOlo25PBh7Yr30IsWbvrzT/AVx2v7j2bx8dzgVC34FGtLfqxBvBo/sKudQVd2oa21+f6ImE4p7cFIhyQknG8XzA0Gyt83EfGhnA91EK+wPaW0qinQk62PYYeigBVaizDoxrqmQH6D3Yo87q1xzxZhMBURE9iS8XN5kccVxXlb41r4qH2RA+cU2ZjM+Eu5wdUycD3jRxSPsUn8seLNHGiIDeUGqfw4NbSBbYoHOFtunihPvqKMX8vEX0WEBftLg1E3+jOuhfnM4HREFCdtQkqpS9Fpj2CT372pCb2KBlnhOzZGxGSnk15YoLCdxq1fOm3EBxQtYLkGhxYy2PcX4l/QW2nlD61CXxt+MZiJiPlq0c7gn+G/GYxjZpmaD+qLn3+uLAoP3yWBAAAAAElFTkSuQmCC";
       DOM_img.alt = "Question";
       DOM_img.title = "Question";
       break;
@@ -340,8 +336,7 @@ function exportBtnAction(){
         "ExploratorySession_" + browserInfoString + "_" + startDateTime;
 
       var exportHTMLService = new ExportSessionHTML(session);
-      var elHtml = exportHTMLService.getHTML(fileName).documentElement
-        .innerHTML;
+      var elHtml = exportHTMLService.getHTML(fileName).documentElement.innerHTML;
 
       mimeType = "text/html" || "text/plain";
 
@@ -457,3 +452,34 @@ function deleteAnnotation(annotationID) {
     }
   );
 }
+
+this.imagePreview = function(){	
+	/* CONFIG */
+		
+		xOffset = -10;
+		yOffset = -400;
+		
+		// these 2 variable determine popup's distance from the cursor
+		// you might want to adjust to get the right result
+		
+	/* END CONFIG */
+	$("a.preview").hover(function(e){
+		this.t = this.title;
+		this.title = "";	
+		var c = (this.t != "") ? "<br/>" + this.t : "";
+		$("body").append("<p id='preview'><img id='imgPreview' src='"+ this.href +"' alt='Image preview' />"+ c +"</p>");								 
+		$("#preview")
+			.css("top",(e.pageY - xOffset) + "px")
+      .css("left",(e.pageX + yOffset) + "px")
+			.fadeIn("fast");						
+    },
+	function(){
+		this.title = this.t;	
+		$("#preview").remove();
+    });	
+	$("a.preview").mousemove(function(e){
+		$("#preview")
+			.css("top",(e.pageY - xOffset) + "px")
+      .css("left",(e.pageX + yOffset) + "px")
+	});			
+};

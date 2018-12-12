@@ -28,36 +28,11 @@ img{
 #sessionActivityTable.tr {
     vertical-align: top;
 }
-.Type {
-    
-}
-.Description {
-    
-}
-.URL {
-    
-}
-.Screenshot {
-    
-}
 
 .annotationDescription, .annotationUrl {
     font-size: 0.7rem;
     vertical-align: top;
     white-space: pre; 
-}
-
-tr.Bug {
-    /*background-color: #f5c6cb;*/
-}
-tr.Note {
-    /*background-color: #ffeeba;*/
-}
-tr.Question {
-    /*background-color: #c3e6cb;*/
-}
-tr.Idea {
-    /*background-color: #bee5eb;*/
 }
 
 .updatethVal{
@@ -87,3 +62,12 @@ tr.Idea {
 #deleteDialog span{
     font-weight: bold;
 }
+#preview{
+	position:absolute;
+	border:1px solid #ccc;
+	background:#333;
+	padding:5px;
+	display:none;
+    color:#fff;
+}
+#imgPreview{max-width: 400px;}
