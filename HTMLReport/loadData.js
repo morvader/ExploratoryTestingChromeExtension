@@ -160,19 +160,21 @@ function loadTable() {
     tr.appendChild(td);
 
     td = document.createElement("td");
-    var screenshotLink = annotaions[i].getImageURL();
+    let screenshotLink = annotaions[i].getImageURL();
 
     if (screenshotLink != "") {
-      var img = document.createElement("img");
+      let img = document.createElement("img");
       img.setAttribute("class", "rounded mx-auto d-block");
-      var link = document.createElement("a");
+      let link = document.createElement("a");
       link.setAttribute("class", "preview");
       link.setAttribute("title", "Click to open in a new window");
 
       img.src = "../images/device-camera.svg";
-      link.onclick = function() {
+
+      link.addEventListener('click',function() {
         openNewWindow(annotationType, screenshotLink);
-      };
+      },false);
+      
 
       link.href = screenshotLink;
       link.appendChild(img);
@@ -191,13 +193,15 @@ function loadTable() {
 }
 
 function openNewWindow(annotationType, data) {
-  var image = new Image();
+  let image = new Image();
   image.src = data;
 
-  var w = window.open(data,annotationType);
-
+  let w = window.open(data, '_blank');
   w.document.write("<title>" + annotationType + " ScreenShot</title>");
+  
   w.document.write(image.outerHTML);
+
+  w.focus();
 }
 
 function addTableFilters() {
@@ -465,9 +469,9 @@ this.imagePreview = function(){
 	/* END CONFIG */
 	$("a.preview").hover(function(e){
 		this.t = this.title;
-		this.title = "";	
+    this.title = "";	
 		var c = (this.t != "") ? "<br/>" + this.t : "";
-		$("body").append("<p id='preview'><img id='imgPreview' src='"+ this.href +"' alt='Image preview' />"+ c +"</p>");								 
+		$("body").append("<p id='preview'><img id='imgPreview' src='"+ e.currentTarget.href +"' alt='Image preview' />"+ c +"</p>");								 
 		$("#preview")
 			.css("top",(e.pageY - xOffset) + "px")
       .css("left",(e.pageX + yOffset) + "px")

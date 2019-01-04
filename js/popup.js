@@ -273,14 +273,15 @@ document.addEventListener('DOMContentLoaded', function () {
   var newBugDescription = document.getElementById("newBugDescription");
   newBugDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
+    // if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+    //   $('#newBugDescription').val($('#newBugDescription').val() + '\n');
+    // }
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      $('#newBugDescription').val($('#newBugDescription').val() + '\n');
+      addNewBug("");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("bug");
-      } else {
-        addNewBug(""); // code for enter
       }
     }
   }, false);
@@ -291,13 +292,11 @@ document.addEventListener('DOMContentLoaded', function () {
   newIdeaDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      $('#newIdeaDescription').val($('#newIdeaDescription').val() + '\n');
+      addNewIdea("");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("idea");
-      } else {
-        addNewIdea(""); // code for enter
       }
     }
   }, false);
@@ -308,13 +307,11 @@ document.addEventListener('DOMContentLoaded', function () {
   newNoteDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      $('#newNoteDescription').val($('#newNoteDescription').val() + '\n');
+      addNewNote("");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("note");
-      } else {
-        addNewNote(""); // code for enter
       }
     }
   }, false);
@@ -325,13 +322,11 @@ document.addEventListener('DOMContentLoaded', function () {
   newQuestionDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      $('#newQuestionDescription').val($('#newQuestionDescription').val() + '\n');
+      addNewQuestion("");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
         addNewAnnotationWithScreenShot("question");
-      } else {
-        addNewQuestion(""); // code for enter
       }
     }
   }, false);
