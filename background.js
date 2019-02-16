@@ -67,7 +67,9 @@ function addAnnotation(type, name, imageURL) {
             active: true
         },
         function (tabs) {
+
             currentUrl = tabs[0].url;
+
             //alert(currentUrl);
             switch (type) {
                 case "Bug":
@@ -155,16 +157,16 @@ function exportSessionJSon() {
 
 };
 
-function importSessionJSon(JSonSessionData){
+function importSessionJSon(JSonSessionData) {
     debugger;
     var exportJSonService = new JSonSessionService();
     var importedSession = exportJSonService.getSession(JSonSessionData);
 
-    if(importedSession == null)
+    if (importedSession == null)
         return false;
 
     clearSession();
     session = importedSession;
- 
+
     return true;
 };
