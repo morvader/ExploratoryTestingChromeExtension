@@ -6,8 +6,8 @@
   "author": "@morvader",
   "version": "2.1.4",
   "icons": {
-    "16": "/icons/iconbig.png",
-    "48": "/icons/iconbig.png",
+    "16": "/icons/iconsmall.png",
+    "48": "/icons/iconmed.png",
     "128": "/icons/iconbig.png"
   },
   "background": {
