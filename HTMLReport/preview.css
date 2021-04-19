@@ -32,7 +32,6 @@ img{
 
 #sessionActivityTable.tr {
     vertical-align: top;
-    table-layout: fixed;
 }
 
 .annotationDescription, .annotationUrl {
