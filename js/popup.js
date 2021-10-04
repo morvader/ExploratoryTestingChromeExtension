@@ -186,7 +186,6 @@ function addNewAnnotationWithScreenShot(type) {
 
   /* Import from JSon */
   function importSessionJSon(evt) {
-    debugger;
     var files = evt.target.files; // FileList object
 
     var reader = new FileReader();
