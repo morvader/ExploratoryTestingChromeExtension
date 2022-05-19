@@ -53,3 +53,4 @@ fabric.properties
 
 .vscode/launch.json
 *.zip
+.DS_Store
