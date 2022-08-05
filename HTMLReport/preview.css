@@ -2,6 +2,11 @@ body{
     min-width: 40%;
     max-width: 100%; 
 }
+
+td {
+    white-space: normal;
+}
+
 #sessionInfo {
     font-size: 0.7rem;
 }
