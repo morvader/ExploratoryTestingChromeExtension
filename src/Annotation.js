@@ -1,91 +1,83 @@
+// Clase base para anotaciones
+export class Annotation {
+    constructor(name, url, timestamp, imageURL) {
+        this.type = "";
+        this.name = name;
+        this.URL = url;
+        this.timeStamp = timestamp;
+        this.imageURL = imageURL;
+    }
 
-//Annotation father class
-function Annotation(name, url, timestamp,imageURL) {
-    this.type = "";
-	this.name = name;
-	this.URL = url;
-	this.timeStamp = timestamp;
-	this.imageURL = imageURL;
+    getName() {
+        return this.name;
+    }
+
+    setName(newName) {
+        this.name = newName;
+    }
+
+    getURL() {
+        return this.URL;
+    }
+
+    getTimeStamp() {
+        return new Date(this.timeStamp);
+    }
+
+    setImageURL(imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    getImageURL() {
+        return this.imageURL;
+    }
 }
 
-Annotation.prototype.getName = function() {
-	return this.name;
-};
+// Clase Bug
+export class Bug extends Annotation {
+    constructor(name, url, timestamp, imageURL) {
+        super(name, url, timestamp, imageURL);
+        this.type = this.getType();
+    }
 
-Annotation.prototype.setName = function(newName) {
-    this.name = newName;
-};
-
-Annotation.prototype.getURL = function() {
-	return this.URL;
-};
-
-Annotation.prototype.getTimeStamp = function() {
-	return new Date(this.timeStamp);
-};
-
-Annotation.prototype.setImageURL = function(imageURL) {
-	this.imageURL = imageURL;
-};
-
-Annotation.prototype.getImageURL = function() {
-	return this.imageURL;
-};
-
-
-//Bug class inherit from annotation
-Bug.prototype = new Annotation();        // Here's where the inheritance occurs
-Bug.prototype.constructor=Bug;
-function Bug(name,url,timestamp,imageURL){
-    this.type = this.getType();
-	this.name = name;
-    this.URL = url;
-    this.timeStamp = timestamp;
-    this.imageURL = imageURL;
+    getType() {
+        return "Bug";
+    }
 }
-Bug.prototype.getType = function(){
-    return "Bug";
-};
 
-//Idea class inherit from annotation
-Idea.prototype = new Annotation();        // Here's where the inheritance occurs
-Idea.prototype.constructor=Idea;
-function Idea(name,url,timestamp,imageURL){
-    this.type = this.getType();
-	this.name = name;
-    this.URL = url;
-    this.timeStamp = timestamp;
-    this.imageURL = imageURL;
-}
-Idea.prototype.getType = function(){
-    return "Idea";
-};
+// Clase Idea
+export class Idea extends Annotation {
+    constructor(name, url, timestamp, imageURL) {
+        super(name, url, timestamp, imageURL);
+        this.type = this.getType();
+    }
 
-//Note class inherit from annotation
-Note.prototype = new Annotation();        // Here's where the inheritance occurs
-Note.prototype.constructor=Note;
-function Note(name,url,timestamp,imageURL){
-    this.type = this.getType();
-	this.name = name;
-    this.URL = url;
-    this.timeStamp = timestamp;
-    this.imageURL = imageURL;
+    getType() {
+        return "Idea";
+    }
 }
-Note.prototype.getType = function(){
-    return "Note";
-};
 
-//Question class inherit from annotation
-Question.prototype = new Annotation();        // Here's where the inheritance occurs
-Question.prototype.constructor=Question;
-function Question(name,url,timestamp,imageURL){
-    this.type = this.getType();
-	this.name = name;
-    this.URL = url;
-    this.timeStamp = timestamp;
-    this.imageURL = imageURL;
+// Clase Note
+export class Note extends Annotation {
+    constructor(name, url, timestamp, imageURL) {
+        super(name, url, timestamp, imageURL);
+        this.type = this.getType();
+    }
+
+    getType() {
+        return "Note";
+    }
 }
-Question.prototype.getType = function(){
-    return "Question";
-};
+
+// Clase Question
+export class Question extends Annotation {
+    constructor(name, url, timestamp, imageURL) {
+        super(name, url, timestamp, imageURL);
+        this.type = this.getType();
+    }
+
+    getType() {
+        return "Question";
+    }
+}
 

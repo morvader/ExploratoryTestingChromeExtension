@@ -1,109 +1,178 @@
-var session = new Session();
+// Importar las clases necesarias
+import { Session } from './src/Session.js';
+import { Bug } from './src/Annotation.js';
+import { Note } from './src/Annotation.js';
+import { Idea } from './src/Annotation.js';
+import { Question } from './src/Annotation.js';
+import { ExportSessionCSV } from './src/ExportSessionCSV.js';
+import { JSonSessionService } from './src/JSonSessionService.js';
+import { getSystemInfo } from './src/browserInfo.js';
 
-chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
+let session = new Session();
+
+// Función para guardar la sesión en el storage
+async function saveSession() {
+    await chrome.storage.local.set({ 'session': session });
+}
+
+// Función para cargar la sesión desde el storage
+async function loadSession() {
+    const data = await chrome.storage.local.get('session');
+    if (data.session) {
+        // Reconstruir el objeto Session con sus métodos
+        const loadedSession = data.session;
+        session = new Session(loadedSession.startDateTime, loadedSession.browserInfo);
+
+        // Reconstruir las anotaciones
+        loadedSession.annotations.forEach(annotation => {
+            let newAnnotation;
+            switch (annotation.type) {
+                case "Bug":
+                    newAnnotation = new Bug(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                    session.addBug(newAnnotation);
+                    break;
+                case "Note":
+                    newAnnotation = new Note(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                    session.addNote(newAnnotation);
+                    break;
+                case "Idea":
+                    newAnnotation = new Idea(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                    session.addIdea(newAnnotation);
+                    break;
+                case "Question":
+                    newAnnotation = new Question(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                    session.addQuestion(newAnnotation);
+                    break;
+            }
+        });
+    }
+}
+
+// Cargar la sesión al iniciar
+loadSession();
+
+// Escuchar mensajes del popup
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "addBug":
-            addAnnotation("Bug", request.name, request.imageURL);
+            addAnnotation("Bug", request.name, request.imageURL)
+                .then(() => sendResponse({ status: "ok" }))
+                .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addIdea":
-            addAnnotation("Idea", request.name, request.imageURL);
+            addAnnotation("Idea", request.name, request.imageURL)
+                .then(() => sendResponse({ status: "ok" }))
+                .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addNote":
-            addAnnotation("Note", request.name, request.imageURL);
+            addAnnotation("Note", request.name, request.imageURL)
+                .then(() => sendResponse({ status: "ok" }))
+                .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addQuestion":
-            addAnnotation("Question", request.name, request.imageURL);
+            addAnnotation("Question", request.name, request.imageURL)
+                .then(() => sendResponse({ status: "ok" }))
+                .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "updateAnnotationName":
             var AnnotationID = request.annotationID;
             var newName = request.newName;
-
             var annotations = session.getAnnotations();
             var annotation = annotations[AnnotationID];
             annotation.setName(newName);
-
+            saveSession().then(() => sendResponse({ status: "ok" }));
             break;
         case "deleteAnnotation":
             session.deleteAnnotation(request.annotationID);
+            saveSession().then(() => sendResponse({ status: "ok" }));
             break;
         case "exportSessionCSV":
-            if (!exportSessionCSV())
-                sendResponse({
-                    status: "nothing to export"
-                });
+            if (!exportSessionCSV()) {
+                sendResponse({ status: "nothing to export" });
+            } else {
+                sendResponse({ status: "ok" });
+            }
             break;
         case "exportSessionJSon":
-            if (!exportSessionJSon())
-                sendResponse({
-                    status: "nothing to export"
-                });
+            if (!exportSessionJSon()) {
+                sendResponse({ status: "nothing to export" });
+            } else {
+                sendResponse({ status: "ok" });
+            }
             break;
         case "importSessionJSon":
             var fileData = request.jSonSession;
-            if (!importSessionJSon(fileData))
-                sendResponse({
-                    status: "nothing to import"
-                });
+            if (!importSessionJSon(fileData)) {
+                sendResponse({ status: "nothing to import" });
+            } else {
+                sendResponse({ status: "ok" });
+            }
             break;
         case "clearSession":
-            clearSession();
+            clearSession().then(() => sendResponse({ status: "ok" }));
+            break;
+        case "getSessionData":
+            sendResponse({
+                bugs: session.getBugs().length,
+                notes: session.getNotes().length,
+                ideas: session.getIdeas().length,
+                questions: session.getQuestions().length,
+                annotationsCount: session.getAnnotations().length
+            });
             break;
     }
-    sendResponse({
-        status: "ok"
-    });
-    return true;
+    return true; // Mantener el puerto de mensajes abierto para respuestas asíncronas
 });
 
-function addAnnotation(type, name, imageURL) {
+async function addAnnotation(type, name, imageURL) {
+    if (session.getAnnotations().length == 0) {
+        await startSession();
+    }
 
-    var currentUrl;
-    var now = Date.now();
+    return new Promise((resolve, reject) => {
+        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            try {
+                const currentUrl = tabs[0].url;
+                const now = Date.now();
 
-    if (session.getAnnotations().length == 0) this.startSession();
-
-    chrome.tabs.query({
-            currentWindow: true,
-            active: true
-        },
-        function (tabs) {
-
-            currentUrl = tabs[0].url;
-
-            //alert(currentUrl);
-            switch (type) {
-                case "Bug":
-                    var newBug = new Bug(name, currentUrl, now, imageURL);
-                    session.addBug(newBug);
-                    break;
-                case "Note":
-                    var newNote = new Note(name, currentUrl, now, imageURL);
-                    session.addNote(newNote);
-                    break;
-                case "Idea":
-                    var newIdea = new Idea(name, currentUrl, now, imageURL);
-                    session.addIdea(newIdea);
-                    break;
-                case "Question":
-                    var newQuestion = new Question(name, currentUrl, now, imageURL);
-                    session.addQuestion(newQuestion);
-                    break;
+                switch (type) {
+                    case "Bug":
+                        var newBug = new Bug(name, currentUrl, now, imageURL);
+                        session.addBug(newBug);
+                        break;
+                    case "Note":
+                        var newNote = new Note(name, currentUrl, now, imageURL);
+                        session.addNote(newNote);
+                        break;
+                    case "Idea":
+                        var newIdea = new Idea(name, currentUrl, now, imageURL);
+                        session.addIdea(newIdea);
+                        break;
+                    case "Question":
+                        var newQuestion = new Question(name, currentUrl, now, imageURL);
+                        session.addQuestion(newQuestion);
+                        break;
+                }
+                saveSession().then(resolve).catch(reject);
+            } catch (error) {
+                reject(error);
             }
         });
+    });
 }
 
-function startSession() {
+async function startSession() {
     var systemInfo = getSystemInfo();
     session = new Session(Date.now(), systemInfo);
-};
+    await saveSession();
+}
 
-function clearSession() {
+async function clearSession() {
     session.clearAnnotations();
-};
-
+    await saveSession();
+}
 
 function exportSessionCSV() {
-
     if (session.getAnnotations().length == 0) return false;
 
     var exportService = new ExportSessionCSV(session);
@@ -127,10 +196,10 @@ function exportSessionCSV() {
     pom.setAttribute('download', fileName);
     pom.click();
 
-};
+    return true;
+}
 
 function exportSessionJSon() {
-
     if (session.getAnnotations().length == 0) return false;
 
     debugger;
@@ -155,7 +224,8 @@ function exportSessionJSon() {
     pom.setAttribute('download', fileName);
     pom.click();
 
-};
+    return true;
+}
 
 function importSessionJSon(JSonSessionData) {
     debugger;
@@ -169,4 +239,4 @@ function importSessionJSon(JSonSessionData) {
     session = importedSession;
 
     return true;
-};
+}

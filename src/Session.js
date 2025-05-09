@@ -1,73 +1,67 @@
-function Session(dateTime, BrowserInfo) {
-  this.BrowserInfo = BrowserInfo;
-  this.StartDateTime = dateTime;
+import { Bug, Note, Idea, Question } from './Annotation.js';
 
-  this.annotations = new Array();
-}
-
-Session.prototype.getBrowserInfo = function() {
-  return this.BrowserInfo;
-};
-
-Session.prototype.getStartDateTime = function() {
-  return new Date(this.StartDateTime);
-};
-
-Session.prototype.clearAnnotations = function() {
-  this.annotations = new Array();
-};
-
-Session.prototype.setAnnotations = function(newAnnotations) {
-  this.annotations = newAnnotations;
-};
-
-Session.prototype.deleteAnnotation = function(annotationID) {
-  if (annotationID > -1) {
-    this.annotations.splice(annotationID, 1);
+export class Session {
+  constructor(dateTime, BrowserInfo) {
+    this.BrowserInfo = BrowserInfo;
+    this.StartDateTime = dateTime;
+    this.annotations = [];
   }
-};
 
-Session.prototype.getAnnotations = function() {
-  return this.annotations;
-};
+  getBrowserInfo() {
+    return this.BrowserInfo;
+  }
 
-Session.prototype.getBugs = function() {
-  return this.annotations.filter(function(item) {
-    return (item instanceof Bug);
-  });
-};
+  getStartDateTime() {
+    return new Date(this.StartDateTime);
+  }
 
-Session.prototype.getNotes = function() {
-  return this.annotations.filter(function(item) {
-    return (item instanceof Note);
-  });
-};
+  clearAnnotations() {
+    this.annotations = [];
+  }
 
-Session.prototype.getIdeas = function() {
-  return this.annotations.filter(function(item) {
-    return (item instanceof Idea);
-  });
-};
+  setAnnotations(newAnnotations) {
+    this.annotations = newAnnotations;
+  }
 
-Session.prototype.getQuestions = function() {
-  return this.annotations.filter(function(item) {
-    return (item instanceof Question);
-  });
-};
+  deleteAnnotation(annotationID) {
+    if (annotationID > -1) {
+      this.annotations.splice(annotationID, 1);
+    }
+  }
 
+  getAnnotations() {
+    return this.annotations;
+  }
 
-Session.prototype.addBug = function(newBug) {
-  this.annotations.push(newBug);
-};
+  getBugs() {
+    return this.annotations.filter(item => item instanceof Bug);
+  }
 
-Session.prototype.addIdea = function(newIdea) {
-  this.annotations.push(newIdea);
-};
+  getNotes() {
+    return this.annotations.filter(item => item instanceof Note);
+  }
 
-Session.prototype.addNote = function(newNote) {
-  this.annotations.push(newNote);
-};
+  getIdeas() {
+    return this.annotations.filter(item => item instanceof Idea);
+  }
 
-Session.prototype.addQuestion = function(newQuestion) {
-  this.annotations.push(newQuestion);
-};
+  getQuestions() {
+    return this.annotations.filter(item => item instanceof Question);
+  }
+
+  addBug(newBug) {
+    this.annotations.push(newBug);
+  }
+
+  addIdea(newIdea) {
+    this.annotations.push(newIdea);
+  }
+
+  addNote(newNote) {
+    this.annotations.push(newNote);
+  }
+
+  addQuestion(newQuestion) {
+    this.annotations.push(newQuestion);
+  }
+}

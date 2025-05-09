@@ -1,32 +1,28 @@
 {
-  "manifest_version": 2,
-  "name": "Exploratory Testing Chrome Extension",
-  "short_name": "Chrome Exploratory Testing",
-  "description": "Exploratory testing session using Chrome",
-  "author": "@morvader",
-  "version": "2.1.5",
+  "manifest_version": 3,
+  "name": "Exploratory Testing",
+  "version": "3.0",
+  "description": "Chrome extension for exploratory testing",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/icons/iconbig.png",
+      "48": "/icons/iconbig.png",
+      "128": "/icons/iconbig.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "icons": {
     "16": "/icons/iconbig.png",
     "48": "/icons/iconbig.png",
     "128": "/icons/iconbig.png"
-  },
-  "background": {
-    "scripts": [
-      "lib/browserInfo.js",
-      "lib/date.js",
-      "src/Annotation.js",
-      "src/Session.js",
-      "src/ExportSessionCSV.js",
-      "src/JSonSessionService.js",
-      "background.js"
-    ],
-    "persistent": true
-  },
-  "permissions": [
-    "activeTab"
-  ],
-  "browser_action": {
-    "default_icon": "/icons/iconbig.png",
-    "default_popup": "popup.html"
   }
 }

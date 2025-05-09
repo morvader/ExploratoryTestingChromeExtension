@@ -77,7 +77,7 @@ function addNewBug(imageURL) {
   var bugName = $('#newBugDescription').val().trim();
   if (bugName == "") return;
 
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "addBug",
     name: bugName,
     imageURL: imageURL
@@ -93,7 +93,7 @@ function addNewNote(imageURL) {
   var noteName = $('#newNoteDescription').val().trim();
   if (noteName == "") return;
 
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "addNote",
     name: noteName,
     imageURL: imageURL
@@ -109,7 +109,7 @@ function addNewIdea(imageURL) {
 
   var ideaName = $('#newIdeaDescription').val().trim();
   if (ideaName == "") return;
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "addIdea",
     name: ideaName,
     imageURL: imageURL
@@ -124,7 +124,7 @@ function addNewIdea(imageURL) {
 function addNewQuestion(imageURL) {
   var questionName = $('#newQuestionDescription').val().trim();
   if (questionName == "") return;
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "addQuestion",
     name: questionName,
     imageURL: imageURL
@@ -140,7 +140,7 @@ function addNewQuestion(imageURL) {
 
 function addNewAnnotationWithScreenShot(type) {
   chrome.tabs.captureVisibleTab((screenshotUrl) => {
-    if(screenshotUrl ==='undefined') screenshotUrl = "";
+    if (screenshotUrl === 'undefined') screenshotUrl = "";
     switch (type) {
       case "bug":
         addNewBug(screenshotUrl);
@@ -158,97 +158,95 @@ function addNewAnnotationWithScreenShot(type) {
   })
 }
 
-  /* Export to CSV  */
-  function exportSessionCSV() {
-    chrome.extension.sendMessage({
-      type: "exportSessionCSV"
-    });
-  };
+/* Export to CSV  */
+function exportSessionCSV() {
+  chrome.extension.sendMessage({
+    type: "exportSessionCSV"
+  });
+};
 
-  function exportListeners() {
-    $(document).on('click', '#exportCSVBtn', exportSessionCSV);
-    $(document).on('click', '#exportJsonBtn', exportSessionJSon);
-    $(document).on('click', '#importJsonBtn', () => {
-      $('#importJsonInput').click()
-    });
-    $(document).on('change', '#importJsonInput', importSessionJSon);
+function exportListeners() {
+  $(document).on('click', '#exportCSVBtn', exportSessionCSV);
+  $(document).on('click', '#exportJsonBtn', exportSessionJSon);
+  $(document).on('click', '#importJsonBtn', () => {
+    $('#importJsonInput').click()
+  });
+  $(document).on('change', '#importJsonInput', importSessionJSon);
+}
+
+
+
+/* Export to JSon */
+function exportSessionJSon() {
+  chrome.extension.sendMessage({
+    type: "exportSessionJSon"
+  });
+};
+
+
+/* Import from JSon */
+function importSessionJSon(evt) {
+  var files = evt.target.files; // FileList object
+
+  var reader = new FileReader();
+  reader.onload = onReaderLoad;
+  reader.readAsText(files[0]);
+};
+
+function onReaderLoad(event) {
+  clearAllReports();
+  var importSession = event.target.result;
+  chrome.extension.sendMessage({
+    type: "importSessionJSon",
+    jSonSession: importSession
+  }, function (response) {
+    updateCounters();
+    //Reset input value
+    $('#importJsonInput').val("");
+  });
+
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  var cancelAnnotationBtn = document.getElementsByName("Cancel");
+  for (var i = 0; i < cancelAnnotationBtn.length; i++) {
+    cancelAnnotationBtn[i].addEventListener('click', cancelAnnotation);
   }
+}, false);
 
+function cancelAnnotation() {
+  clearAllReports();
+  hideAllReports();
+};
 
-
-  /* Export to JSon */
-  function exportSessionJSon() {
-    chrome.extension.sendMessage({
-      type: "exportSessionJSon"
-    });
-  };
-
-
-  /* Import from JSon */
-  function importSessionJSon(evt) {
-    var files = evt.target.files; // FileList object
-
-    var reader = new FileReader();
-    reader.onload = onReaderLoad;
-    reader.readAsText(files[0]);
-  };
-
-  function onReaderLoad(event) {
-    clearAllReports();
-    var importSession = event.target.result;
-    chrome.extension.sendMessage({
-      type: "importSessionJSon",
-      jSonSession: importSession
-    }, function (response) {
-      updateCounters();
-      //Reset input value
-      $('#importJsonInput').val("");
-    });
-
+function clearAllReports() {
+  var descriptions = document.getElementsByTagName("textarea");
+  for (i = 0; i < descriptions.length; i++) {
+    descriptions[i].value = "";
   }
+};
 
+function hideAllReports() {
+  $("#newBugDescription").val('');
+  $("#newIdeaDescription").val('');
+  $("#newNoteDescription").val('');
+  $("#newQuestionDescription").val('');
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var cancelAnnotationBtn = document.getElementsByName("Cancel");
-    for (var i = 0; i < cancelAnnotationBtn.length; i++) {
-      cancelAnnotationBtn[i].addEventListener('click', cancelAnnotation);
-    }
-  }, false);
+  $("#addNewBug").slideUp();
+  $("#addNewIdea").slideUp();
+  $("#addNewNote").slideUp();
+  $("#addNewQuestion").slideUp();
+};
 
-  function cancelAnnotation() {
-    clearAllReports();
-    hideAllReports();
-  };
-
-  function clearAllReports() {
-    var descriptions = document.getElementsByTagName("textarea");
-    for (i = 0; i < descriptions.length; i++) {
-      descriptions[i].value = "";
-    }
-  };
-
-  function hideAllReports() {
-    $("#newBugDescription").val('');
-    $("#newIdeaDescription").val('');
-    $("#newNoteDescription").val('');
-    $("#newQuestionDescription").val('');
-
-    $("#addNewBug").slideUp();
-    $("#addNewIdea").slideUp();
-    $("#addNewNote").slideUp();
-    $("#addNewQuestion").slideUp();
-  };
-
-  document.addEventListener('DOMContentLoaded', function () {
-    var previewBtn = document.getElementById('previewBtn');
-    previewBtn.addEventListener('click', function () {
-      var background = chrome.extension.getBackgroundPage();
-      var session = background.session;
-
-      if (session.getAnnotations().length == 0) return;
+document.addEventListener('DOMContentLoaded', function () {
+  var previewBtn = document.getElementById('previewBtn');
+  previewBtn.addEventListener('click', function () {
+    chrome.runtime.sendMessage({ type: "getSessionData" }, function (response) {
+      if (response.annotationsCount === 0) return;
 
       chrome.tabs.create({
-        url: chrome.extension.getURL("HTMLReport/preview.html"),
+        url: chrome.runtime.getURL("HTMLReport/preview.html"),
         'active': false
       }, function (tab) {
         var selfTabId = tab.id;
@@ -262,122 +260,117 @@ function addNewAnnotationWithScreenShot(type) {
           }
         });
       });
-    }, false);
+    });
   }, false);
+}, false);
 
-  function updateCounters() {
-    var background = chrome.extension.getBackgroundPage();
-    var session = background.session;
+function updateCounters() {
+  chrome.runtime.sendMessage({ type: "getSessionData" }, function (response) {
+    if (response.bugs > 0) $("#bugCounter").html(" " + response.bugs + " ");
+    else $("#bugCounter").html("");
 
-    var bugs = session.getBugs().length;
-    var notes = session.getNotes().length;
-    var ideas = session.getIdeas().length;
-    var questions = session.getQuestions().length;
+    if (response.notes > 0) $("#noteCounter").html(" " + response.notes + " ");
+    else $("#noteCounter").html("");
 
-    bugs > 0 ? $("#bugCounter").html(" " + bugs + " ") : $("#bugCounter").html("");
-    notes > 0 ? $("#noteCounter").html(" " + notes + " ") : $("#noteCounter").html("");
-    ideas > 0 ? $("#ideaCounter").html(" " + ideas + " ") : $("#ideaCounter").html("");
-    questions > 0 ? $("#questionCounter").html(" " + questions + " ") : $("#questionCounter").html("");
+    if (response.ideas > 0) $("#ideaCounter").html(" " + response.ideas + " ");
+    else $("#ideaCounter").html("");
 
+    if (response.questions > 0) $("#questionCounter").html(" " + response.questions + " ");
+    else $("#questionCounter").html("");
+  });
+}
 
-  };
-
-  document.addEventListener('DOMContentLoaded', function () {
-    var newBugDescription = document.getElementById("newBugDescription");
-    newBugDescription.addEventListener("keypress", function (e) {
-      var key = e.which || e.keyCode;
-      // if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      //   $('#newBugDescription').val($('#newBugDescription').val() + '\n');
-      // }
-      if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-        addNewBug("");
+document.addEventListener('DOMContentLoaded', function () {
+  var newBugDescription = document.getElementById("newBugDescription");
+  newBugDescription.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    // if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+    //   $('#newBugDescription').val($('#newBugDescription').val() + '\n');
+    // }
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      addNewBug("");
+    }
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("bug");
       }
-      if (key == 13) { // 13 is enter
-        if (e.shiftKey == true) {
-          addNewAnnotationWithScreenShot("bug");
-        }
-      }
-    }, false);
+    }
   }, false);
+}, false);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var newIdeaDescription = document.getElementById("newIdeaDescription");
-    newIdeaDescription.addEventListener("keypress", function (e) {
-      var key = e.which || e.keyCode;
-      if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-        addNewIdea("");
+document.addEventListener('DOMContentLoaded', function () {
+  var newIdeaDescription = document.getElementById("newIdeaDescription");
+  newIdeaDescription.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      addNewIdea("");
+    }
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("idea");
       }
-      if (key == 13) { // 13 is enter
-        if (e.shiftKey == true) {
-          addNewAnnotationWithScreenShot("idea");
-        }
-      }
-    }, false);
+    }
   }, false);
+}, false);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var newNoteDescription = document.getElementById("newNoteDescription");
-    newNoteDescription.addEventListener("keypress", function (e) {
-      var key = e.which || e.keyCode;
-      if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-        addNewNote("");
+document.addEventListener('DOMContentLoaded', function () {
+  var newNoteDescription = document.getElementById("newNoteDescription");
+  newNoteDescription.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      addNewNote("");
+    }
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("note");
       }
-      if (key == 13) { // 13 is enter
-        if (e.shiftKey == true) {
-          addNewAnnotationWithScreenShot("note");
-        }
-      }
-    }, false);
+    }
   }, false);
+}, false);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var newQuestionDescription = document.getElementById("newQuestionDescription");
-    newQuestionDescription.addEventListener("keypress", function (e) {
-      var key = e.which || e.keyCode;
-      if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-        addNewQuestion("");
+document.addEventListener('DOMContentLoaded', function () {
+  var newQuestionDescription = document.getElementById("newQuestionDescription");
+  newQuestionDescription.addEventListener("keypress", function (e) {
+    var key = e.which || e.keyCode;
+    if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+      addNewQuestion("");
+    }
+    if (key == 13) { // 13 is enter
+      if (e.shiftKey == true) {
+        addNewAnnotationWithScreenShot("question");
       }
-      if (key == 13) { // 13 is enter
-        if (e.shiftKey == true) {
-          addNewAnnotationWithScreenShot("question");
-        }
-      }
-    }, false);
+    }
   }, false);
+}, false);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var resetBtn = document.getElementById('resetBtn');
-    resetBtn.addEventListener('click', function () {
-      var background = chrome.extension.getBackgroundPage();
-      var session = background.session;
-      if (session.getAnnotations().length == 0) return;
+document.addEventListener('DOMContentLoaded', function () {
+  var resetBtn = document.getElementById('resetBtn');
+  resetBtn.addEventListener('click', function () {
+    chrome.runtime.sendMessage({ type: "getSessionData" }, function (response) {
+      if (response.annotationsCount === 0) return;
 
       var resetConfirmation = document.getElementById('resetConfirmation');
       $("#resetConfirmation").fadeIn();
-    }, false);
+    });
   }, false);
+}, false);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var resetBtnNo = document.getElementById('resetNo');
-    resetBtnNo.addEventListener('click', function () {
-      $("#resetConfirmation").slideUp();
-    });
+document.addEventListener('DOMContentLoaded', function () {
+  var resetBtnNo = document.getElementById('resetNo');
+  resetBtnNo.addEventListener('click', function () {
+    $("#resetConfirmation").slideUp();
   });
+});
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var resetBtnNo = document.getElementById('resetYes');
-    resetBtnNo.addEventListener('click', function () {
-      var background = chrome.extension.getBackgroundPage();
-      var session = background.session;
-      if (session.getAnnotations().length == 0) return;
-      chrome.extension.sendMessage({
-        type: "clearSession"
-      }, function (response) {
-        $("#bugCounter").html("");
-        $("#ideaCounter").html("");
-        $("#noteCounter").html("");
-        $("#questionCounter").html("");
-      });
-      $("#resetConfirmation").slideUp();
+document.addEventListener('DOMContentLoaded', function () {
+  var resetBtnNo = document.getElementById('resetYes');
+  resetBtnNo.addEventListener('click', function () {
+    chrome.runtime.sendMessage({ type: "clearSession" }, function (response) {
+      $("#bugCounter").html("");
+      $("#ideaCounter").html("");
+      $("#noteCounter").html("");
+      $("#questionCounter").html("");
     });
+    $("#resetConfirmation").slideUp();
   });
+});

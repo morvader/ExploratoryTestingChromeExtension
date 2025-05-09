@@ -1,45 +1,34 @@
-function ExportSessionCSV(session) {
-    this.session = session;
+export class ExportSessionCSV {
+    constructor(session) {
+        this.session = session;
+    }
+
+    getCSVData() {
+        let csvData = "TimeStamp,Type,Name,URL\n";
+        const annotations = this.session.getAnnotations();
+
+        for (let i = 0; i < annotations.length; i++) {
+            const annotation = annotations[i];
+            const timeStamp = annotation.getTimeStamp().toString('dd-MM-yyyy HH:mm');
+            const type = annotation.getType();
+            const name = annotation.getName();
+            const url = annotation.getURL();
+
+            csvData += `${timeStamp},${type},${name},${url}\n`;
+        }
+
+        return csvData;
+    }
+
+    donwloadCSVFile() {
+        var pom = document.createElement('a');
+        var csvContent = this.getCSVData(); //here we load our csv data
+        var blob = new Blob([csvContent], {
+            type: 'text/csv;charset=utf-8;'
+        });
+        var url = URL.createObjectURL(blob);
+        pom.href = url;
+        pom.setAttribute('download', 'foo.csv');
+        pom.click();
+    }
 }
-
-ExportSessionCSV.prototype.getCSVData = function() {
-    var dateFormatOptions = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: 'numeric',
-        minute: 'numeric'
-    };
-
-    var annotations = this.session.getAnnotations();
-
-    var csvContent = "";
-    csvContent += this.getCSVHeader() + "\n";
-
-    annotations.forEach(function(annotation) {
-
-        dateFormat = annotation.getTimeStamp().toString('dd-MM-yyyy HH:mm');
-        //csvData.push([annotation.getTimeStamp().toLocaleDateString("en-GB",dateFormatOptions), annotation.constructor.name, annotation.getName(),annotation.getURL()])
-        dataString = dateFormat + "," + annotation.constructor.name + "," + annotation.getName() + "," + annotation.getURL();
-
-        csvContent += dataString + "\n";
-    });
-
-    return csvContent;
-};
-
-ExportSessionCSV.prototype.getCSVHeader = function() {
-    return "TimeStamp,Type,Name,URL";
-};
-
-ExportSessionCSV.prototype.donwloadCSVFile = function() {
-    var pom = document.createElement('a');
-    var csvContent = actualCSV; //here we load our csv data
-    var blob = new Blob([csvContent], {
-        type: 'text/csv;charset=utf-8;'
-    });
-    var url = URL.createObjectURL(blob);
-    pom.href = url;
-    pom.setAttribute('download', 'foo.csv');
-    pom.click();
-};
