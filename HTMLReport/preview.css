@@ -1,73 +1,198 @@
-body{
-    min-width: 40%;
-    max-width: 100%; 
-}
-#sessionInfo {
-    font-size: 0.7rem;
-}
-#sessionInfo ul li span {
-    font-weight: bold;
-    display: block;
-    font-size: 0.8rem;
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
 }
 
-a.canvasjs-chart-credit {
-    display: none;
+#report {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#export{
-    float: right;
-    clear:both;
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-img{
-    padding:2px;
-    vertical-align: top;
+.session-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
 }
 
-#sessionActivityTable.tr {
-    vertical-align: top;
+.session-info h2 {
+    color: #444;
+    margin-top: 0;
 }
 
-.annotationDescription, .annotationUrl {
-    font-size: 0.7rem;
-    vertical-align: top;
-    white-space: pre; 
+.session-info p {
+    margin: 10px 0;
 }
 
-.updatethVal{
+/* Estilos de la tabla */
+.table {
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
-.deleteBtn {
-    width: 13px;
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
-.deleteBtn:hover{ 
-    cursor:pointer
-}
-#cancelDelete{
-    margin-right: 8px;
-    margin-left: 8px;
-}
-#divOverlay { 
-    display: none; 
-    background-color:lightcoral; 
-    text-align:center;
-    position:absolute; 
-    z-index:10000;
-    opacity:0.97; 
-}
-#deleteDialog{
-    margin-top: 8px;
-}
-#deleteDialog span{
+
+.table th {
+    background-color: #f8f9fa;
     font-weight: bold;
 }
-#preview{
-	position:absolute;
-	border:1px solid #ccc;
-	background:#333;
-	padding:5px;
-	display:none;
-    color:#fff;
+
+/* Estilos para los iconos de anotaciones */
+.annotation-icon {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
 }
-#imgPreview{max-width: 400px;}
+
+/* Estilos para las celdas de la tabla */
+.annotationDescription {
+    max-width: 300px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.annotationUrl {
+    max-width: 200px;
+    word-break: break-all;
+    font-size: 0.9em;
+    color: #0066cc;
+}
+
+.screenshot-cell {
+    width: 50px;
+    text-align: center;
+    position: relative;
+}
+
+/* Estilos para las imágenes */
+.previewImage {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.previewImage:hover {
+    transform: scale(1.1);
+}
+
+.previewImage:hover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 150px;
+    background-image: var(--preview-src);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* Estilos para el botón de eliminar */
+.deleteBtn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.deleteBtn:hover {
+    color: #c82333;
+}
+
+/* Estilos para el overlay de eliminación */
+#divOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+#deleteDialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#deleteDialog span {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.cancelButton,
+.actionButton {
+    padding: 8px 16px;
+    margin: 0 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+}
+
+.actionButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Estilos para la vista previa de imágenes */
+#preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    cursor: pointer;
+}
+
+#imgPreview {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}

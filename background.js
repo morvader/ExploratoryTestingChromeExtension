@@ -120,6 +120,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 annotationsCount: session.getAnnotations().length
             });
             break;
+        case "getFullSession":
+            if (!session) {
+                sendResponse(null);
+                return true;
+            }
+            sendResponse({
+                startDateTime: session.StartDateTime,
+                browserInfo: {
+                    browser: session.BrowserInfo.browser || "Chrome",
+                    browserVersion: session.BrowserInfo.browserVersion || chrome.runtime.getManifest().version,
+                    os: session.BrowserInfo.os || navigator.platform,
+                    osVersion: session.BrowserInfo.osVersion || navigator.userAgent,
+                    cookies: session.BrowserInfo.cookies || navigator.cookieEnabled,
+                    flashVersion: session.BrowserInfo.flashVersion || "N/A"
+                },
+                annotations: session.annotations.map(annotation => ({
+                    type: annotation.constructor.name,
+                    name: annotation.name,
+                    url: annotation.url,
+                    timestamp: annotation.timestamp,
+                    imageURL: annotation.imageURL
+                }))
+            });
+            break;
     }
     return true; // Mantener el puerto de mensajes abierto para respuestas asíncronas
 });
@@ -133,24 +157,25 @@ async function addAnnotation(type, name, imageURL) {
         chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
             try {
                 const currentUrl = tabs[0].url;
-                const now = Date.now();
+                const now = new Date().getTime();
 
+                let newAnnotation;
                 switch (type) {
                     case "Bug":
-                        var newBug = new Bug(name, currentUrl, now, imageURL);
-                        session.addBug(newBug);
+                        newAnnotation = new Bug(name, currentUrl, now, imageURL);
+                        session.addBug(newAnnotation);
                         break;
                     case "Note":
-                        var newNote = new Note(name, currentUrl, now, imageURL);
-                        session.addNote(newNote);
+                        newAnnotation = new Note(name, currentUrl, now, imageURL);
+                        session.addNote(newAnnotation);
                         break;
                     case "Idea":
-                        var newIdea = new Idea(name, currentUrl, now, imageURL);
-                        session.addIdea(newIdea);
+                        newAnnotation = new Idea(name, currentUrl, now, imageURL);
+                        session.addIdea(newAnnotation);
                         break;
                     case "Question":
-                        var newQuestion = new Question(name, currentUrl, now, imageURL);
-                        session.addQuestion(newQuestion);
+                        newAnnotation = new Question(name, currentUrl, now, imageURL);
+                        session.addQuestion(newAnnotation);
                         break;
                 }
                 saveSession().then(resolve).catch(reject);

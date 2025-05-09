@@ -1,67 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
 <head>
-    <title>Exploratory Session Report</title>
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <title>Exploratory Testing Session Report</title>
     <link rel="stylesheet" href="preview.css">
-    <!--<link rel="stylesheet" href="../css/popUp.css">-->
-
-    <script src="loadData.js" type="text/javascript"></script>
-    <script src="../lib/tablefilter_all_min.js" type="text/javascript"></script>
-    <script src="../src/Session.js" type="text/javascript"></script>
-    <script src="../src/Annotation.js" type="text/javascript"></script>
-    <script src="../src/ExportSessionHTML.js" type="text/javascript"></script>
-
-    <script src="../lib/date.js" type="text/javascript"></script>
-    <script src="../lib/browserInfo.js" type="text/javascript"></script>
-    <script src="../lib/canvasjs.min.js" type="text/javascript"></script>
-    <script src="../js/jquery-1.11.3.min.js" type="text/javascript"></script>
-
+    <script type="module" src="preview.js"></script>
 </head>
+
 <body>
-
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h1 class="display-4">Exploratory Session Report</h1>
+    <div id="report">
+        <h1>Exploratory Testing Session Report</h1>
+        <div id="sessionInfo"></div>
+        <div id="sessionResults">
+            <table id="sessionActivityTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>URL</th>
+                        <th>Time</th>
+                        <th>Screenshot</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="annotationsTableBody"></tbody>
+            </table>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-3">
-            <div id="sessionData">
-                <div id="sessionInfo">
-                    <ul class="list-group">
-                    <li class="list-group-item" id="sessionDate">Date</li>
-                    <li class="list-group-item" id="browserInfo">Browser</li>
-                    <li class="list-group-item" id="osInfo">OS</li>
-                    <li class="list-group-item" id="miscInfo">MiscInfo</li>
-
-                </div>
-                <div id="graph">
-                    <div id="canvasHolder">
-                        <span>Graph</span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="col-9">
-            <div id="sessionResults">
-                <label>Data Table</label>
-            </div>
-
+    <div id="divOverlay">
+        <div id='deleteDialog'>
+            <span>Delete this annotation?</span>
+            <button id="cancelDelete" class="cancelButton" title="Cancel deletion">No</button>
+            <button id="deleteYes" class="actionButton" title="Delete annotation">Yes</button>
         </div>
     </div>
-    
-</div>
-<div id="divOverlay">
-    <div id='deleteDialog'>
-        <span>Delete this annotation?</span>
-        <button id="cancelDelete" class="cancelButton" title="Cancel deletion">No</button>
-        <button id="deleteYes" class="actionButton" title="Delete annotation">Yes</button>
-    </div>
-</div>
 </body>
+
 </html>

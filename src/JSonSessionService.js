@@ -25,13 +25,13 @@ export class JSonSessionService {
 
     getAnnotaionFromType(annotation) {
         const name = annotation.name;
-        const URL = annotation.URL;
-        const timeStamp = new Date(annotation.timeStamp);
+        const url = annotation.url;
+        const timestamp = new Date(annotation.timestamp);
         const image = annotation.imageURL;
 
-        if (annotation.type == "Bug") return new Bug(name, URL, timeStamp, image);
-        if (annotation.type == "Note") return new Note(name, URL, timeStamp, image);
-        if (annotation.type == "Idea") return new Idea(name, URL, timeStamp, image);
-        if (annotation.type == "Question") return new Question(name, URL, timeStamp, image);
+        if (annotation.type == "Bug") return new Bug(name, url, timestamp, image);
+        if (annotation.type == "Note") return new Note(name, url, timestamp, image);
+        if (annotation.type == "Idea") return new Idea(name, url, timestamp, image);
+        if (annotation.type == "Question") return new Question(name, url, timestamp, image);
     }
 }

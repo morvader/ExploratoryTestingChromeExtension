@@ -3,8 +3,8 @@ export class Annotation {
     constructor(name, url, timestamp, imageURL) {
         this.type = "";
         this.name = name;
-        this.URL = url;
-        this.timeStamp = timestamp;
+        this.url = url;
+        this.timestamp = timestamp;
         this.imageURL = imageURL;
     }
 
@@ -17,11 +17,11 @@ export class Annotation {
     }
 
     getURL() {
-        return this.URL;
+        return this.url;
     }
 
     getTimeStamp() {
-        return new Date(this.timeStamp);
+        return new Date(this.timestamp);
     }
 
     setImageURL(imageURL) {
