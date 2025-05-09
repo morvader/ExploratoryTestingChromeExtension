@@ -69,18 +69,58 @@ function displaySessionInfo(session) {
             <p><strong>Cookies:</strong> ${browserInfo.cookies ? 'Enabled' : 'Disabled'}</p>
         </div>
     `;
+
+    // Crear la gráfica circular
+    createAnnotationsChart(session);
+}
+
+function createAnnotationsChart(session) {
+    const bugs = session.getBugs().length;
+    const notes = session.getNotes().length;
+    const ideas = session.getIdeas().length;
+    const questions = session.getQuestions().length;
+
+    const ctx = document.getElementById('annotationsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Bugs', 'Notes', 'Ideas', 'Questions'],
+            datasets: [{
+                data: [bugs, notes, ideas, questions],
+                backgroundColor: [
+                    '#dc3545', // Rojo para bugs
+                    '#28a745', // Verde para notas
+                    '#ffc107', // Amarillo para ideas
+                    '#17a2b8'  // Azul para preguntas
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Annotations Distribution'
+                }
+            }
+        }
+    });
 }
 
 function getAnnotationIcon(type) {
     switch (type) {
         case "Bug":
-            return '<img src="../iamges/bug.svg" alt="Bug" class="annotation-icon">';
+            return '<img src="../images/bug.svg" alt="Bug" class="annotation-icon">';
         case "Note":
-            return '<img src="../iamges/note.svg" alt="Note" class="annotation-icon">';
+            return '<img src="../images/note.svg" alt="Note" class="annotation-icon">';
         case "Idea":
-            return '<img src="../iamges/light-bulb.svg" alt="Idea" class="annotation-icon">';
+            return '<img src="../images/light-bulb.svg" alt="Idea" class="annotation-icon">';
         case "Question":
-            return '<img src="../iamges/question.svg" alt="Question" class="annotation-icon">';
+            return '<img src="../images/question.svg" alt="Question" class="annotation-icon">';
         default:
             return type;
     }

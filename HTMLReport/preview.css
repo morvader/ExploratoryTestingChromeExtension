@@ -96,14 +96,14 @@ h1 {
     transform: scale(1.1);
 }
 
-.previewImage:hover::after {
+.previewImage:hover::before {
     content: '';
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 150px;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 200px;
     background-image: var(--preview-src);
     background-size: contain;
     background-repeat: no-repeat;
@@ -112,6 +112,7 @@ h1 {
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    pointer-events: none;
 }
 
 /* Estilos para el botón de eliminar */
