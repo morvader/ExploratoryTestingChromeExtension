@@ -12,9 +12,21 @@
 <body>
     <div id="report">
         <h1>Exploratory Testing Session Report</h1>
-        <div id="sessionInfo"></div>
-        <div id="chartContainer" style="width: 300px; margin: 20px auto;">
-            <canvas id="annotationsChart"></canvas>
+        <div class="session-info-container">
+            <div id="sessionInfo"></div>
+            <div id="chartContainer">
+                <canvas id="annotationsChart"></canvas>
+            </div>
+        </div>
+        <div class="filter-container">
+            <span class="filter-label">Filter by type:</span>
+            <div class="filter-buttons">
+                <button class="filter-button active" data-type="all">All</button>
+                <button class="filter-button" data-type="Bug">Bugs</button>
+                <button class="filter-button" data-type="Note">Notes</button>
+                <button class="filter-button" data-type="Idea">Ideas</button>
+                <button class="filter-button" data-type="Question">Questions</button>
+            </div>
         </div>
         <div id="sessionResults">
             <table id="sessionActivityTable" class="table">
@@ -38,6 +50,9 @@
             <button id="cancelDelete" class="cancelButton" title="Cancel deletion">No</button>
             <button id="deleteYes" class="actionButton" title="Delete annotation">Yes</button>
         </div>
+    </div>
+    <div id="imagePreview" class="image-preview">
+        <img src="" alt="Preview">
     </div>
 </body>
 

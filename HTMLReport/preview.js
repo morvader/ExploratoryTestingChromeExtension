@@ -3,6 +3,7 @@ import { Bug, Note, Idea, Question } from '../src/Annotation.js';
 
 let currentSession = null;
 let annotationToDelete = null;
+let currentFilter = 'all';
 
 // Función para cargar los datos de la sesión
 async function loadData() {
@@ -49,6 +50,7 @@ async function loadData() {
         displaySessionInfo(currentSession);
         displayAnnotationsTable(currentSession);
         setupDeleteListeners();
+        setupFilterListeners();
     } catch (error) {
         console.error('Error loading data:', error);
         document.getElementById('report').innerHTML = `<h2>Error loading data: ${error.message}</h2>`;
@@ -130,42 +132,44 @@ function displayAnnotationsTable(session) {
     const tableBody = document.getElementById('annotationsTableBody');
     const annotations = session.getAnnotations();
 
-    console.log('Annotations:', annotations); // Debug log
+    console.log('Annotations:', annotations);
 
-    tableBody.innerHTML = annotations.map((annotation, index) => {
-        console.log(`Annotation ${index}:`, {
-            type: annotation.constructor.name,
-            name: annotation.name,
-            url: annotation.url,
-            timestamp: annotation.timestamp,
-            imageURL: annotation.imageURL
-        });
+    tableBody.innerHTML = annotations
+        .filter(annotation => currentFilter === 'all' || annotation.constructor.name === currentFilter)
+        .map((annotation, index) => {
+            console.log(`Annotation ${index}:`, {
+                type: annotation.constructor.name,
+                name: annotation.name,
+                url: annotation.url,
+                timestamp: annotation.timestamp,
+                imageURL: annotation.imageURL
+            });
 
-        const row = `
-        <tr>
-            <td>${getAnnotationIcon(annotation.constructor.name)}</td>
-            <td class="annotationDescription">${annotation.name}</td>
-            <td class="annotationUrl">${annotation.url || 'N/A'}</td>
-            <td>${annotation.timestamp ? new Date(annotation.timestamp).toLocaleString() : 'N/A'}</td>
-            <td class="screenshot-cell">
-                ${annotation.imageURL ?
-                `<img src="${annotation.imageURL}" 
-                         class="previewImage" 
-                         data-index="${index}"
-                         style="--preview-src: url('${annotation.imageURL}')">`
-                : ''}
-            </td>
-            <td>
-                <button class="deleteBtn" data-index="${index}" title="Delete annotation">×</button>
-            </td>
-        </tr>`;
-        return row;
-    }).join('');
+            const row = `
+            <tr>
+                <td>${getAnnotationIcon(annotation.constructor.name)}</td>
+                <td class="annotationDescription">${annotation.name}</td>
+                <td class="annotationUrl">${annotation.url || 'N/A'}</td>
+                <td>${annotation.timestamp ? new Date(annotation.timestamp).toLocaleString() : 'N/A'}</td>
+                <td class="screenshot-cell">
+                    ${annotation.imageURL ?
+                    `<img src="${annotation.imageURL}" 
+                             class="previewImage" 
+                             data-index="${index}"
+                             data-preview="${annotation.imageURL}">`
+                    : ''}
+                </td>
+                <td>
+                    <button class="deleteBtn" data-index="${index}" title="Delete annotation">×</button>
+                </td>
+            </tr>`;
+            return row;
+        }).join('');
 
     // Añadir listeners para las imágenes de vista previa
     document.querySelectorAll('.previewImage').forEach(img => {
         img.addEventListener('click', function () {
-            showImagePreview(this.src);
+            showImagePreview(this.dataset.preview);
         });
     });
 }
@@ -203,14 +207,31 @@ function setupDeleteListeners() {
 }
 
 function showImagePreview(src) {
-    const preview = document.createElement('div');
-    preview.id = 'preview';
-    preview.innerHTML = `<img id="imgPreview" src="${src}">`;
-    document.body.appendChild(preview);
-    preview.style.display = 'block';
+    const preview = document.getElementById('imagePreview');
+    const previewImg = preview.querySelector('img');
+    previewImg.src = src;
+    preview.classList.add('active');
 
-    preview.addEventListener('click', function () {
-        document.body.removeChild(preview);
+    // Cerrar al hacer clic en cualquier parte
+    preview.addEventListener('click', function closePreview() {
+        preview.classList.remove('active');
+        preview.removeEventListener('click', closePreview);
+    });
+}
+
+function setupFilterListeners() {
+    document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', function () {
+            // Actualizar botones
+            document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // Actualizar filtro
+            currentFilter = this.dataset.type;
+
+            // Actualizar tabla
+            displayAnnotationsTable(currentSession);
+        });
     });
 }
 
