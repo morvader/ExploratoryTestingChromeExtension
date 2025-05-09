@@ -160,7 +160,7 @@ function addNewAnnotationWithScreenShot(type) {
 
 /* Export to CSV  */
 function exportSessionCSV() {
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "exportSessionCSV"
   });
 };
@@ -178,7 +178,7 @@ function exportListeners() {
 
 /* Export to JSon */
 function exportSessionJSon() {
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "exportSessionJSon"
   });
 };
@@ -196,7 +196,7 @@ function importSessionJSon(evt) {
 function onReaderLoad(event) {
   clearAllReports();
   var importSession = event.target.result;
-  chrome.extension.sendMessage({
+  chrome.runtime.sendMessage({
     type: "importSessionJSon",
     jSonSession: importSession
   }, function (response) {

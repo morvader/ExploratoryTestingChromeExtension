@@ -204,22 +204,26 @@ function exportSessionCSV() {
     var csvData = exportService.getCSVData();
 
     var browserInfo = session.getBrowserInfo();
-
     var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
 
-    //Take the timestamp of the first Annotation
-    var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
+    // Formatear la fecha correctamente
+    const date = new Date(session.getStartDateTime());
+    const startDateTime = date.getFullYear() +
+        ('0' + (date.getMonth() + 1)).slice(-2) +
+        ('0' + date.getDate()).slice(-2) + '_' +
+        ('0' + date.getHours()).slice(-2) +
+        ('0' + date.getMinutes()).slice(-2);
 
     var fileName = "ExploratorySession_" + browserInfoString + "_" + startDateTime + ".csv";
 
-    var pom = document.createElement('a');
-    var blob = new Blob([csvData], {
-        type: 'text/csv;charset=utf-8;'
+    // Crear data URL
+    const dataUrl = 'data:text/csv;charset=utf-8;base64,' + btoa(csvData);
+
+    chrome.downloads.download({
+        url: dataUrl,
+        filename: fileName,
+        saveAs: true
     });
-    var url = URL.createObjectURL(blob);
-    pom.href = url;
-    pom.setAttribute('download', fileName);
-    pom.click();
 
     return true;
 }
@@ -227,27 +231,30 @@ function exportSessionCSV() {
 function exportSessionJSon() {
     if (session.getAnnotations().length == 0) return false;
 
-    debugger;
     var exportJSonService = new JSonSessionService();
     var jsonData = exportJSonService.getJSon(session);
 
     var browserInfo = session.getBrowserInfo();
-
     var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
 
-    //Take the timestamp of the first Annotation
-    var startDateTime = session.getStartDateTime().toString('yyyyMMdd_HHmm');
+    // Formatear la fecha correctamente
+    const date = new Date(session.getStartDateTime());
+    const startDateTime = date.getFullYear() +
+        ('0' + (date.getMonth() + 1)).slice(-2) +
+        ('0' + date.getDate()).slice(-2) + '_' +
+        ('0' + date.getHours()).slice(-2) +
+        ('0' + date.getMinutes()).slice(-2);
 
     var fileName = "ExploratorySession_" + browserInfoString + "_" + startDateTime + ".json";
 
-    var pom = document.createElement('a');
-    var blob = new Blob([jsonData], {
-        type: 'application/json'
+    // Crear data URL
+    const dataUrl = 'data:application/json;base64,' + btoa(jsonData);
+
+    chrome.downloads.download({
+        url: dataUrl,
+        filename: fileName,
+        saveAs: true
     });
-    var url = URL.createObjectURL(blob);
-    pom.href = url;
-    pom.setAttribute('download', fileName);
-    pom.click();
 
     return true;
 }
