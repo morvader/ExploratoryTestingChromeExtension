@@ -102,8 +102,8 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    height: 200px;
+    width: 80vw;
+    height: 80vh;
     background-image: var(--preview-src);
     background-size: contain;
     background-repeat: no-repeat;
@@ -196,4 +196,121 @@ h1 {
     max-width: 90%;
     max-height: 90%;
     object-fit: contain;
+}
+
+/* Estilos para la visualización de la distribución */
+.chart-container {
+    width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chart-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.chart-color.bug {
+    background-color: #dc3545;
+}
+
+.chart-color.note {
+    background-color: #28a745;
+}
+
+.chart-color.idea {
+    background-color: #ffc107;
+}
+
+.chart-color.question {
+    background-color: #17a2b8;
+}
+
+.chart-label {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.chart-count {
+    background-color: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Layout para la información de la sesión y la gráfica */
+.session-info-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.session-info {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+#chartContainer {
+    width: 300px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+/* Estilos para el filtro */
+.filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-label {
+    font-weight: bold;
+    color: #444;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.filter-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-button:hover {
+    background-color: #f8f9fa;
+}
+
+.filter-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
 }
