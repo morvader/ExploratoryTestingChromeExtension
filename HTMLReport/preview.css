@@ -336,6 +336,7 @@ h1 {
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .filter-label {
@@ -346,6 +347,7 @@ h1 {
 .filter-buttons {
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 .filter-button {
@@ -365,4 +367,29 @@ h1 {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
+}
+
+.download-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-left: auto;
+}
+
+.download-button:hover {
+    background-color: #218838;
+}
+
+.download-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
 }

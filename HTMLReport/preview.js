@@ -291,6 +291,339 @@ function setupFilterListeners() {
             displayAnnotationsTable(currentSession);
         });
     });
+
+    // Añadir listener para el botón de descarga
+    document.getElementById('downloadReportBtn').addEventListener('click', downloadCompleteReport);
+}
+
+function downloadCompleteReport() {
+    // Crear una copia del contenido actual
+    const reportContent = document.getElementById('report').cloneNode(true);
+
+    // Eliminar el botón de descarga del reporte
+    const downloadBtn = reportContent.querySelector('#downloadReportBtn');
+    if (downloadBtn) {
+        downloadBtn.parentElement.remove();
+    }
+
+    // Eliminar la columna de eliminación
+    const table = reportContent.querySelector('table');
+    if (table) {
+        // Eliminar la columna del encabezado
+        const headerRow = table.querySelector('thead tr');
+        if (headerRow) {
+            const lastHeaderCell = headerRow.lastElementChild;
+            if (lastHeaderCell) {
+                lastHeaderCell.remove();
+            }
+        }
+
+        // Eliminar la columna de cada fila
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const lastCell = row.lastElementChild;
+            if (lastCell) {
+                lastCell.remove();
+            }
+        });
+    }
+
+    // Asegurar que los filtros estén presentes
+    const reportDiv = reportContent.querySelector('#report');
+    if (reportDiv) {
+        // Crear el contenedor de filtros si no existe
+        let filterContainer = reportDiv.querySelector('.filter-container');
+        if (!filterContainer) {
+            filterContainer = document.createElement('div');
+            filterContainer.className = 'filter-container';
+            reportDiv.insertBefore(filterContainer, reportDiv.firstChild);
+        }
+
+        // Añadir los botones de filtro
+        filterContainer.innerHTML = `
+            <div class="filter-buttons">
+                <button class="filter-button active" data-type="all">all</button>
+                <button class="filter-button" data-type="Bug">Bug</button>
+                <button class="filter-button" data-type="Note">Note</button>
+                <button class="filter-button" data-type="Idea">Idea</button>
+                <button class="filter-button" data-type="Question">Question</button>
+            </div>
+        `;
+    }
+
+    // Convertir las imágenes a base64
+    const images = reportContent.querySelectorAll('.previewImage');
+    const imagePromises = Array.from(images).map(img => {
+        return new Promise((resolve) => {
+            if (img.src) {
+                const tempImg = new Image();
+                tempImg.crossOrigin = 'Anonymous';
+                tempImg.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tempImg.width;
+                    canvas.height = tempImg.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempImg, 0, 0);
+                    img.src = canvas.toDataURL('image/png');
+                    resolve();
+                };
+                tempImg.onerror = () => resolve();
+                tempImg.src = img.src;
+            } else {
+                resolve();
+            }
+        });
+    });
+
+    // Esperar a que todas las imágenes se conviertan
+    Promise.all(imagePromises).then(() => {
+        // Convertir los SVG a base64
+        const svgPromises = {
+            Bug: fetch('../images/bug.svg').then(r => r.text()),
+            Note: fetch('../images/note.svg').then(r => r.text()),
+            Idea: fetch('../images/light-bulb.svg').then(r => r.text()),
+            Question: fetch('../images/question.svg').then(r => r.text())
+        };
+
+        Promise.all(Object.values(svgPromises)).then(svgContents => {
+            const icons = {
+                Bug: `data:image/svg+xml;base64,${btoa(svgContents[0])}`,
+                Note: `data:image/svg+xml;base64,${btoa(svgContents[1])}`,
+                Idea: `data:image/svg+xml;base64,${btoa(svgContents[2])}`,
+                Question: `data:image/svg+xml;base64,${btoa(svgContents[3])}`
+            };
+
+            // Reemplazar las referencias a los iconos en el HTML
+            const iconElements = reportContent.querySelectorAll('.annotation-icon');
+            iconElements.forEach(icon => {
+                const type = icon.alt;
+                if (icons[type]) {
+                    icon.outerHTML = `<img src="${icons[type]}" alt="${type}" class="annotation-icon" data-type="${type}">`;
+                }
+            });
+
+            // Crear el HTML completo
+            const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Exploratory Testing Session Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        ${getStyles()}
+    </style>
+</head>
+<body>
+    ${reportContent.outerHTML}
+    <div id="imagePreview" class="image-preview">
+        <img src="" alt="Preview">
+    </div>
+    <div id="imageHoverPreview" class="image-hover-preview">
+        <img src="" alt="Hover Preview">
+    </div>
+    <script>
+        // Datos de la sesión
+        const sessionData = ${JSON.stringify({
+                startDateTime: currentSession.getStartDateTime(),
+                browserInfo: currentSession.getBrowserInfo(),
+                annotations: currentSession.getAnnotations().map(a => ({
+                    type: a.constructor.name,
+                    name: a.name,
+                    url: a.url,
+                    timestamp: a.timestamp,
+                    imageURL: a.imageURL
+                }))
+            })};
+
+        // Función para inicializar la gráfica
+        function initChart() {
+            const ctx = document.getElementById('annotationsChart').getContext('2d');
+            const bugs = sessionData.annotations.filter(a => a.type === 'Bug').length;
+            const notes = sessionData.annotations.filter(a => a.type === 'Note').length;
+            const ideas = sessionData.annotations.filter(a => a.type === 'Idea').length;
+            const questions = sessionData.annotations.filter(a => a.type === 'Question').length;
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Bugs', 'Notes', 'Ideas', 'Questions'],
+                    datasets: [{
+                        data: [bugs, notes, ideas, questions],
+                        backgroundColor: [
+                            '#dc3545',
+                            '#28a745',
+                            '#ffc107',
+                            '#17a2b8'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Annotations Distribution'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para manejar los filtros
+        function setupFilters() {
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Actualizar estado de los botones
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aplicar filtro
+                    const filter = this.dataset.type;
+                    filterAnnotations(filter);
+                });
+            });
+        }
+
+        // Función para filtrar anotaciones
+        function filterAnnotations(filter) {
+            const rows = document.querySelectorAll('#annotationsTableBody tr');
+            rows.forEach(row => {
+                const icon = row.querySelector('.annotation-icon');
+                if (!icon) return;
+                
+                const type = icon.dataset.type;
+                if (filter === 'all' || type === filter) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Función para mostrar la vista previa completa
+        function showImagePreview(src) {
+            const preview = document.getElementById('imagePreview');
+            if (!preview) return;
+            
+            const previewImg = preview.querySelector('img');
+            if (!previewImg) return;
+
+            previewImg.src = src;
+            preview.classList.add('active');
+
+            const closePreview = function() {
+                preview.classList.remove('active');
+                preview.removeEventListener('click', closePreview);
+            };
+
+            preview.addEventListener('click', closePreview);
+            previewImg.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Función para manejar el hover de imágenes
+        function setupImageHover() {
+            document.querySelectorAll('.previewImage').forEach(img => {
+                // Click para vista completa
+                img.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showImagePreview(this.src);
+                });
+
+                // Hover para preview
+                img.addEventListener('mouseenter', function(e) {
+                    const preview = document.getElementById('imageHoverPreview');
+                    if (!preview) return;
+
+                    const previewImg = preview.querySelector('img');
+                    if (!previewImg) return;
+
+                    previewImg.src = this.src;
+                    preview.classList.add('active');
+                    updateHoverPosition(e);
+                });
+
+                img.addEventListener('mousemove', updateHoverPosition);
+                img.addEventListener('mouseleave', function() {
+                    const preview = document.getElementById('imageHoverPreview');
+                    if (preview) {
+                        preview.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        function updateHoverPosition(event) {
+            const preview = document.getElementById('imageHoverPreview');
+            if (!preview || !preview.classList.contains('active')) return;
+
+            const offset = 15;
+            const previewWidth = preview.offsetWidth;
+            const previewHeight = preview.offsetHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            let left = event.clientX + offset;
+            let top = event.clientY + offset;
+
+            if (left + previewWidth > windowWidth) {
+                left = event.clientX - previewWidth - offset;
+            }
+            if (top + previewHeight > windowHeight) {
+                top = event.clientY - previewHeight - offset;
+            }
+
+            preview.style.left = left + 'px';
+            preview.style.top = top + 'px';
+        }
+
+        // Inicializar todo cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            setupFilters();
+            setupImageHover();
+        });
+    </script>
+</body>
+</html>`;
+
+            // Crear el blob y descargar
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ExploratoryTestingReport_${new Date().toISOString().slice(0, 10)}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    });
+}
+
+function getStyles() {
+    // Obtener todos los estilos del documento
+    const styles = Array.from(document.styleSheets)
+        .map(sheet => {
+            try {
+                return Array.from(sheet.cssRules)
+                    .map(rule => rule.cssText)
+                    .join('\n');
+            } catch (e) {
+                // Ignorar errores de CORS
+                return '';
+            }
+        })
+        .join('\n');
+
+    return styles;
 }
 
 // Cargar los datos cuando el documento esté listo
