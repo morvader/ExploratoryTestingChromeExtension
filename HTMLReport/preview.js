@@ -166,12 +166,65 @@ function displayAnnotationsTable(session) {
             return row;
         }).join('');
 
-    // Añadir listeners para las imágenes de vista previa
+    // Añadir listeners para las imágenes
     document.querySelectorAll('.previewImage').forEach(img => {
+        // Click para vista completa
         img.addEventListener('click', function () {
             showImagePreview(this.dataset.preview);
         });
+
+        // Hover para preview
+        img.addEventListener('mouseenter', function (e) {
+            showHoverPreview(this.dataset.preview, e);
+        });
+
+        img.addEventListener('mousemove', function (e) {
+            updateHoverPreviewPosition(e);
+        });
+
+        img.addEventListener('mouseleave', function () {
+            hideHoverPreview();
+        });
     });
+}
+
+function showHoverPreview(src, event) {
+    const preview = document.getElementById('imageHoverPreview');
+    const previewImg = preview.querySelector('img');
+    previewImg.src = src;
+    preview.classList.add('active');
+    updateHoverPreviewPosition(event);
+}
+
+function updateHoverPreviewPosition(event) {
+    const preview = document.getElementById('imageHoverPreview');
+    if (!preview.classList.contains('active')) return;
+
+    const offset = 15; // Distancia del cursor al preview
+    const previewWidth = preview.offsetWidth;
+    const previewHeight = preview.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Calcular posición
+    let left = event.clientX + offset;
+    let top = event.clientY + offset;
+
+    // Ajustar si el preview se sale de la ventana
+    if (left + previewWidth > windowWidth) {
+        left = event.clientX - previewWidth - offset;
+    }
+    if (top + previewHeight > windowHeight) {
+        top = event.clientY - previewHeight - offset;
+    }
+
+    preview.style.left = left + 'px';
+    preview.style.top = top + 'px';
+}
+
+function hideHoverPreview() {
+    const preview = document.getElementById('imageHoverPreview');
+    preview.classList.remove('active');
 }
 
 function setupDeleteListeners() {
@@ -212,10 +265,15 @@ function showImagePreview(src) {
     previewImg.src = src;
     preview.classList.add('active');
 
-    // Cerrar al hacer clic en cualquier parte
-    preview.addEventListener('click', function closePreview() {
+    const closePreview = function () {
         preview.classList.remove('active');
         preview.removeEventListener('click', closePreview);
+    };
+
+    preview.addEventListener('click', closePreview);
+
+    previewImg.addEventListener('click', function (e) {
+        e.stopPropagation();
     });
 }
 
