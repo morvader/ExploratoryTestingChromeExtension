@@ -2,7 +2,7 @@ function ExportSessionHTML(session) {
     this.session = session;
 }
 
-ExportSessionHTML.prototype.getHTML = function(fileName) {
+ExportSessionHTML.prototype.getHTML = function (fileName) {
 
     var doc = document.implementation.createHTMLDocument(fileName);
 
@@ -30,16 +30,16 @@ ExportSessionHTML.prototype.getHTML = function(fileName) {
     return doc;
 }
 
-ExportSessionHTML.prototype.addJavaScriptFiles = function(doc) {
+ExportSessionHTML.prototype.addJavaScriptFiles = function (doc) {
     //For table Filter
     var tableFilterScript = document.createElement('script');
     tableFilterScript.type = 'text/javascript';
-    tableFilterScript.src = 'http://tablefilter.free.fr/TableFilter/tablefilter_all_min.js';
+    tableFilterScript.src = chrome.runtime.getURL('/lib/tablefilter_all_min.js');
 
     doc.getElementsByTagName('head')[0].appendChild(tableFilterScript);
 }
 
-ExportSessionHTML.prototype.createExportableTable = function(doc) {
+ExportSessionHTML.prototype.createExportableTable = function (doc) {
 
     var tableDiv = doc.createElement("div");
     doc.body.appendChild(tableDiv);
@@ -73,7 +73,7 @@ ExportSessionHTML.prototype.createExportableTable = function(doc) {
     tableHead.appendChild(tr);
     for (i = 0; i < heading.length; i++) {
         var th = document.createElement('TH')
-            //th.width = '75';
+        //th.width = '75';
         th.appendChild(document.createTextNode(heading[i]));
         tr.appendChild(th);
     }
@@ -131,7 +131,7 @@ ExportSessionHTML.prototype.createExportableTable = function(doc) {
 
 }
 
-ExportSessionHTML.prototype.addStyleCSS = function(doc) {
+ExportSessionHTML.prototype.addStyleCSS = function (doc) {
     var css = document.createElement("style");
     css.type = "text/css";
     css.innerHTML = "#exportActivityTable { \
@@ -174,7 +174,7 @@ ExportSessionHTML.prototype.addStyleCSS = function(doc) {
     doc.head.appendChild(css);
 }
 
-ExportSessionHTML.prototype.addTableFilters = function(doc) {
+ExportSessionHTML.prototype.addTableFilters = function (doc) {
     var script = document.createElement("script");
 
     // Add script content
