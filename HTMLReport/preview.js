@@ -300,6 +300,12 @@ function downloadCompleteReport() {
     // Crear una copia del contenido actual
     const reportContent = document.getElementById('report').cloneNode(true);
 
+    // Remove chart container if it exists
+    const chartContainer = reportContent.querySelector('#chartContainer');
+    if (chartContainer) {
+        chartContainer.remove();
+    }
+
     // Eliminar el botón de descarga del reporte
     const downloadBtn = reportContent.querySelector('#downloadReportBtn');
     if (downloadBtn) {
@@ -409,7 +415,6 @@ function downloadCompleteReport() {
 <head>
     <meta charset="utf-8">
     <title>Exploratory Testing Session Report</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         ${getStyles()}
     </style>
@@ -435,76 +440,6 @@ function downloadCompleteReport() {
                     imageURL: a.imageURL
                 }))
             })};
-
-        // Función para inicializar la gráfica
-        function initChart() {
-            const ctx = document.getElementById('annotationsChart').getContext('2d');
-            const bugs = sessionData.annotations.filter(a => a.type === 'Bug').length;
-            const notes = sessionData.annotations.filter(a => a.type === 'Note').length;
-            const ideas = sessionData.annotations.filter(a => a.type === 'Idea').length;
-            const questions = sessionData.annotations.filter(a => a.type === 'Question').length;
-
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Bugs', 'Notes', 'Ideas', 'Questions'],
-                    datasets: [{
-                        data: [bugs, notes, ideas, questions],
-                        backgroundColor: [
-                            '#dc3545',
-                            '#28a745',
-                            '#ffc107',
-                            '#17a2b8'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Annotations Distribution'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Función para manejar los filtros
-        function setupFilters() {
-            const filterButtons = document.querySelectorAll('.filter-button');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Actualizar estado de los botones
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Aplicar filtro
-                    const filter = this.dataset.type;
-                    filterAnnotations(filter);
-                });
-            });
-        }
-
-        // Función para filtrar anotaciones
-        function filterAnnotations(filter) {
-            const rows = document.querySelectorAll('#annotationsTableBody tr');
-            rows.forEach(row => {
-                const icon = row.querySelector('.annotation-icon');
-                if (!icon) return;
-                
-                const type = icon.dataset.type;
-                if (filter === 'all' || type === filter) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
 
         // Función para mostrar la vista previa completa
         function showImagePreview(src) {
@@ -586,8 +521,6 @@ function downloadCompleteReport() {
 
         // Inicializar todo cuando el documento esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            initChart();
-            setupFilters();
             setupImageHover();
         });
     </script>
@@ -627,4 +560,4 @@ function getStyles() {
 }
 
 // Cargar los datos cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', loadData); 
+document.addEventListener('DOMContentLoaded', loadData);
