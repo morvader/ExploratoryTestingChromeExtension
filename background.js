@@ -51,32 +51,66 @@ async function loadSession() {
 // Cargar la sesión al iniciar
 loadSession();
 
+// Helper function for notifications of processing errors (before addAnnotation is called)
+function notifyProcessingError(annotationType, descriptionName, errorMessage = "") {
+    const typeStr = annotationType || "Annotation";
+    const nameStr = descriptionName || "";
+    const notifId = 'annotationProcessingError-' + Date.now();
+    chrome.notifications.create(notifId, {
+        type: 'basic',
+        iconUrl: 'icons/iconbig.png',
+        title: `${typeStr} Processing Failed`,
+        message: `Could not process ${typeStr.toLowerCase()} "${nameStr}" for screenshot. Error: ${errorMessage}`
+    });
+    setTimeout(() => { chrome.notifications.clear(notifId); }, 7000);
+}
+
+
 // Escuchar mensajes del popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Keep 'return true' if any path in this listener might call sendResponse asynchronously.
+    // For "csToBgCropData", we are not sending a response back to content script currently.
+    // For other existing cases, they do use sendResponse.
+    let isAsync = false;
+
     switch (request.type) {
         case "addBug":
             console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Bug", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
+            isAsync = true;
             break;
         case "addIdea":
             console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Idea", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
+            isAsync = true;
             break;
         case "addNote":
             console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Note", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
+            isAsync = true;
             break;
         case "addQuestion":
             console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Question", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
+            isAsync = true;
+            break;
+        case "csToBgCropData":
+            console.log("Background: Received csToBgCropData", request);
+            if (sender.tab && sender.tab.id) {
+                handleProcessCropRequest(request, sender.tab.id);
+                // No sendResponse needed back to content script for this message type currently.
+            } else {
+                console.error("Background: csToBgCropData received without valid sender.tab.id");
+            }
+            // This path is not asynchronous in terms of sendResponse to this specific message.
             break;
         case "updateAnnotationName":
             var AnnotationID = request.annotationID;
@@ -149,8 +183,70 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             });
             break;
     }
-    return true; // Mantener el puerto de mensajes abierto para respuestas asíncronas
+    return isAsync; // Return true only if sendResponse is used asynchronously in any of the handled cases.
 });
+
+
+async function handleProcessCropRequest(data, tabId) {
+    console.log(`Background: Processing crop request for tab ${tabId}`, data);
+
+    try {
+        const tab = await chrome.tabs.get(tabId);
+        if (!tab) {
+            console.error("Background: No valid tab found for ID", tabId);
+            notifyProcessingError(data.annotationType, data.description, "Tab not found for capture.");
+            return;
+        }
+        if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('https://chrome.google.com/webstore'))) {
+            console.warn(`Background: Attempted to capture restricted URL: ${tab.url}. Aborting.`);
+            notifyProcessingError(data.annotationType, data.description, "Cannot capture screenshot on this page.");
+            return;
+        }
+
+        const dataUrl = await chrome.tabs.captureVisibleTab(tabId, { format: "png" });
+
+        if (chrome.runtime.lastError || !dataUrl) {
+            console.error("Background: Error capturing tab:", chrome.runtime.lastError?.message || "No data URL");
+            notifyProcessingError(data.annotationType, data.description, chrome.runtime.lastError?.message || "Tab capture failed");
+            return;
+        }
+
+        const imageBlob = await fetch(dataUrl).then(res => res.blob());
+        const imageBitmap = await createImageBitmap(imageBlob);
+
+        const sx = data.coordinates.x; 
+        const sy = data.coordinates.y;
+        const sWidth = data.coordinates.width;
+        const sHeight = data.coordinates.height;
+
+        const canvasWidth = sWidth;
+        const canvasHeight = sHeight;
+
+        const offscreenCanvas = new OffscreenCanvas(canvasWidth, canvasHeight);
+        const ctx = offscreenCanvas.getContext('2d');
+
+        ctx.drawImage(imageBitmap,
+            sx, sy, sWidth, sHeight, 
+            0, 0, canvasWidth, canvasHeight); 
+
+        const croppedBlob = await offscreenCanvas.convertToBlob({ type: 'image/png' });
+        const reader = new FileReader(); 
+
+        reader.onloadend = function() {
+            const croppedDataUrl = reader.result;
+            // Now call the existing addAnnotation function
+            addAnnotation(data.annotationType, data.description, croppedDataUrl)
+                .then(() => { /* Notification handled in addAnnotation */ })
+                .catch(error => { /* Notification handled in addAnnotation */ });
+        };
+        reader.readAsDataURL(croppedBlob);
+
+    } catch (error) {
+        console.error("Background: Error in handleProcessCropRequest:", error);
+        notifyProcessingError(data.annotationType, data.description, error.message || "Cropping process failed");
+    }
+}
+
 
 async function addAnnotation(type, name, imageURL) {
     console.log("Background: addAnnotation called. Type:", type, ". Name:", name, ". Image URL (first 100 chars):", imageURL ? imageURL.substring(0,100) : "No image");
@@ -222,13 +318,24 @@ async function addAnnotation(type, name, imageURL) {
                     });
                      setTimeout(() => {
                         chrome.notifications.clear(errorNotifId);
-                    }, 7000);
+                    }, 7000); // Keep error notifications slightly longer
 
                     reject(error);
                 });
 
-            } catch (error) {
+            } catch (error) { // Catch synchronous errors in the promise executor
                 console.error("Background: Error in addAnnotation sync part:", error);
+                // Send a notification for this synchronous error as well
+                 const syncErrorNotifId = 'annotationSyncError-' + Date.now();
+                 chrome.notifications.create(syncErrorNotifId, {
+                     type: 'basic',
+                     iconUrl: 'icons/iconbig.png',
+                     title: `${type || 'Annotation'} Setup Failed`,
+                     message: `Failed to initiate saving for "${name}". Error: ${error.message}`
+                 });
+                 setTimeout(() => {
+                     chrome.notifications.clear(syncErrorNotifId);
+                 }, 7000);
                 reject(error);
             }
         });

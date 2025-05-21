@@ -9,19 +9,29 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     let startX, startY;      // Initial mouse coordinates on mousedown
     let selectionInstructionNotification = null; // For the notification message
 
+    // Store data received from popup
+    let currentAnnotationType = null;
+    let currentDescription = null;
+
     // This listener is added once per page load/script injection context
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.type === "startSelection") {
-            console.log("Content script: 'startSelection' message received.");
-            // Reset state for a new selection attempt
+            console.log("Content script: 'startSelection' message received with type:", request.annotationType, "and description:", request.description ? request.description.substring(0,50) + "..." : "N/A");
+            
+            // Store annotation details
+            currentAnnotationType = request.annotationType;
+            currentDescription = request.description;
+
             isDrawing = false; 
             if (selectionBox) { // Hide if it exists from a previous attempt
                 selectionBox.style.display = 'none';
             }
             initSelection(); // Prepare for a new selection
-            sendResponse({ status: "selectionStarted" });
+            sendResponse({ status: "selectionStarted" }); // Response back to popup.js
         }
-        return true; // Indicate async response capability
+        // For safety with multiple potential message types, keeping 'return true;'
+        // as other handlers (if added in the future) might use sendResponse asynchronously.
+        return true; 
     });
 
     function createSelectionBoxElement() {
@@ -35,25 +45,19 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             box.style.border = '1px dashed #0064ff';
             box.style.zIndex = '2147483647'; // Max z-index
             box.style.cursor = 'crosshair';
-            box.style.pointerEvents = 'none'; // So it doesn't interfere with mouse events on underlying page elements
-            box.style.display = 'none';       // Initially hidden
+            box.style.pointerEvents = 'none'; 
+            box.style.display = 'none';       
             document.body.appendChild(box);
             return box;
         }
         return existingBox;
     }
-
-    // Create or get the selection box element once during initial setup
-    selectionBox = createSelectionBoxElement();
-
+    
     function showSelectionNotification(message) {
-        // Remove any existing notification first
         removeSelectionNotification();
-
         selectionInstructionNotification = document.createElement('div');
         selectionInstructionNotification.id = 'exploratoryTestingSelectionNotification';
         selectionInstructionNotification.textContent = message;
-        // Styling:
         selectionInstructionNotification.style.position = 'fixed';
         selectionInstructionNotification.style.top = '20px';
         selectionInstructionNotification.style.left = '50%';
@@ -63,7 +67,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionInstructionNotification.style.color = 'white';
         selectionInstructionNotification.style.fontSize = '16px';
         selectionInstructionNotification.style.borderRadius = '5px';
-        selectionInstructionNotification.style.zIndex = '2147483646'; // Just below selectionBox
+        selectionInstructionNotification.style.zIndex = '2147483646'; 
         selectionInstructionNotification.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
         document.body.appendChild(selectionInstructionNotification);
     }
@@ -76,37 +80,28 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     }
 
     function initSelection() {
-        // Ensure selectionBox is available (it should be due to the line above)
         if (!selectionBox) {
             console.error("Selection box element not found or created!");
             return;
         }
-        
-        // Reset visual state of the selection box
         selectionBox.style.left = '0px';
         selectionBox.style.top = '0px';
         selectionBox.style.width = '0px';
         selectionBox.style.height = '0px';
         selectionBox.style.display = 'none';
 
-        // Remove any listeners from previous selection attempts to prevent stacking
         cleanUpAllSelectionListeners();
-        
-        removeSelectionNotification(); // Remove any old notification
+        removeSelectionNotification(); 
         showSelectionNotification("Click and drag to select an area. Press Esc to cancel.");
 
-
-        // Add listeners for starting a new selection
         document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('keydown', handleKeyDown); // For Escape key
+        document.addEventListener('keydown', handleKeyDown); 
         console.log("Content script: Initialized for new selection. Mousedown and keydown listeners added. Notification shown.");
     }
 
     function handleMouseDown(event) {
-        // Only proceed if the click is for starting selection (e.g., not on an input field if we want to be more specific later)
-        // For now, any mousedown after initSelection starts drawing.
-        event.preventDefault();   // Prevent default browser actions like text selection
-        event.stopPropagation();  // Stop event from bubbling up
+        event.preventDefault();   
+        event.stopPropagation();  
 
         isDrawing = true;
         startX = event.clientX;
@@ -116,9 +111,8 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionBox.style.top = startY + 'px';
         selectionBox.style.width = '0px';
         selectionBox.style.height = '0px';
-        selectionBox.style.display = 'block'; // Make it visible
+        selectionBox.style.display = 'block'; 
 
-        // Add listeners for dragging and mouse up, specific to this drawing instance
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
         console.log("Content script: Mouse down, drawing started.");
@@ -132,7 +126,6 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         let currentX = event.clientX;
         let currentY = event.clientY;
 
-        // Calculate position and dimensions
         let newX = Math.min(startX, currentX);
         let newY = Math.min(startY, currentY);
         let width = Math.abs(currentX - startX);
@@ -145,53 +138,62 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     }
     
     function handleMouseUp(event) {
-        if (!isDrawing) return; // Should not happen if listeners are managed correctly
+        if (!isDrawing) return; 
         isDrawing = false;
         event.preventDefault();
         event.stopPropagation();
 
         console.log("Content script: Mouse up, drawing ended.");
-        cleanUpInProgressSelectionListeners(); // Remove move/up listeners
+        cleanUpInProgressSelectionListeners(); 
 
         let finalX = parseInt(selectionBox.style.left, 10);
         let finalY = parseInt(selectionBox.style.top, 10);
         let finalWidth = parseInt(selectionBox.style.width, 10);
         let finalHeight = parseInt(selectionBox.style.height, 10);
 
-        // Important: keep the selection box hidden but don't remove mousedown/keydown yet,
-        // as another 'startSelection' message might come for a new crop.
-        // The mousedown/keydown are cleaned by cleanUpAllSelectionListeners() in initSelection()
-        // or by handleKeyDown if escape is pressed.
+        if (selectionBox) selectionBox.style.display = 'none';
+        removeSelectionNotification();
 
         if (finalWidth > 0 && finalHeight > 0) {
-            chrome.runtime.sendMessage({
-                type: "selectionCoordinates",
-                coordinates: { x: finalX, y: finalY, width: finalWidth, height: finalHeight }
-            });
-            console.log("Content script: Sent coordinates:", { x: finalX, y: finalY, width: finalWidth, height: finalHeight });
+            const messageToBackground = {
+                type: "csToBgCropData", 
+                coordinates: { x: finalX, y: finalY, width: finalWidth, height: finalHeight },
+                annotationType: currentAnnotationType,
+                description: currentDescription
+            };
+            chrome.runtime.sendMessage(messageToBackground);
+            console.log("Content script: Sent csToBgCropData to background:", messageToBackground);
         } else {
             console.log("Content script: Selection was too small or invalid.");
-            chrome.runtime.sendMessage({ type: "selectionCancelled" });
+            chrome.runtime.sendMessage({ 
+                type: "selectionCancelled", 
+                annotationType: currentAnnotationType 
+            });
         }
-        // Do NOT hide selectionBox here, popup.js might need it if we decide to show it briefly.
-        // Or rather, it should be hidden. The next initSelection will handle it.
-        selectionBox.style.display = 'none';
-        // The main mousedown and keydown listeners are removed by the next call to initSelection or by handleKeyDown.
-        removeSelectionNotification();
+        // Reset stored type and description
+        currentAnnotationType = null;
+        currentDescription = null;
     }
 
     function handleKeyDown(event) {
         if (event.key === 'Escape') {
             console.log("Content script: Escape key pressed.");
-            if (isDrawing) { // If drawing is in progress
+            if (isDrawing) {
                 isDrawing = false;
                 console.log("Content script: Cancelling active drawing.");
             }
-            selectionBox.style.display = 'none';
-            cleanUpAllSelectionListeners(); // Remove all listeners
-            removeSelectionNotification(); // Remove notification on cancel
-            chrome.runtime.sendMessage({ type: "selectionCancelled" });
-            console.log("Content script: Selection cancelled via Escape. All listeners removed. Notification removed.");
+            if (selectionBox) selectionBox.style.display = 'none';
+            cleanUpAllSelectionListeners(); 
+            removeSelectionNotification(); 
+            
+            chrome.runtime.sendMessage({ 
+                type: "selectionCancelled", 
+                annotationType: currentAnnotationType // Include type
+            });
+            console.log("Content script: Selection cancelled via Escape. Sent 'selectionCancelled' for type:", currentAnnotationType);
+            // Reset stored type and description
+            currentAnnotationType = null;
+            currentDescription = null;
         }
     }
 
@@ -203,16 +205,16 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     
     function cleanUpAllSelectionListeners() {
         document.removeEventListener('mousedown', handleMouseDown);
-        document.removeEventListener('mousemove', handleMouseMove); // In case they were somehow left active
-        document.removeEventListener('mouseup', handleMouseUp);     // In case they were somehow left active
+        document.removeEventListener('mousemove', handleMouseMove); 
+        document.removeEventListener('mouseup', handleMouseUp);     
         document.removeEventListener('keydown', handleKeyDown);
         console.log("Content script: Cleaned up all selection listeners (mousedown, mousemove, mouseup, keydown).");
     }
+    
+    // Initial creation of the selection box
+    selectionBox = createSelectionBoxElement();
 
-} // End of if (typeof window.exploratoryTestingCropperInitialized === 'undefined')
+} 
 else {
-    // This 'else' block will be hit if executeScript runs this file again on the same page.
-    // The existing onMessage listener (from the first injection) will handle the "startSelection" message.
-    // The key is that variables are not re-declared with 'let' or 'const' at the top level.
-    console.log("Content script: Already initialized (exploratoryTestingCropperInitialized = true). Waiting for 'startSelection' message on existing listener.");
+    console.log("Content script: Already initialized. Waiting for 'startSelection' message.");
 }

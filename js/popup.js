@@ -59,23 +59,49 @@ function annotationListeners() {
 }
 
 function handleCropScreenshot(type) {
-    currentAnnotationTypeForCrop = type; // Store the type for later
+    // Get description based on type
+    let description = "";
+    let descriptionFieldId = "";
+    switch (type) {
+        case "bug": descriptionFieldId = "#newBugDescription"; break;
+        case "idea": descriptionFieldId = "#newIdeaDescription"; break;
+        case "note": descriptionFieldId = "#newNoteDescription"; break;
+        case "question": descriptionFieldId = "#newQuestionDescription"; break;
+        default:
+            console.error("Unknown annotation type for crop:", type);
+            return;
+    }
+    description = $(descriptionFieldId).val().trim();
+
+    if (description === "") {
+        alert("Please enter a description before taking a cropped screenshot.");
+        return; // Prevent starting selection if description is empty
+    }
+
+    // currentAnnotationTypeForCrop is still useful for 'selectionCancelled' if popup handles it.
+    // If not, it can be removed from this function. Let's assume it might be used for cancellation.
+    currentAnnotationTypeForCrop = type; 
+
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (tabs && tabs[0] && tabs[0].id != null) {
             const tabId = tabs[0].id;
+            const messagePayload = {
+                type: "startSelection",
+                annotationType: type, // Pass the annotation type
+                description: description // Pass the description
+            };
 
-            // Directly send the message, assuming manifest-declared content script
-            chrome.tabs.sendMessage(tabId, { type: "startSelection" }, function(response) {
+            chrome.tabs.sendMessage(tabId, messagePayload, function(response) {
                 if (chrome.runtime.lastError) {
                     console.error("Error starting selection (sendMessage):", chrome.runtime.lastError.message);
-                    alert("Failed to start selection mode. Please ensure the page is fully loaded and try again. If this is a new page or the extension was just updated, you might need to refresh the page. Error: " + chrome.runtime.lastError.message);
+                    alert("Failed to start selection mode. Please ensure the page is fully loaded and try again. Error: " + chrome.runtime.lastError.message);
                     currentAnnotationTypeForCrop = null; // Reset
                     return;
                 }
-
                 if (response && response.status === "selectionStarted") {
-                    console.log("Popup: Selection started in content script.");
-                    // Popup remains open, no window.close() here.
+                    console.log("Popup: Selection started in content script for type '"+type+"' with description '"+description.substring(0,20)+"...'.");
+                    // Popup remains open. No window.close().
+                    // No longer processes coordinates here.
                 } else {
                     console.warn("Popup: Content script did not confirm selection start. Response:", response);
                     alert("Could not initiate selection on the page. The selection script might not have responded correctly. Please try refreshing the page.");
@@ -83,87 +109,26 @@ function handleCropScreenshot(type) {
                 }
             });
         } else {
-            console.error("Popup: No active tab with valid ID found to start selection.");
-            alert("No active tab found or tab ID is invalid. Please select a tab to capture from.");
+            console.error("Popup: No active tab with valid ID found.");
+            alert("No active tab found. Please select a tab to capture from.");
             currentAnnotationTypeForCrop = null; // Reset
         }
-    });
-}
-
-function processCroppedScreenshot(annotationType, coordinates) {
-    chrome.tabs.captureVisibleTab({ format: "png" }, (dataUrl) => {
-        if (chrome.runtime.lastError) {
-            console.error("Error capturing tab:", chrome.runtime.lastError.message);
-            alert("Failed to capture screenshot. " + chrome.runtime.lastError.message);
-            return;
-        }
-        if (!dataUrl) {
-            console.error("Error capturing tab: No data URL returned.");
-            alert("Failed to capture screenshot. No image data received.");
-            return;
-        }
-
-        const img = new Image();
-        console.log("Popup: Full screenshot dataURL (first 100 chars):", dataUrl ? dataUrl.substring(0, 100) : "null");
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            const dpr = window.devicePixelRatio || 1;
-
-            canvas.width = coordinates.width * dpr;
-            canvas.height = coordinates.height * dpr;
-
-            ctx.drawImage(img,
-                coordinates.x * dpr, coordinates.y * dpr,   // source x, y
-                coordinates.width * dpr, coordinates.height * dpr, // source width, height
-                0, 0,                               // destination x, y
-                coordinates.width * dpr, coordinates.height * dpr); // destination width, height
-
-            const croppedDataUrl = canvas.toDataURL('image/png');
-            console.log("Popup: Cropped dataURL (first 100 chars):", croppedDataUrl ? croppedDataUrl.substring(0, 100) : "null");
-            console.log("Popup: Calling addNew" + annotationType.charAt(0).toUpperCase() + annotationType.slice(1) + " with cropped image. Annotation type:", annotationType);
-
-            switch (annotationType) {
-                case "bug":
-                    addNewBug(croppedDataUrl);
-                    break;
-                case "idea":
-                    addNewIdea(croppedDataUrl);
-                    break;
-                case "question":
-                    addNewQuestion(croppedDataUrl);
-                    break;
-                case "note":
-                    addNewNote(croppedDataUrl);
-                    break;
-            }
-        };
-        img.onerror = () => {
-            console.error("Error loading screenshot image for cropping.");
-            alert("Failed to load screenshot for cropping.");
-        };
-        img.src = dataUrl;
     });
 }
 
 // Register the listener for messages from content script
 function registerPopupMessageListener() {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.type === "selectionCoordinates") {
-            if (currentAnnotationTypeForCrop && request.coordinates) {
-                console.log("Popup: Received coordinates", request.coordinates);
-                processCroppedScreenshot(currentAnnotationTypeForCrop, request.coordinates);
-                currentAnnotationTypeForCrop = null; // Reset after processing
-            } else {
-                console.warn("Popup: Received coordinates but no annotation type was set or coordinates missing.");
-            }
-        } else if (request.type === "selectionCancelled") {
-            console.log("Popup: Selection cancelled by content script.");
+        // Removed 'selectionCoordinates' handler
+        if (request.type === "selectionCancelled") {
+            console.log("Popup: Selection cancelled by content script for type:", currentAnnotationTypeForCrop);
+            // Optionally, re-enable parts of the UI if they were disabled,
+            // or show a message in the popup. For now, just log and reset.
+            // A more robust check would be if (currentAnnotationTypeForCrop === request.annotationTypeFromContentScript)
+            // but this requires content script to send annotationType on cancellation.
             currentAnnotationTypeForCrop = null; // Reset
         }
-        // Important: Return true if you intend to use sendResponse asynchronously in this listener.
-        return true;
+        // No 'return true;' as this listener does not call sendResponse() asynchronously
     });
 }
 
