@@ -61,41 +61,26 @@ function annotationListeners() {
 function handleCropScreenshot(type) {
     currentAnnotationTypeForCrop = type; // Store the type for later
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        if (tabs && tabs[0] && tabs[0].id != null) { // Ensure tab ID is valid
+        if (tabs && tabs[0] && tabs[0].id != null) {
             const tabId = tabs[0].id;
 
-            // 1. Programmatically inject the content script
-            chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                files: ["js/content_script.js"]
-            }, () => {
+            // Directly send the message, assuming manifest-declared content script
+            chrome.tabs.sendMessage(tabId, { type: "startSelection" }, function(response) {
                 if (chrome.runtime.lastError) {
-                    console.error("Error injecting content script:", chrome.runtime.lastError.message);
-                    alert("Failed to prepare selection mode. Please try refreshing the page. Error: " + chrome.runtime.lastError.message);
+                    console.error("Error starting selection (sendMessage):", chrome.runtime.lastError.message);
+                    alert("Failed to start selection mode. Please ensure the page is fully loaded and try again. If this is a new page or the extension was just updated, you might need to refresh the page. Error: " + chrome.runtime.lastError.message);
                     currentAnnotationTypeForCrop = null; // Reset
                     return;
                 }
 
-                // 2. Content script injected successfully, now send the message
-                chrome.tabs.sendMessage(tabId, { type: "startSelection" }, function(response) {
-                    if (chrome.runtime.lastError) {
-                        console.error("Error starting selection:", chrome.runtime.lastError.message);
-                        // This alert might be redundant if the executeScript error already covered it,
-                        // but specific error for sendMessage is still useful.
-                        alert("Failed to start selection mode after preparing. Please try again. Error: " + chrome.runtime.lastError.message);
-                        currentAnnotationTypeForCrop = null; // Reset
-                        return;
-                    }
-
-                    if (response && response.status === "selectionStarted") {
-                        console.log("Popup: Selection started in content script.");
-                        // window.close(); // This line is confirmed to be removed or commented out.
-                    } else {
-                        console.warn("Popup: Content script did not confirm selection start. Response:", response);
-                        alert("Could not initiate selection on the page. The selection script might not have started correctly.");
-                        currentAnnotationTypeForCrop = null; // Reset
-                    }
-                });
+                if (response && response.status === "selectionStarted") {
+                    console.log("Popup: Selection started in content script.");
+                    // Popup remains open, no window.close() here.
+                } else {
+                    console.warn("Popup: Content script did not confirm selection start. Response:", response);
+                    alert("Could not initiate selection on the page. The selection script might not have responded correctly. Please try refreshing the page.");
+                    currentAnnotationTypeForCrop = null; // Reset
+                }
             });
         } else {
             console.error("Popup: No active tab with valid ID found to start selection.");
