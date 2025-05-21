@@ -161,31 +161,74 @@ async function addAnnotation(type, name, imageURL) {
     return new Promise((resolve, reject) => {
         chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
             try {
-                const currentUrl = tabs[0].url;
+                const currentUrl = tabs[0] ? tabs[0].url : "N/A"; // Handle missing tab
                 const now = new Date().getTime();
 
                 let newAnnotation;
+                let annotationSimpleType = ""; // For user-friendly notification
+
                 switch (type) {
                     case "Bug":
                         newAnnotation = new Bug(name, currentUrl, now, imageURL);
                         session.addBug(newAnnotation);
+                        annotationSimpleType = "Bug";
                         break;
                     case "Note":
                         newAnnotation = new Note(name, currentUrl, now, imageURL);
                         session.addNote(newAnnotation);
+                        annotationSimpleType = "Note";
                         break;
                     case "Idea":
                         newAnnotation = new Idea(name, currentUrl, now, imageURL);
                         session.addIdea(newAnnotation);
+                        annotationSimpleType = "Idea";
                         break;
                     case "Question":
                         newAnnotation = new Question(name, currentUrl, now, imageURL);
                         session.addQuestion(newAnnotation);
+                        annotationSimpleType = "Question";
                         break;
+                    default: // Should not happen
+                        return reject(new Error("Unknown annotation type"));
                 }
+                
                 console.log("Background: Attempting to save session for annotation Type:", type, "Name:", name);
-                saveSession().then(resolve).catch(error => { console.error("Background: Error during saveSession promise chain for", type, name, ":", error); reject(error); });
+                saveSession().then(() => {
+                    // --- Create Notification ---
+                    const notifId = 'annotationSaved-' + Date.now();
+                    const notifOptions = {
+                        type: 'basic',
+                        iconUrl: 'icons/iconbig.png', // Ensure this icon path is correct
+                        title: `${annotationSimpleType} Saved!`,
+                        message: `Your ${annotationSimpleType.toLowerCase()} "${name}" has been successfully saved.`
+                    };
+                    chrome.notifications.create(notifId, notifOptions);
+                    // Optional: Clear notification after a few seconds
+                    setTimeout(() => {
+                        chrome.notifications.clear(notifId);
+                    }, 5000); // Clear after 5 seconds
+                    // --- End Notification ---
+                    
+                    resolve(); // Resolve the main promise
+                }).catch(error => {
+                    console.error("Background: Error during saveSession for", type, name, ":", error);
+                    // Optionally, show an error notification here too
+                    const errorNotifId = 'annotationError-' + Date.now();
+                    chrome.notifications.create(errorNotifId, {
+                        type: 'basic',
+                        iconUrl: 'icons/iconbig.png',
+                        title: `${annotationSimpleType || type} Save Failed`,
+                        message: `Could not save ${annotationSimpleType.toLowerCase() || type.toLowerCase()} "${name}". Error: ${error.message}`
+                    });
+                     setTimeout(() => {
+                        chrome.notifications.clear(errorNotifId);
+                    }, 7000);
+
+                    reject(error);
+                });
+
             } catch (error) {
+                console.error("Background: Error in addAnnotation sync part:", error);
                 reject(error);
             }
         });

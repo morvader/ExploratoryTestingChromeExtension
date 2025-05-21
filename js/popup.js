@@ -88,8 +88,8 @@ function handleCropScreenshot(type) {
                     }
 
                     if (response && response.status === "selectionStarted") {
-                        console.log("Popup: Selection started in content script.");
-                        // Waiting for "selectionCoordinates" or "selectionCancelled" message
+                        console.log("Popup: Selection started in content script. Closing popup.");
+                        window.close(); // <-- Add this line
                     } else {
                         console.warn("Popup: Content script did not confirm selection start. Response:", response);
                         alert("Could not initiate selection on the page. The selection script might not have started correctly.");
