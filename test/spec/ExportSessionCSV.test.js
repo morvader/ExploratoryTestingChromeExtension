@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { ExportSessionCSV } from '../../src/ExportSessionCSV';
 import { Session } from '../../src/Session';
 import { Bug, Idea, Note, Question } from '../../src/Annotation';
@@ -84,36 +88,64 @@ describe('ExportSessionCSV', function () {
 	});
 
 	describe('downloadCSVFile', function () {
+		beforeEach(() => {
+			// Store original URL if it exists
+			originalURL = global.URL;
+
+			// Mock URL.createObjectURL
+			global.URL = {
+				...originalURL, // Keep any existing properties
+				createObjectURL: jest.fn().mockReturnValue('mock-url')
+			};
+		});
+
+		afterEach(() => {
+			// Restore original URL
+			global.URL = originalURL;
+		});
+
 		it('should create a download link', function () {
-			// Mock del DOM que registra todos los cambios
+			// Create mock DOM element
 			const mockLink = {
 				href: '',
 				download: '',
 				click: jest.fn(),
-				setAttribute: jest.fn(function (name, value) { // Simplified mockImplementation
+				setAttribute: jest.fn(function (name, value) {
 					this[name] = value;
 				})
 			};
 
+			// Make sure document exists before using spyOn
+			expect(document).toBeDefined();
+
+			// Now spy on document.createElement
 			jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
-			jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
 
 			exportCSV.downloadCSVFile();
 
-			// Verificar llamada a createElement
+			// Verify URL.createObjectURL was called
+			expect(URL.createObjectURL).toHaveBeenCalled();
+
+			// Rest of your assertions...
 			expect(document.createElement).toHaveBeenCalledWith('a');
-
-			// Verificar que href es el esperado (sin importar cómo se estableció)
 			expect(mockLink.href).toBe('mock-url');
-
-			// Verificar que download es el esperado (sin importar cómo se estableció)
-			// expect(mockLink.download).toBe('foo.csv'); // Direct property check might be less reliable with some mock setups
-			// Instead, check if setAttribute was called correctly for 'download'
-
-			// Verificar que se llamó a setAttribute específicamente para download
 			expect(mockLink.setAttribute).toHaveBeenCalledWith('download', 'foo.csv');
-			
-			// Verify that the click method was called
 			expect(mockLink.click).toHaveBeenCalled();
 		});
 	});
+	describe('ExportSessionCSV with empty session', function () {
+		let exportCSV;
+		let emptySession;
+
+		beforeEach(function () {
+			emptySession = new Session(new Date(), "Chrome");
+			exportCSV = new ExportSessionCSV(emptySession);
+		});
+
+		it('should handle empty session gracefully', function () {
+			const csvData = exportCSV.getCSVData();
+			expect(csvData).toBe('TimeStamp,Type,Name,URL\n');
+		});
+	});
+});
+
