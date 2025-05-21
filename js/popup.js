@@ -1,3 +1,6 @@
+// At the top of popup.js
+let currentAnnotationTypeForCrop = null;
+
 window.onload = function () {
   initElements();
 
@@ -10,6 +13,7 @@ function initElements() {
   annotationListeners();
   exportListeners();
   updateCounters();
+  registerPopupMessageListener(); // Added listener registration
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   })
@@ -46,6 +50,115 @@ function annotationListeners() {
   $(document).on('click', '#addNewQuestionSCBtn', () => {
     addNewAnnotationWithScreenShot("question")
   });
+
+  // New listeners for crop buttons
+  $(document).on('click', '#addNewBugCropBtn', () => { handleCropScreenshot("bug"); });
+  $(document).on('click', '#addNewIdeaCropBtn', () => { handleCropScreenshot("idea"); });
+  $(document).on('click', '#addNewNoteCropBtn', () => { handleCropScreenshot("note"); });
+  $(document).on('click', '#addNewQuestionCropBtn', () => { handleCropScreenshot("question"); });
+}
+
+function handleCropScreenshot(type) {
+    currentAnnotationTypeForCrop = type; // Store the type for later
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        if (tabs && tabs[0]) {
+            chrome.tabs.sendMessage(tabs[0].id, { type: "startSelection" }, function(response) {
+                if (chrome.runtime.lastError) {
+                    console.error("Error starting selection:", chrome.runtime.lastError.message);
+                    alert("Failed to start selection mode. Ensure the page is fully loaded or try refreshing. Cropping is not available on special browser pages (e.g., chrome://).");
+                    currentAnnotationTypeForCrop = null; // Reset
+                    return;
+                }
+                if (response && response.status === "selectionStarted") {
+                    console.log("Popup: Selection started in content script.");
+                    // Waiting for "selectionCoordinates" or "selectionCancelled" message
+                } else {
+                    // Handle cases where content script doesn't respond as expected
+                    console.warn("Popup: Content script did not confirm selection start.");
+                    // alert("Could not initiate selection on the page."); // Optional user feedback
+                    currentAnnotationTypeForCrop = null; // Reset
+                }
+            });
+        } else {
+            console.error("Popup: No active tab found to start selection.");
+            alert("No active tab found. Please select a tab to capture from.");
+            currentAnnotationTypeForCrop = null; // Reset
+        }
+    });
+}
+
+function processCroppedScreenshot(annotationType, coordinates) {
+    chrome.tabs.captureVisibleTab({ format: "png" }, (dataUrl) => {
+        if (chrome.runtime.lastError) {
+            console.error("Error capturing tab:", chrome.runtime.lastError.message);
+            alert("Failed to capture screenshot. " + chrome.runtime.lastError.message);
+            return;
+        }
+        if (!dataUrl) {
+            console.error("Error capturing tab: No data URL returned.");
+            alert("Failed to capture screenshot. No image data received.");
+            return;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = coordinates.width * dpr;
+            canvas.height = coordinates.height * dpr;
+
+            ctx.drawImage(img,
+                coordinates.x * dpr, coordinates.y * dpr,   // source x, y
+                coordinates.width * dpr, coordinates.height * dpr, // source width, height
+                0, 0,                               // destination x, y
+                coordinates.width * dpr, coordinates.height * dpr); // destination width, height
+
+            const croppedDataUrl = canvas.toDataURL('image/png');
+
+            switch (annotationType) {
+                case "bug":
+                    addNewBug(croppedDataUrl);
+                    break;
+                case "idea":
+                    addNewIdea(croppedDataUrl);
+                    break;
+                case "question":
+                    addNewQuestion(croppedDataUrl);
+                    break;
+                case "note":
+                    addNewNote(croppedDataUrl);
+                    break;
+            }
+        };
+        img.onerror = () => {
+            console.error("Error loading screenshot image for cropping.");
+            alert("Failed to load screenshot for cropping.");
+        };
+        img.src = dataUrl;
+    });
+}
+
+// Register the listener for messages from content script
+function registerPopupMessageListener() {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.type === "selectionCoordinates") {
+            if (currentAnnotationTypeForCrop && request.coordinates) {
+                console.log("Popup: Received coordinates", request.coordinates);
+                processCroppedScreenshot(currentAnnotationTypeForCrop, request.coordinates);
+                currentAnnotationTypeForCrop = null; // Reset after processing
+            } else {
+                console.warn("Popup: Received coordinates but no annotation type was set or coordinates missing.");
+            }
+        } else if (request.type === "selectionCancelled") {
+            console.log("Popup: Selection cancelled by content script.");
+            currentAnnotationTypeForCrop = null; // Reset
+        }
+        // Important: Return true if you intend to use sendResponse asynchronously in this listener.
+        return true;
+    });
 }
 
 function showBugReport() {
@@ -72,7 +185,6 @@ function showQuestionReport() {
   $('#newQuestionDescription').focus();
 };
 
-
 function addNewBug(imageURL) {
   var bugName = $('#newBugDescription').val().trim();
   if (bugName == "") return;
@@ -92,7 +204,6 @@ function addNewBug(imageURL) {
 function addNewNote(imageURL) {
   var noteName = $('#newNoteDescription').val().trim();
   if (noteName == "") return;
-
   chrome.runtime.sendMessage({
     type: "addNote",
     name: noteName,
@@ -187,7 +298,6 @@ function exportSessionJSon() {
 /* Import from JSon */
 function importSessionJSon(evt) {
   var files = evt.target.files; // FileList object
-
   var reader = new FileReader();
   reader.onload = onReaderLoad;
   reader.readAsText(files[0]);

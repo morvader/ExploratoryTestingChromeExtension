@@ -25,5 +25,12 @@
     "16": "/icons/iconbig.png",
     "48": "/icons/iconbig.png",
     "128": "/icons/iconbig.png"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content_script.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
