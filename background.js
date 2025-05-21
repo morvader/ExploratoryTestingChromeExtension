@@ -212,24 +212,38 @@ async function handleProcessCropRequest(request) {
         // Crear un bitmap de la imagen
         const bitmap = await createImageBitmap(blob);
 
-        // Crear un canvas fuera de pantalla
+        // Intentar inferir el DPR comparando el tamaño de la bitmap con las coordenadas CSS recibidas.
+        // Esto asume que las coordenadas request.coordinates representan el área de recorte en píxeles CSS 
+        // relativo al tamaño del viewport en píxeles CSS.
+        // NOTA: La forma correcta es ajustar en el content script.
+        let inferredDpr = 1;
+        if (request.viewportWidth && request.viewportHeight && bitmap.width && bitmap.height) {
+            // Asumiendo que la bitmap.width / viewportWidth en CSS es aproximadamente el DPR
+            // Esto puede no ser exacto si la captura no cubre exactamente el viewport o hay zoom.
+            inferredDpr = bitmap.width / request.viewportWidth;
+            console.log("Background: Inferred DPR based on bitmap size and viewport width:", inferredDpr);
+        } else {
+            console.log("Background: Could not infer DPR. Using assumed DPR of 1.");
+        }
+
+        // Crear un canvas fuera de pantalla con las dimensiones del recorte en píxeles de dispositivo
         const canvas = new OffscreenCanvas(
-            request.coordinates.width,
-            request.coordinates.height
+            request.coordinates.width * inferredDpr,
+            request.coordinates.height * inferredDpr
         );
         const ctx = canvas.getContext('2d');
 
         // Dibujar la porción seleccionada
         ctx.drawImage(
             bitmap,
-            request.coordinates.x,
-            request.coordinates.y,
-            request.coordinates.width,
-            request.coordinates.height,
+            request.coordinates.x * inferredDpr, // Ajustar coordenada X origen
+            request.coordinates.y * inferredDpr, // Ajustar coordenada Y origen
+            request.coordinates.width * inferredDpr, // Ajustar ancho origen
+            request.coordinates.height * inferredDpr, // Ajustar alto origen
             0,
             0,
-            request.coordinates.width,
-            request.coordinates.height
+            request.coordinates.width * inferredDpr, // Dibujar en el canvas con el tamaño ajustado
+            request.coordinates.height * inferredDpr  // Dibujar en el canvas con el tamaño ajustado
         );
 
         // Convertir el canvas a blob

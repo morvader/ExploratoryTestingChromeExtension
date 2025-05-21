@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Exploratory Testing",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Chrome extension for exploratory testing",
   "permissions": [
     "storage",
@@ -30,8 +30,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["js/content_script.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/content_script.js"
+      ],
       "run_at": "document_idle"
     }
   ]

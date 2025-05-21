@@ -16,13 +16,13 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     // This listener is added once per page load/script injection context
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.type === "startSelection") {
-            console.log("Content script: 'startSelection' message received with type:", request.annotationType, "and description:", request.description ? request.description.substring(0,50) + "..." : "N/A");
-            
+            console.log("Content script: 'startSelection' message received with type:", request.annotationType, "and description:", request.description ? request.description.substring(0, 50) + "..." : "N/A");
+
             // Store annotation details
             currentAnnotationType = request.annotationType;
             currentDescription = request.description;
 
-            isDrawing = false; 
+            isDrawing = false;
             if (selectionBox) { // Hide if it exists from a previous attempt
                 selectionBox.style.display = 'none';
             }
@@ -31,7 +31,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         }
         // For safety with multiple potential message types, keeping 'return true;'
         // as other handlers (if added in the future) might use sendResponse asynchronously.
-        return true; 
+        return true;
     });
 
     function createSelectionBoxElement() {
@@ -45,14 +45,14 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             box.style.border = '1px dashed #0064ff';
             box.style.zIndex = '2147483647'; // Max z-index
             box.style.cursor = 'crosshair';
-            box.style.pointerEvents = 'none'; 
-            box.style.display = 'none';       
+            box.style.pointerEvents = 'none';
+            box.style.display = 'none';
             document.body.appendChild(box);
             return box;
         }
         return existingBox;
     }
-    
+
     function showSelectionNotification(message) {
         removeSelectionNotification();
         selectionInstructionNotification = document.createElement('div');
@@ -67,7 +67,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionInstructionNotification.style.color = 'white';
         selectionInstructionNotification.style.fontSize = '16px';
         selectionInstructionNotification.style.borderRadius = '5px';
-        selectionInstructionNotification.style.zIndex = '2147483646'; 
+        selectionInstructionNotification.style.zIndex = '2147483646';
         selectionInstructionNotification.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
         document.body.appendChild(selectionInstructionNotification);
     }
@@ -91,17 +91,17 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionBox.style.display = 'none';
 
         cleanUpAllSelectionListeners();
-        removeSelectionNotification(); 
+        removeSelectionNotification();
         showSelectionNotification("Click and drag to select an area. Press Esc to cancel.");
 
         document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('keydown', handleKeyDown); 
+        document.addEventListener('keydown', handleKeyDown);
         console.log("Content script: Initialized for new selection. Mousedown and keydown listeners added. Notification shown.");
     }
 
     function handleMouseDown(event) {
-        event.preventDefault();   
-        event.stopPropagation();  
+        event.preventDefault();
+        event.stopPropagation();
 
         isDrawing = true;
         startX = event.clientX;
@@ -111,7 +111,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionBox.style.top = startY + 'px';
         selectionBox.style.width = '0px';
         selectionBox.style.height = '0px';
-        selectionBox.style.display = 'block'; 
+        selectionBox.style.display = 'block';
 
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
@@ -136,15 +136,15 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         selectionBox.style.width = width + 'px';
         selectionBox.style.height = height + 'px';
     }
-    
+
     function handleMouseUp(event) {
-        if (!isDrawing) return; 
+        if (!isDrawing) return;
         isDrawing = false;
         event.preventDefault();
         event.stopPropagation();
 
         console.log("Content script: Mouse up, drawing ended.");
-        cleanUpInProgressSelectionListeners(); 
+        cleanUpInProgressSelectionListeners();
 
         let finalX = parseInt(selectionBox.style.left, 10);
         let finalY = parseInt(selectionBox.style.top, 10);
@@ -155,19 +155,30 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         removeSelectionNotification();
 
         if (finalWidth > 0 && finalHeight > 0) {
+            // Obtener el Device Pixel Ratio
+            const dpr = window.devicePixelRatio || 1;
+
+            // Ajustar las coordenadas por el DPR
+            const croppedCoordinates = {
+                x: finalX * dpr,
+                y: finalY * dpr,
+                width: finalWidth * dpr,
+                height: finalHeight * dpr
+            };
+
             const messageToBackground = {
-                type: "csToBgCropData", 
-                coordinates: { x: finalX, y: finalY, width: finalWidth, height: finalHeight },
+                type: "csToBgCropData",
+                coordinates: croppedCoordinates, // Usar las coordenadas ajustadas
                 annotationType: currentAnnotationType,
                 description: currentDescription
             };
             chrome.runtime.sendMessage(messageToBackground);
-            console.log("Content script: Sent csToBgCropData to background:", messageToBackground);
+            console.log("Content script: Sent csToBgCropData to background with DPR adjusted coordinates:", croppedCoordinates);
         } else {
             console.log("Content script: Selection was too small or invalid.");
-            chrome.runtime.sendMessage({ 
-                type: "selectionCancelled", 
-                annotationType: currentAnnotationType 
+            chrome.runtime.sendMessage({
+                type: "selectionCancelled",
+                annotationType: currentAnnotationType
             });
         }
         // Reset stored type and description
@@ -183,11 +194,11 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
                 console.log("Content script: Cancelling active drawing.");
             }
             if (selectionBox) selectionBox.style.display = 'none';
-            cleanUpAllSelectionListeners(); 
-            removeSelectionNotification(); 
-            
-            chrome.runtime.sendMessage({ 
-                type: "selectionCancelled", 
+            cleanUpAllSelectionListeners();
+            removeSelectionNotification();
+
+            chrome.runtime.sendMessage({
+                type: "selectionCancelled",
                 annotationType: currentAnnotationType // Include type
             });
             console.log("Content script: Selection cancelled via Escape. Sent 'selectionCancelled' for type:", currentAnnotationType);
@@ -202,19 +213,19 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         document.removeEventListener('mouseup', handleMouseUp);
         console.log("Content script: Cleaned up mousemove and mouseup listeners.");
     }
-    
+
     function cleanUpAllSelectionListeners() {
         document.removeEventListener('mousedown', handleMouseDown);
-        document.removeEventListener('mousemove', handleMouseMove); 
-        document.removeEventListener('mouseup', handleMouseUp);     
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
         document.removeEventListener('keydown', handleKeyDown);
         console.log("Content script: Cleaned up all selection listeners (mousedown, mousemove, mouseup, keydown).");
     }
-    
+
     // Initial creation of the selection box
     selectionBox = createSelectionBoxElement();
 
-} 
+}
 else {
     console.log("Content script: Already initialized. Waiting for 'startSelection' message.");
 }
