@@ -12,105 +12,146 @@
 
 <body>
     <div class="card">
-        <div class="card-header"><h5>Add new annotation</h5></div>
+        <div class="card-header">
+            <h5>Add new annotation</h5>
+        </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <button id="BugBtn" class="BugButton btn btn-danger btn-block">Bug <span id="bugCounter" class="badge badge-light"></button>
+        <div class="card">
+            <div class="card-header">
+                <button id="BugBtn" class="BugButton btn btn-danger btn-block">Bug <span id="bugCounter"
+                        class="badge badge-light"></button>
+            </div>
+            <div id="addNewBug" class="reportAnnotation card-body">
+                <div class="form-group">
+                    <textarea id="newBugDescription" rows="4" placeholder="Bug description..."
+                        title="[Enter] to add a new line" class="form-control-sm"></textarea>
                 </div>
-                <div id="addNewBug" class="reportAnnotation card-body">
-                    <div class="form-group">
-                        <textarea id="newBugDescription" rows="4" placeholder="Bug description..." title="[Enter] to add a new line" class="form-control-sm"></textarea>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
-                            <button id="addNewBugBtn" class="btn btn-outline-danger add" title="Add new Bug [Crtl + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewBugSCBtn" class="btn btn-outline-danger screenshot" title="Add new Bug with screenshot [Shift + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewBugCropBtn" class="btn btn-outline-danger screenshot" title="Add new Bug with cropped screenshot" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel" title="Cancel annotation">Cancel</button>
-                        </div>
+                <div class="card-footer">
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button id="addNewBugBtn" class="btn btn-outline-danger add" title="Add new Bug [Crtl + Enter]"
+                            data-toggle="tooltip" data-placement="top">&nbsp;</button>
+                        <button id="addNewBugSCBtn" class="btn btn-outline-danger screenshot"
+                            title="Add new Bug with screenshot [Shift + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewBugCropBtn" class="btn btn-outline-danger crop-screenshot"
+                            title="Add new Bug with cropped screenshot" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel"
+                            title="Cancel annotation">Cancel</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <button id="NoteBtn" class="NoteButton btn btn-warning btn-block">Note <span id="noteCounter" class="badge badge-light"></span></button>
+        <div class="card">
+            <div class="card-header">
+                <button id="NoteBtn" class="NoteButton btn btn-warning btn-block">Note <span id="noteCounter"
+                        class="badge badge-light"></span></button>
+            </div>
+            <div id="addNewNote" class="reportAnnotation card-body">
+                <div class="form-group">
+                    <textarea id="newNoteDescription" rows="4" placeholder="Note description..."
+                        title="[Enter] to add a new line" class="form-control-sm"></textarea>
                 </div>
-                <div id="addNewNote" class="reportAnnotation card-body">
-                    <div class="form-group">
-                        <textarea id="newNoteDescription" rows="4" placeholder="Note description..." title="[Enter] to add a new line" class="form-control-sm"></textarea>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
-                            <button id="addNewNoteBtn" class="btn btn-outline-warning add" title="Add new Note [Crtl + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewNoteSCBtn" class="btn btn-outline-warning screenshot" title="Add new Note with screenshot [Shift + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewNoteCropBtn" class="btn btn-outline-warning screenshot" title="Add new Note with cropped screenshot" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel" title="Cancel annotation">Cancel</button>
-                        </div>
+                <div class="card-footer">
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button id="addNewNoteBtn" class="btn btn-outline-warning add"
+                            title="Add new Note [Crtl + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewNoteSCBtn" class="btn btn-outline-warning screenshot"
+                            title="Add new Note with screenshot [Shift + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewNoteCropBtn" class="btn btn-outline-warning crop-screenshot"
+                            title="Add new Note with cropped screenshot" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel"
+                            title="Cancel annotation">Cancel</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <button id="QuestionBtn" class="QuestionButton btn btn-success btn-block">Question <span id="questionCounter" class="badge badge-light"></span></button>
+        <div class="card">
+            <div class="card-header">
+                <button id="QuestionBtn" class="QuestionButton btn btn-success btn-block">Question <span
+                        id="questionCounter" class="badge badge-light"></span></button>
+            </div>
+            <div id="addNewQuestion" class="reportAnnotation card-body">
+                <div class="form-group">
+                    <textarea id="newQuestionDescription" rows="4" placeholder="Question description..."
+                        title="[Enter] to add a new line" class="form-control-sm"></textarea>
                 </div>
-                <div id="addNewQuestion" class="reportAnnotation card-body">
-                    <div class="form-group">
-                        <textarea id="newQuestionDescription" rows="4" placeholder="Question description..." title="[Enter] to add a new line" class="form-control-sm"></textarea>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
-                            <button id="addNewQuestionBtn" class="btn btn-outline-success add" title="Add new Question [Crtl + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewQuestionSCBtn" class="btn btn-outline-success screenshot" title="Add new Question with screenshot [Shift + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewQuestionCropBtn" class="btn btn-outline-success screenshot" title="Add new Question with cropped screenshot" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel" title="Cancel annotation">Cancel</button>
-                        </div>
+                <div class="card-footer">
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button id="addNewQuestionBtn" class="btn btn-outline-success add"
+                            title="Add new Question [Crtl + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewQuestionSCBtn" class="btn btn-outline-success screenshot"
+                            title="Add new Question with screenshot [Shift + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewQuestionCropBtn" class="btn btn-outline-success crop-screenshot"
+                            title="Add new Question with cropped screenshot" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel"
+                            title="Cancel annotation">Cancel</button>
                     </div>
                 </div>
             </div>
-                
-            <div class="card">
-                <div class="card-header">
-                    <button id="IdeaBtn" class="IdeaButton btn btn-info btn-block">Idea <span id="ideaCounter" class="badge badge-light"></span></button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <button id="IdeaBtn" class="IdeaButton btn btn-info btn-block">Idea <span id="ideaCounter"
+                        class="badge badge-light"></span></button>
+            </div>
+            <div id="addNewIdea" class="reportAnnotation card-body">
+                <div class="form-group">
+                    <textarea id="newIdeaDescription" rows="4" placeholder="Idea description..."
+                        title="[Enter] to add a new line" class="form-control-sm"></textarea>
                 </div>
-                <div id="addNewIdea" class="reportAnnotation card-body">
-                    <div class="form-group">
-                        <textarea id="newIdeaDescription" rows="4" placeholder="Idea description..." title="[Enter] to add a new line" class="form-control-sm"></textarea>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
-                            <button id="addNewIdeaBtn" class="btn btn-outline-info add" title="Add new Idea [Crtl + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewIdeaSCBtn" class="btn btn-outline-info screenshot" title="Add new Idea with screenshot [Shift + Enter]" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button id="addNewIdeaCropBtn" class="btn btn-outline-info screenshot" title="Add new Idea with cropped screenshot" data-toggle="tooltip" data-placement="top">&nbsp;</button>
-                            <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel" title="Cancel annotation">Cancel</button>
-                        </div>
+                <div class="card-footer">
+                    <div class="btn-group-sm annotation-group" role="group" aria-label="Annotation Options">
+                        <button id="addNewIdeaBtn" class="btn btn-outline-info add" title="Add new Idea [Crtl + Enter]"
+                            data-toggle="tooltip" data-placement="top">&nbsp;</button>
+                        <button id="addNewIdeaSCBtn" class="btn btn-outline-info screenshot"
+                            title="Add new Idea with screenshot [Shift + Enter]" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button id="addNewIdeaCropBtn" class="btn btn-outline-info crop-screenshot"
+                            title="Add new Idea with cropped screenshot" data-toggle="tooltip"
+                            data-placement="top">&nbsp;</button>
+                        <button name="Cancel" class="btn btn-outline-secondary btn-sm cancel"
+                            title="Cancel annotation">Cancel</button>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 
     <div class="footer card-footer">
         <div>
             <div class="btn-group btn-group-sm session-group" role="group" aria-label="Session Options">
-                    <button id="resetBtn" class="btn btn-sm btn-outline-danger" title="Reset session data">Reset</button>
-                <button id="exportCSVBtn" class="btn btn-secondary" title="Export session to CSV" data-toggle="tooltip" data-placement="top"></button>
-                <button id="exportJsonBtn" class="btn btn-secondary" title="Export session to JSON" data-toggle="tooltip" data-placement="top"></button>
-                <button id="importJsonBtn" class="btn btn-secondary" title="Import session from JSON" data-toggle="tooltip" data-placement="top">
+                <button id="resetBtn" class="btn btn-sm btn-outline-danger" title="Reset session data">Reset</button>
+                <button id="exportCSVBtn" class="btn btn-secondary" title="Export session to CSV" data-toggle="tooltip"
+                    data-placement="top"></button>
+                <button id="exportJsonBtn" class="btn btn-secondary" title="Export session to JSON"
+                    data-toggle="tooltip" data-placement="top"></button>
+                <button id="importJsonBtn" class="btn btn-secondary" title="Import session from JSON"
+                    data-toggle="tooltip" data-placement="top">
                 </button>
-                <input type="file" name = "jsonFile" class="file-input" id="importJsonInput" hidden="true"></input>
+                <input type="file" name="jsonFile" class="file-input" id="importJsonInput" hidden="true"></input>
 
-                <button id="previewBtn" class="btn btn-secondary" title="View Session report" data-toggle="tooltip" data-placement="top"></button>
-                
+                <button id="previewBtn" class="btn btn-secondary" title="View Session report" data-toggle="tooltip"
+                    data-placement="top"></button>
+
             </div>
-           
+
         </div>
         <div id="resetConfirmation" class="card" style="display:none">
             <div class="card-header bg-danger text-white">This will reset the current session.</div>
             <div class="card-body">
                 <p class="text-danger">Are you sure?</p>
-                <button id="resetYes" class="actionButton btn btn-outline-danger btn-sm" title="Reset current session">Yes</button>
+                <button id="resetYes" class="actionButton btn btn-outline-danger btn-sm"
+                    title="Reset current session">Yes</button>
                 <button id="resetNo" class="cancelButton btn btn-success btn-sm" title="Cancel reset">No</button>
             </div>
         </div>

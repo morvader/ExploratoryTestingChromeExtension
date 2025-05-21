@@ -15,6 +15,14 @@ body {
 	min-width: 30px;
 }
 
+.crop-screenshot {
+	background-image: url("../images/crop.png");
+	background-repeat: no-repeat;
+	background-size: 75%;
+	background-position: 4px 3px;
+	min-width: 30px;
+}
+
 .add {
 	background-image: url("../images/diff-added.svg");
 	background-repeat: no-repeat;
