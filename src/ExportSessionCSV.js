@@ -20,7 +20,7 @@ export class ExportSessionCSV {
         return csvData;
     }
 
-    donwloadCSVFile() {
+    downloadCSVFile() {
         var pom = document.createElement('a');
         var csvContent = this.getCSVData(); //here we load our csv data
         var blob = new Blob([csvContent], {

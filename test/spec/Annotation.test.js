@@ -1,3 +1,5 @@
+import { Annotation, Bug, Idea, Note, Question } from '../../src/Annotation';
+
 describe('Annotation Classes', function () {
     let testName = "Test Annotation";
     let testUrl = "http://test.com";

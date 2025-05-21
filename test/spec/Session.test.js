@@ -1,3 +1,6 @@
+import { Session } from '../../src/Session';
+import { Bug, Idea, Note, Question } from '../../src/Annotation';
+
 describe("Exploratory Session", function () {
 
 	describe("when Session starts", function () {
@@ -234,4 +237,48 @@ describe("Exploratory Session", function () {
 
 	});
 
+	describe('deleteAnnotation edge cases', function() {
+		let session;
+
+		beforeEach(function() {
+			// For these tests, session starts with a few annotations
+			session = new Session(new Date(), "TestBrowser");
+			session.addBug(new Bug("Bug 1", "url1"));
+			session.addNote(new Note("Note 1", "url2"));
+			session.addIdea(new Idea("Idea 1", "url3")); // Session now has 3 annotations
+		});
+
+		it('should not change annotations if index is -1', function() {
+			const initialAnnotations = [...session.getAnnotations()];
+			session.deleteAnnotation(-1);
+			expect(session.getAnnotations()).toEqual(initialAnnotations);
+		});
+
+		it('should not change annotations if index is equal to annotations length', function() {
+			const initialAnnotations = [...session.getAnnotations()];
+			session.deleteAnnotation(initialAnnotations.length);
+			expect(session.getAnnotations()).toEqual(initialAnnotations);
+		});
+
+		it('should not change annotations if index is greater than annotations length', function() {
+			const initialAnnotations = [...session.getAnnotations()];
+			session.deleteAnnotation(initialAnnotations.length + 1);
+			expect(session.getAnnotations()).toEqual(initialAnnotations);
+		});
+
+		it('should not throw an error or change annotations if list is empty and delete is attempted', function() {
+			const emptySession = new Session(new Date(), "EmptyBrowser");
+			expect(emptySession.getAnnotations().length).toBe(0);
+			
+			expect(() => {
+				emptySession.deleteAnnotation(0);
+			}).not.toThrow();
+			expect(emptySession.getAnnotations().length).toBe(0);
+			
+			expect(() => {
+				emptySession.deleteAnnotation(-1);
+			}).not.toThrow();
+			expect(emptySession.getAnnotations().length).toBe(0);
+		});
+	});
 });
