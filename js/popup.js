@@ -223,7 +223,7 @@ function addNewBug(imageURL) {
 
   clearAllReports();
   hideAllReports();
-  window.close(); // <-- Add this line
+  // window.close(); // <-- REMOVED THIS LINE
 };
 
 function addNewNote(imageURL) {
@@ -242,7 +242,7 @@ function addNewNote(imageURL) {
 
   clearAllReports();
   hideAllReports();
-  window.close(); // <-- Add this line
+  // window.close(); // <-- REMOVED THIS LINE
 };
 
 function addNewIdea(imageURL) {
@@ -261,7 +261,7 @@ function addNewIdea(imageURL) {
 
   clearAllReports();
   hideAllReports();
-  window.close(); // Ensuring only one call here
+  // window.close(); // <-- REMOVED THIS LINE
 };
 
 function addNewQuestion(imageURL) {
@@ -280,7 +280,7 @@ function addNewQuestion(imageURL) {
 
   clearAllReports();
   hideAllReports();
-  window.close(); // <-- Add this line
+  // window.close(); // <-- REMOVED THIS LINE
 };
 
 
