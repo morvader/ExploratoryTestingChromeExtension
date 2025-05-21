@@ -88,8 +88,8 @@ function handleCropScreenshot(type) {
                     }
 
                     if (response && response.status === "selectionStarted") {
-                        console.log("Popup: Selection started in content script. Closing popup.");
-                        window.close(); // <-- Add this line
+                        console.log("Popup: Selection started in content script.");
+                        // window.close(); // This line is confirmed to be removed or commented out.
                     } else {
                         console.warn("Popup: Content script did not confirm selection start. Response:", response);
                         alert("Could not initiate selection on the page. The selection script might not have started correctly.");
@@ -223,6 +223,7 @@ function addNewBug(imageURL) {
 
   clearAllReports();
   hideAllReports();
+  window.close(); // <-- Add this line
 };
 
 function addNewNote(imageURL) {
@@ -241,6 +242,7 @@ function addNewNote(imageURL) {
 
   clearAllReports();
   hideAllReports();
+  window.close(); // <-- Add this line
 };
 
 function addNewIdea(imageURL) {
@@ -259,6 +261,7 @@ function addNewIdea(imageURL) {
 
   clearAllReports();
   hideAllReports();
+  window.close(); // Ensuring only one call here
 };
 
 function addNewQuestion(imageURL) {
@@ -277,6 +280,7 @@ function addNewQuestion(imageURL) {
 
   clearAllReports();
   hideAllReports();
+  window.close(); // <-- Add this line
 };
 
 
