@@ -104,13 +104,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             break;
         case "csToBgCropData":
             console.log("Background: Received csToBgCropData", request);
-            if (sender.tab && sender.tab.id) {
-                handleProcessCropRequest(request, sender.tab.id);
-                // No sendResponse needed back to content script for this message type currently.
-            } else {
-                console.error("Background: csToBgCropData received without valid sender.tab.id");
-            }
-            // This path is not asynchronous in terms of sendResponse to this specific message.
+            handleProcessCropRequest(request)
+                .then(() => {
+                    console.log("Background: Crop request processed successfully");
+                })
+                .catch((error) => {
+                    console.error("Background: Failed to process crop request:", error);
+                });
             break;
         case "updateAnnotationName":
             var AnnotationID = request.annotationID;
@@ -187,69 +187,78 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 
-async function handleProcessCropRequest(data, tabId) {
-    console.log(`Background: Processing crop request for tab ${tabId}`, data);
-
+// Función para manejar la solicitud de captura de pantalla
+async function handleProcessCropRequest(request) {
     try {
-        const tab = await chrome.tabs.get(tabId);
-        if (!tab) {
-            console.error("Background: No valid tab found for ID", tabId);
-            notifyProcessingError(data.annotationType, data.description, "Tab not found for capture.");
-            return;
-        }
-        if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('https://chrome.google.com/webstore'))) {
-            console.warn(`Background: Attempted to capture restricted URL: ${tab.url}. Aborting.`);
-            notifyProcessingError(data.annotationType, data.description, "Cannot capture screenshot on this page.");
-            return;
-        }
+        console.log("Background: Processing crop request for tab", request.tabId, request);
 
-        const dataUrl = await chrome.tabs.captureVisibleTab(tabId, { format: "png" });
+        // Obtener la pestaña activa
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tabs || tabs.length === 0) {
+            throw new Error("No active tab found");
+        }
+        const activeTab = tabs[0];
 
-        if (chrome.runtime.lastError || !dataUrl) {
-            console.error("Background: Error capturing tab:", chrome.runtime.lastError?.message || "No data URL");
-            notifyProcessingError(data.annotationType, data.description, chrome.runtime.lastError?.message || "Tab capture failed");
-            return;
+        // Capturar la pantalla
+        const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: "png" });
+        if (!dataUrl) {
+            throw new Error("Failed to capture screenshot");
         }
 
-        const imageBlob = await fetch(dataUrl).then(res => res.blob());
-        const imageBitmap = await createImageBitmap(imageBlob);
+        // Convertir dataUrl a Blob
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
 
-        const sx = data.coordinates.x; 
-        const sy = data.coordinates.y;
-        const sWidth = data.coordinates.width;
-        const sHeight = data.coordinates.height;
+        // Crear un bitmap de la imagen
+        const bitmap = await createImageBitmap(blob);
 
-        const canvasWidth = sWidth;
-        const canvasHeight = sHeight;
+        // Crear un canvas fuera de pantalla
+        const canvas = new OffscreenCanvas(
+            request.coordinates.width,
+            request.coordinates.height
+        );
+        const ctx = canvas.getContext('2d');
 
-        const offscreenCanvas = new OffscreenCanvas(canvasWidth, canvasHeight);
-        const ctx = offscreenCanvas.getContext('2d');
+        // Dibujar la porción seleccionada
+        ctx.drawImage(
+            bitmap,
+            request.coordinates.x,
+            request.coordinates.y,
+            request.coordinates.width,
+            request.coordinates.height,
+            0,
+            0,
+            request.coordinates.width,
+            request.coordinates.height
+        );
 
-        ctx.drawImage(imageBitmap,
-            sx, sy, sWidth, sHeight, 
-            0, 0, canvasWidth, canvasHeight); 
+        // Convertir el canvas a blob
+        const croppedBlob = await canvas.convertToBlob({ type: 'image/png' });
 
-        const croppedBlob = await offscreenCanvas.convertToBlob({ type: 'image/png' });
-        const reader = new FileReader(); 
+        // Convertir blob a dataUrl
+        const croppedDataUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(croppedBlob);
+        });
 
-        reader.onloadend = function() {
-            const croppedDataUrl = reader.result;
-            // Now call the existing addAnnotation function
-            addAnnotation(data.annotationType, data.description, croppedDataUrl)
-                .then(() => { /* Notification handled in addAnnotation */ })
-                .catch(error => { /* Notification handled in addAnnotation */ });
-        };
-        reader.readAsDataURL(croppedBlob);
+        // Crear la anotación
+        await addAnnotation(
+            request.annotationType.charAt(0).toUpperCase() + request.annotationType.slice(1),
+            request.description,
+            croppedDataUrl
+        );
 
+        console.log("Background: Successfully processed crop request");
     } catch (error) {
         console.error("Background: Error in handleProcessCropRequest:", error);
-        notifyProcessingError(data.annotationType, data.description, error.message || "Cropping process failed");
+        throw error;
     }
 }
 
 
 async function addAnnotation(type, name, imageURL) {
-    console.log("Background: addAnnotation called. Type:", type, ". Name:", name, ". Image URL (first 100 chars):", imageURL ? imageURL.substring(0,100) : "No image");
+    console.log("Background: addAnnotation called. Type:", type, ". Name:", name, ". Image URL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "No image");
     if (session.getAnnotations().length == 0) {
         await startSession();
     }
@@ -287,7 +296,7 @@ async function addAnnotation(type, name, imageURL) {
                     default: // Should not happen
                         return reject(new Error("Unknown annotation type"));
                 }
-                
+
                 console.log("Background: Attempting to save session for annotation Type:", type, "Name:", name);
                 saveSession().then(() => {
                     // --- Create Notification ---
@@ -304,7 +313,7 @@ async function addAnnotation(type, name, imageURL) {
                         chrome.notifications.clear(notifId);
                     }, 5000); // Clear after 5 seconds
                     // --- End Notification ---
-                    
+
                     resolve(); // Resolve the main promise
                 }).catch(error => {
                     console.error("Background: Error during saveSession for", type, name, ":", error);
@@ -316,7 +325,7 @@ async function addAnnotation(type, name, imageURL) {
                         title: `${annotationSimpleType || type} Save Failed`,
                         message: `Could not save ${annotationSimpleType.toLowerCase() || type.toLowerCase()} "${name}". Error: ${error.message}`
                     });
-                     setTimeout(() => {
+                    setTimeout(() => {
                         chrome.notifications.clear(errorNotifId);
                     }, 7000); // Keep error notifications slightly longer
 
@@ -326,16 +335,16 @@ async function addAnnotation(type, name, imageURL) {
             } catch (error) { // Catch synchronous errors in the promise executor
                 console.error("Background: Error in addAnnotation sync part:", error);
                 // Send a notification for this synchronous error as well
-                 const syncErrorNotifId = 'annotationSyncError-' + Date.now();
-                 chrome.notifications.create(syncErrorNotifId, {
-                     type: 'basic',
-                     iconUrl: 'icons/iconbig.png',
-                     title: `${type || 'Annotation'} Setup Failed`,
-                     message: `Failed to initiate saving for "${name}". Error: ${error.message}`
-                 });
-                 setTimeout(() => {
-                     chrome.notifications.clear(syncErrorNotifId);
-                 }, 7000);
+                const syncErrorNotifId = 'annotationSyncError-' + Date.now();
+                chrome.notifications.create(syncErrorNotifId, {
+                    type: 'basic',
+                    iconUrl: 'icons/iconbig.png',
+                    title: `${type || 'Annotation'} Setup Failed`,
+                    message: `Failed to initiate saving for "${name}". Error: ${error.message}`
+                });
+                setTimeout(() => {
+                    chrome.notifications.clear(syncErrorNotifId);
+                }, 7000);
                 reject(error);
             }
         });
