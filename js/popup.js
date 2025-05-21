@@ -61,27 +61,45 @@ function annotationListeners() {
 function handleCropScreenshot(type) {
     currentAnnotationTypeForCrop = type; // Store the type for later
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        if (tabs && tabs[0]) {
-            chrome.tabs.sendMessage(tabs[0].id, { type: "startSelection" }, function(response) {
+        if (tabs && tabs[0] && tabs[0].id != null) { // Ensure tab ID is valid
+            const tabId = tabs[0].id;
+
+            // 1. Programmatically inject the content script
+            chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                files: ["js/content_script.js"]
+            }, () => {
                 if (chrome.runtime.lastError) {
-                    console.error("Error starting selection:", chrome.runtime.lastError.message);
-                    alert("Failed to start selection mode. Ensure the page is fully loaded or try refreshing. Cropping is not available on special browser pages (e.g., chrome://).");
+                    console.error("Error injecting content script:", chrome.runtime.lastError.message);
+                    alert("Failed to prepare selection mode. Please try refreshing the page. Error: " + chrome.runtime.lastError.message);
                     currentAnnotationTypeForCrop = null; // Reset
                     return;
                 }
-                if (response && response.status === "selectionStarted") {
-                    console.log("Popup: Selection started in content script.");
-                    // Waiting for "selectionCoordinates" or "selectionCancelled" message
-                } else {
-                    // Handle cases where content script doesn't respond as expected
-                    console.warn("Popup: Content script did not confirm selection start.");
-                    // alert("Could not initiate selection on the page."); // Optional user feedback
-                    currentAnnotationTypeForCrop = null; // Reset
-                }
+
+                // 2. Content script injected successfully, now send the message
+                chrome.tabs.sendMessage(tabId, { type: "startSelection" }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        console.error("Error starting selection:", chrome.runtime.lastError.message);
+                        // This alert might be redundant if the executeScript error already covered it,
+                        // but specific error for sendMessage is still useful.
+                        alert("Failed to start selection mode after preparing. Please try again. Error: " + chrome.runtime.lastError.message);
+                        currentAnnotationTypeForCrop = null; // Reset
+                        return;
+                    }
+
+                    if (response && response.status === "selectionStarted") {
+                        console.log("Popup: Selection started in content script.");
+                        // Waiting for "selectionCoordinates" or "selectionCancelled" message
+                    } else {
+                        console.warn("Popup: Content script did not confirm selection start. Response:", response);
+                        alert("Could not initiate selection on the page. The selection script might not have started correctly.");
+                        currentAnnotationTypeForCrop = null; // Reset
+                    }
+                });
             });
         } else {
-            console.error("Popup: No active tab found to start selection.");
-            alert("No active tab found. Please select a tab to capture from.");
+            console.error("Popup: No active tab with valid ID found to start selection.");
+            alert("No active tab found or tab ID is invalid. Please select a tab to capture from.");
             currentAnnotationTypeForCrop = null; // Reset
         }
     });
@@ -101,6 +119,7 @@ function processCroppedScreenshot(annotationType, coordinates) {
         }
 
         const img = new Image();
+        console.log("Popup: Full screenshot dataURL (first 100 chars):", dataUrl ? dataUrl.substring(0, 100) : "null");
         img.onload = () => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -117,6 +136,8 @@ function processCroppedScreenshot(annotationType, coordinates) {
                 coordinates.width * dpr, coordinates.height * dpr); // destination width, height
 
             const croppedDataUrl = canvas.toDataURL('image/png');
+            console.log("Popup: Cropped dataURL (first 100 chars):", croppedDataUrl ? croppedDataUrl.substring(0, 100) : "null");
+            console.log("Popup: Calling addNew" + annotationType.charAt(0).toUpperCase() + annotationType.slice(1) + " with cropped image. Annotation type:", annotationType);
 
             switch (annotationType) {
                 case "bug":
@@ -186,8 +207,11 @@ function showQuestionReport() {
 };
 
 function addNewBug(imageURL) {
+  console.log("Popup: Inside addNewBug. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
   var bugName = $('#newBugDescription').val().trim();
+  console.log("Popup: Bug name:", bugName);
   if (bugName == "") return;
+  console.log("Popup: Sending message to background for addBug. Name:", bugName);
 
   chrome.runtime.sendMessage({
     type: "addBug",
@@ -202,8 +226,11 @@ function addNewBug(imageURL) {
 };
 
 function addNewNote(imageURL) {
+  console.log("Popup: Inside addNewNote. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
   var noteName = $('#newNoteDescription').val().trim();
+  console.log("Popup: Note name:", noteName);
   if (noteName == "") return;
+  console.log("Popup: Sending message to background for addNote. Name:", noteName);
   chrome.runtime.sendMessage({
     type: "addNote",
     name: noteName,
@@ -217,9 +244,11 @@ function addNewNote(imageURL) {
 };
 
 function addNewIdea(imageURL) {
-
+  console.log("Popup: Inside addNewIdea. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
   var ideaName = $('#newIdeaDescription').val().trim();
+  console.log("Popup: Idea name:", ideaName);
   if (ideaName == "") return;
+  console.log("Popup: Sending message to background for addIdea. Name:", ideaName);
   chrome.runtime.sendMessage({
     type: "addIdea",
     name: ideaName,
@@ -233,8 +262,11 @@ function addNewIdea(imageURL) {
 };
 
 function addNewQuestion(imageURL) {
+  console.log("Popup: Inside addNewQuestion. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
   var questionName = $('#newQuestionDescription').val().trim();
+  console.log("Popup: Question name:", questionName);
   if (questionName == "") return;
+  console.log("Popup: Sending message to background for addQuestion. Name:", questionName);
   chrome.runtime.sendMessage({
     type: "addQuestion",
     name: questionName,
