@@ -249,13 +249,20 @@ function setupDeleteListeners() {
                 type: "deleteAnnotation",
                 annotationID: annotationToDelete
             }, function (response) {
-                if (response.status === "ok") {
-                    loadData(); // Recargar los datos después de eliminar
+                // Cerrar el diálogo y limpiar la variable independientemente de la respuesta
+                document.getElementById('divOverlay').style.display = 'none';
+                annotationToDelete = null;
+
+                // Si hay una respuesta válida y fue exitosa, recargar la página
+                if (response && response.status === "ok") {
+                    location.reload();
+                } else {
+                    console.error('Error al eliminar la anotación:', response);
+                    // Recargar de todos modos para asegurar que los datos estén sincronizados
+                    location.reload();
                 }
             });
         }
-        document.getElementById('divOverlay').style.display = 'none';
-        annotationToDelete = null;
     });
 }
 
