@@ -55,21 +55,25 @@ loadSession();
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "addBug":
+            console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Bug", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addIdea":
+            console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Idea", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addNote":
+            console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Note", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
             break;
         case "addQuestion":
+            console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Question", request.name, request.imageURL)
                 .then(() => sendResponse({ status: "ok" }))
                 .catch(error => sendResponse({ status: "error", error: error.message }));
@@ -149,6 +153,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function addAnnotation(type, name, imageURL) {
+    console.log("Background: addAnnotation called. Type:", type, ". Name:", name, ". Image URL (first 100 chars):", imageURL ? imageURL.substring(0,100) : "No image");
     if (session.getAnnotations().length == 0) {
         await startSession();
     }
@@ -178,7 +183,8 @@ async function addAnnotation(type, name, imageURL) {
                         session.addQuestion(newAnnotation);
                         break;
                 }
-                saveSession().then(resolve).catch(reject);
+                console.log("Background: Attempting to save session for annotation Type:", type, "Name:", name);
+                saveSession().then(resolve).catch(error => { console.error("Background: Error during saveSession promise chain for", type, name, ":", error); reject(error); });
             } catch (error) {
                 reject(error);
             }
