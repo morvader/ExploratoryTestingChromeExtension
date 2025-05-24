@@ -20,31 +20,12 @@ async function loadData() {
             throw new Error('Could not get full session data');
         }
 
-        // Reconstruir la sesión
-        currentSession = new Session(sessionData.startDateTime, sessionData.browserInfo);
+        // Reconstruir la sesión usando el método estático
+        currentSession = Session.fromPlainObject(sessionData);
 
-        // Reconstruir las anotaciones
-        sessionData.annotations.forEach(annotation => {
-            let newAnnotation;
-            switch (annotation.type) {
-                case "Bug":
-                    newAnnotation = new Bug(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    currentSession.addBug(newAnnotation);
-                    break;
-                case "Note":
-                    newAnnotation = new Note(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    currentSession.addNote(newAnnotation);
-                    break;
-                case "Idea":
-                    newAnnotation = new Idea(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    currentSession.addIdea(newAnnotation);
-                    break;
-                case "Question":
-                    newAnnotation = new Question(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    currentSession.addQuestion(newAnnotation);
-                    break;
-            }
-        });
+        if (!currentSession) {
+            throw new Error('Could not reconstruct session using Session.fromPlainObject');
+        }
 
         // Mostrar la información de la sesión
         displaySessionInfo(currentSession);
@@ -136,35 +117,22 @@ function displayAnnotationsTable(session) {
 
     tableBody.innerHTML = annotations
         .filter(annotation => currentFilter === 'all' || annotation.constructor.name === currentFilter)
-        .map((annotation, index) => {
-            console.log(`Annotation ${index}:`, {
-                type: annotation.constructor.name,
-                name: annotation.name,
-                url: annotation.url,
-                timestamp: annotation.timestamp,
-                imageURL: annotation.imageURL
-            });
-
-            const row = `
+        .map((annotation, index) => `
             <tr>
                 <td>${getAnnotationIcon(annotation.constructor.name)}</td>
-                <td class="annotationDescription">${annotation.name}</td>
-                <td class="annotationUrl">${annotation.url || 'N/A'}</td>
+                <td class="annotationDescription">${escapeHTML(annotation.name)}</td>
+                <td class="annotationUrl">${escapeHTML(annotation.url || 'N/A')}</td>
                 <td>${annotation.timestamp ? new Date(annotation.timestamp).toLocaleString() : 'N/A'}</td>
                 <td class="screenshot-cell">
                     ${annotation.imageURL ?
-                    `<img src="${annotation.imageURL}" 
-                             class="previewImage" 
-                             data-index="${index}"
-                             data-preview="${annotation.imageURL}">`
+                    `<img src="${annotation.imageURL}" class="previewImage" data-index="${index}" data-preview="${annotation.imageURL}">`
                     : ''}
                 </td>
                 <td>
                     <button class="deleteBtn" data-index="${index}" title="Delete annotation">×</button>
                 </td>
-            </tr>`;
-            return row;
-        }).join('');
+            </tr>`
+        ).join('');
 
     // Añadir listeners para las imágenes
     document.querySelectorAll('.previewImage').forEach(img => {
@@ -296,268 +264,214 @@ function setupFilterListeners() {
     document.getElementById('downloadReportBtn').addEventListener('click', downloadCompleteReport);
 }
 
-function downloadCompleteReport() {
-    // Crear una copia del contenido actual
-    const reportContent = document.getElementById('report').cloneNode(true);
 
-    // Remove chart container if it exists
-    const chartContainer = reportContent.querySelector('#chartContainer');
-    if (chartContainer) {
-        chartContainer.remove();
-    }
+// --- Helper Functions for Report Download ---
 
-    // Eliminar el botón de descarga del reporte
-    const downloadBtn = reportContent.querySelector('#downloadReportBtn');
-    if (downloadBtn) {
-        downloadBtn.parentElement.remove();
-    }
-
-    // Eliminar la columna de eliminación
-    const table = reportContent.querySelector('table');
-    if (table) {
-        // Eliminar la columna del encabezado
-        const headerRow = table.querySelector('thead tr');
-        if (headerRow) {
-            const lastHeaderCell = headerRow.lastElementChild;
-            if (lastHeaderCell) {
-                lastHeaderCell.remove();
-            }
-        }
-
-        // Eliminar la columna de cada fila
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const lastCell = row.lastElementChild;
-            if (lastCell) {
-                lastCell.remove();
-            }
-        });
-    }
-
-    // Asegurar que los filtros estén presentes
-    const reportDiv = reportContent.querySelector('#report');
-    if (reportDiv) {
-        // Crear el contenedor de filtros si no existe
-        let filterContainer = reportDiv.querySelector('.filter-container');
-        if (!filterContainer) {
-            filterContainer = document.createElement('div');
-            filterContainer.className = 'filter-container';
-            reportDiv.insertBefore(filterContainer, reportDiv.firstChild);
-        }
-
-        // Añadir los botones de filtro
-        filterContainer.innerHTML = `
-            <div class="filter-buttons">
-                <button class="filter-button active" data-type="all">all</button>
-                <button class="filter-button" data-type="Bug">Bug</button>
-                <button class="filter-button" data-type="Note">Note</button>
-                <button class="filter-button" data-type="Idea">Idea</button>
-                <button class="filter-button" data-type="Question">Question</button>
-            </div>
-        `;
-    }
-
-    // Convertir las imágenes a base64
-    const images = reportContent.querySelectorAll('.previewImage');
-    const imagePromises = Array.from(images).map(img => {
-        return new Promise((resolve) => {
-            if (img.src) {
-                const tempImg = new Image();
-                tempImg.crossOrigin = 'Anonymous';
-                tempImg.onload = function () {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = tempImg.width;
-                    canvas.height = tempImg.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(tempImg, 0, 0);
-                    img.src = canvas.toDataURL('image/png');
-                    resolve();
-                };
-                tempImg.onerror = () => resolve();
-                tempImg.src = img.src;
-            } else {
-                resolve();
-            }
-        });
-    });
-
-    // Esperar a que todas las imágenes se conviertan
-    Promise.all(imagePromises).then(() => {
-        // Convertir los SVG a base64
-        const svgPromises = {
-            Bug: fetch('../images/bug.svg').then(r => r.text()),
-            Note: fetch('../images/note.svg').then(r => r.text()),
-            Idea: fetch('../images/light-bulb.svg').then(r => r.text()),
-            Question: fetch('../images/question.svg').then(r => r.text())
-        };
-
-        Promise.all(Object.values(svgPromises)).then(svgContents => {
-            const icons = {
-                Bug: `data:image/svg+xml;base64,${btoa(svgContents[0])}`,
-                Note: `data:image/svg+xml;base64,${btoa(svgContents[1])}`,
-                Idea: `data:image/svg+xml;base64,${btoa(svgContents[2])}`,
-                Question: `data:image/svg+xml;base64,${btoa(svgContents[3])}`
-            };
-
-            // Reemplazar las referencias a los iconos en el HTML
-            const iconElements = reportContent.querySelectorAll('.annotation-icon');
-            iconElements.forEach(icon => {
-                const type = icon.alt;
-                if (icons[type]) {
-                    icon.outerHTML = `<img src="${icons[type]}" alt="${type}" class="annotation-icon" data-type="${type}">`;
-                }
-            });
-
-            // Crear el HTML completo
-            const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Exploratory Testing Session Report</title>
-    <style>
-        ${getStyles()}
-    </style>
-</head>
-<body>
-    ${reportContent.outerHTML}
-    <div id="imagePreview" class="image-preview">
-        <img src="" alt="Preview">
-    </div>
-    <div id="imageHoverPreview" class="image-hover-preview">
-        <img src="" alt="Hover Preview">
-    </div>
-    <script>
-        // Datos de la sesión
-        const sessionData = ${JSON.stringify({
-                startDateTime: currentSession.getStartDateTime(),
-                browserInfo: currentSession.getBrowserInfo(),
-                annotations: currentSession.getAnnotations().map(a => ({
-                    type: a.constructor.name,
-                    name: a.name,
-                    url: a.url,
-                    timestamp: a.timestamp,
-                    imageURL: a.imageURL
-                }))
-            })};
-
-        // Función para mostrar la vista previa completa
-        function showImagePreview(src) {
-            const preview = document.getElementById('imagePreview');
-            if (!preview) return;
-            
-            const previewImg = preview.querySelector('img');
-            if (!previewImg) return;
-
-            previewImg.src = src;
-            preview.classList.add('active');
-
-            const closePreview = function() {
-                preview.classList.remove('active');
-                preview.removeEventListener('click', closePreview);
-            };
-
-            preview.addEventListener('click', closePreview);
-            previewImg.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        }
-
-        // Función para manejar el hover de imágenes
-        function setupImageHover() {
-            document.querySelectorAll('.previewImage').forEach(img => {
-                // Click para vista completa
-                img.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showImagePreview(this.src);
-                });
-
-                // Hover para preview
-                img.addEventListener('mouseenter', function(e) {
-                    const preview = document.getElementById('imageHoverPreview');
-                    if (!preview) return;
-
-                    const previewImg = preview.querySelector('img');
-                    if (!previewImg) return;
-
-                    previewImg.src = this.src;
-                    preview.classList.add('active');
-                    updateHoverPosition(e);
-                });
-
-                img.addEventListener('mousemove', updateHoverPosition);
-                img.addEventListener('mouseleave', function() {
-                    const preview = document.getElementById('imageHoverPreview');
-                    if (preview) {
-                        preview.classList.remove('active');
-                    }
-                });
-            });
-        }
-
-        function updateHoverPosition(event) {
-            const preview = document.getElementById('imageHoverPreview');
-            if (!preview || !preview.classList.contains('active')) return;
-
-            const offset = 15;
-            const previewWidth = preview.offsetWidth;
-            const previewHeight = preview.offsetHeight;
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-
-            let left = event.clientX + offset;
-            let top = event.clientY + offset;
-
-            if (left + previewWidth > windowWidth) {
-                left = event.clientX - previewWidth - offset;
-            }
-            if (top + previewHeight > windowHeight) {
-                top = event.clientY - previewHeight - offset;
-            }
-
-            preview.style.left = left + 'px';
-            preview.style.top = top + 'px';
-        }
-
-        // Inicializar todo cuando el documento esté listo
-        document.addEventListener('DOMContentLoaded', function() {
-            setupImageHover();
-        });
-    </script>
-</body>
-</html>`;
-
-            // Crear el blob y descargar
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ExploratoryTestingReport_${new Date().toISOString().slice(0, 10)}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>"']/g, function (match) {
+        return {
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[match];
     });
 }
 
-function getStyles() {
+function cloneAndPrepareReportContent() {
+    const reportContent = document.getElementById('report').cloneNode(true);
+    reportContent.querySelector('#chartContainer')?.remove();
+    reportContent.querySelector('#downloadReportBtn')?.parentElement.remove();
+
+    const table = reportContent.querySelector('table');
+    if (table) {
+        table.querySelector('thead tr')?.lastElementChild?.remove(); // Remove delete column header
+        table.querySelectorAll('tbody tr').forEach(row => row.lastElementChild?.remove()); // Remove delete button cell
+    }
+    return reportContent;
+}
+
+function ensureFilterButtonsInClone(reportClone, currentFilterValue) {
+    const reportDiv = reportClone.querySelector('#report') || reportClone;
+    let filterContainer = reportDiv.querySelector('.filter-container');
+    if (!filterContainer) {
+        filterContainer = document.createElement('div');
+        filterContainer.className = 'filter-container';
+        reportDiv.insertBefore(filterContainer, reportDiv.firstChild);
+    }
+    filterContainer.innerHTML = `
+        <div class="filter-buttons">
+            <button class="filter-button ${currentFilterValue === 'all' ? 'active' : ''}" data-type="all">All</button>
+            <button class="filter-button ${currentFilterValue === 'Bug' ? 'active' : ''}" data-type="Bug">Bug</button>
+            <button class="filter-button ${currentFilterValue === 'Note' ? 'active' : ''}" data-type="Note">Note</button>
+            <button class="filter-button ${currentFilterValue === 'Idea' ? 'active' : ''}" data-type="Idea">Idea</button>
+            <button class="filter-button ${currentFilterValue === 'Question' ? 'active' : ''}" data-type="Question">Question</button>
+        </div>`;
+}
+
+async function convertImageToDataURL(imgElement) {
+    if (!imgElement || !imgElement.src || imgElement.src.startsWith('data:')) {
+        return Promise.resolve(); // No conversion needed or possible
+    }
+    return new Promise((resolve) => {
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'Anonymous'; // Attempt to load cross-origin images (e.g., from other extension pages if policy allows)
+        tempImg.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = tempImg.naturalWidth;
+            canvas.height = tempImg.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(tempImg, 0, 0);
+            imgElement.src = canvas.toDataURL('image/png');
+            resolve();
+        };
+        tempImg.onerror = () => {
+            console.warn('Failed to load image for base64 conversion:', imgElement.src);
+            resolve(); // Resolve to not break Promise.all
+        };
+        tempImg.src = imgElement.src;
+    });
+}
+
+async function embedImagesAsBase64(reportClone) {
+    const images = reportClone.querySelectorAll('.previewImage');
+    const promises = Array.from(images).map(img => convertImageToDataURL(img));
+    await Promise.all(promises);
+}
+
+async function convertSvgToDataURL(svgPath) {
+    try {
+        const response = await fetch(svgPath);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const svgText = await response.text();
+        return `data:image/svg+xml;base64,${btoa(svgText)}`;
+    } catch (error) {
+        console.error('Error fetching or converting SVG:', svgPath, error);
+        return svgPath; // Return original path as fallback
+    }
+}
+
+async function embedSvgsAsBase64(reportClone) {
+    const iconElements = reportClone.querySelectorAll('.annotation-icon');
+    const svgSources = { // Relative to preview.html
+        Bug: '../images/bug.svg',
+        Note: '../images/note.svg',
+        Idea: '../images/light-bulb.svg',
+        Question: '../images/question.svg'
+    };
+
+    const promises = Array.from(iconElements).map(async (iconImg) => {
+        const type = iconImg.alt;
+        const srcPath = svgSources[type];
+        if (srcPath && !iconImg.src.startsWith('data:')) {
+            iconImg.src = await convertSvgToDataURL(srcPath);
+        }
+    });
+    await Promise.all(promises);
+}
+
+function getStyles() { // Renamed to indicate it's for embedding
     // Obtener todos los estilos del documento
-    const styles = Array.from(document.styleSheets)
+    return Array.from(document.styleSheets)
         .map(sheet => {
             try {
-                return Array.from(sheet.cssRules)
+                return Array.from(sheet.cssRules || []) // Add guard for sheet.cssRules being null
                     .map(rule => rule.cssText)
                     .join('\n');
             } catch (e) {
-                // Ignorar errores de CORS
-                return '';
+                console.warn('Could not read CSS rules from stylesheet:', sheet.href, e);
+                return ''; // Return empty string for sheets that can't be accessed
             }
         })
         .join('\n');
-
-    return styles;
 }
+
+function generateReportHtml(clonedReportHtml, stylesHtml, sessionDataJsonString) {
+    // Basic script for image preview in the downloaded report. Hover functionality removed for simplicity.
+    const scriptContent = `
+        const sessionData = ${sessionDataJsonString};
+        function showImagePreview(src) {
+            const preview = document.getElementById('imagePreview');
+            if (!preview) return;
+            const img = preview.querySelector('img');
+            if (!img) return;
+            img.src = src;
+            preview.classList.add('active');
+            preview.onclick = () => preview.classList.remove('active'); // Click anywhere on overlay to close
+            img.onclick = (e) => e.stopPropagation(); // Click on image itself does nothing extra
+        }
+        document.querySelectorAll('.previewImage').forEach(img => {
+            img.addEventListener('click', (e) => { e.preventDefault(); showImagePreview(img.src); });
+        });
+    `;
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Exploratory Testing Session Report</title>
+    <style>${stylesHtml}</style>
+</head>
+<body>
+    ${clonedReportHtml}
+    <div id="imagePreview" class="image-preview"><img></div> 
+    <script>${scriptContent}</script>
+</body>
+</html>`;
+}
+
+function triggerDownload(htmlContent, filename) {
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+async function downloadCompleteReport() {
+    try {
+        const reportCloneElement = cloneAndPrepareReportContent();
+        ensureFilterButtonsInClone(reportCloneElement, currentFilter);
+
+        await embedImagesAsBase64(reportCloneElement);
+        await embedSvgsAsBase64(reportCloneElement);
+
+        const stylesHtml = getStyles(); // Renamed from getEmbeddedStyles for consistency
+        
+        const sessionDataForEmbed = {
+            startDateTime: currentSession.getStartDateTime(),
+            browserInfo: currentSession.getBrowserInfo(),
+            annotations: currentSession.getAnnotations().map(a => ({
+                type: a.constructor.name,
+                name: a.name, // Assumes name is already escaped or safe
+                url: a.url,   // Assumes URL is already escaped or safe
+                timestamp: a.timestamp,
+                imageURL: reportCloneElement.querySelector(`.previewImage[data-index="${currentSession.getAnnotations().indexOf(a)}"]`)?.src || a.imageURL // Get potentially base64 version
+            }))
+        };
+        const sessionJsonString = JSON.stringify(sessionDataForEmbed, (key, value) => {
+            // Basic escaping for string values in JSON to prevent XSS in the <script> block
+            if (typeof value === 'string') {
+                return value.replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+            }
+            return value;
+        });
+
+
+        const finalHtml = generateReportHtml(reportCloneElement.innerHTML, stylesHtml, sessionJsonString);
+        const filename = `ExploratoryTestingReport_${new Date().toISOString().slice(0, 10)}.html`;
+        
+        triggerDownload(finalHtml, filename);
+
+    } catch (error) {
+        console.error("Error during report download:", error);
+        alert("Failed to download report. Check console for details."); // User-friendly error
+    }
+}
+
 
 // Cargar los datos cuando el documento esté listo
 document.addEventListener('DOMContentLoaded', loadData);

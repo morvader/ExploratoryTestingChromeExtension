@@ -19,33 +19,24 @@ async function saveSession() {
 async function loadSession() {
     const data = await chrome.storage.local.get('session');
     if (data.session) {
-        // Reconstruir el objeto Session con sus métodos
-        const loadedSession = data.session;
-        session = new Session(loadedSession.startDateTime, loadedSession.browserInfo);
-
-        // Reconstruir las anotaciones
-        loadedSession.annotations.forEach(annotation => {
-            let newAnnotation;
-            switch (annotation.type) {
-                case "Bug":
-                    newAnnotation = new Bug(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addBug(newAnnotation);
-                    break;
-                case "Note":
-                    newAnnotation = new Note(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addNote(newAnnotation);
-                    break;
-                case "Idea":
-                    newAnnotation = new Idea(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addIdea(newAnnotation);
-                    break;
-                case "Question":
-                    newAnnotation = new Question(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addQuestion(newAnnotation);
-                    break;
-            }
-        });
+        const loadedSessionData = data.session;
+        const reconstructedSession = Session.fromPlainObject(loadedSessionData);
+        if (reconstructedSession) {
+            session = reconstructedSession;
+        } else {
+            console.warn("Background: Failed to reconstruct session from stored data. Starting new session.");
+            session = new Session(new Date(), getSystemInfo()); // Fallback to a new session
+        }
+    } else {
+        // If no session data in storage, ensure a new session is created (or handle as appropriate)
+        console.log("Background: No session found in storage. Initializing a new session.");
+        session = new Session(new Date(), getSystemInfo());
     }
+    // Ensure session is saved if it was newly created or reconstructed,
+    // especially if fromPlainObject might return null and a new one is made.
+    // However, loadSession is usually called at startup, saveSession might be too aggressive here
+    // unless there's a specific need to ensure the loaded/reconstructed session is immediately persisted back.
+    // For now, let's assume saveSession will be called by other operations when changes occur.
 }
 
 // Cargar la sesión al iniciar

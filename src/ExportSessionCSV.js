@@ -9,7 +9,17 @@ export class ExportSessionCSV {
 
         for (let i = 0; i < annotations.length; i++) {
             const annotation = annotations[i];
-            const timeStamp = annotation.getTimeStamp().toString('dd-MM-yyyy HH:mm');
+            const dateObj = annotation.getTimeStamp();
+
+            const padTo2Digits = (num) => num.toString().padStart(2, '0');
+
+            const day = padTo2Digits(dateObj.getDate());
+            const month = padTo2Digits(dateObj.getMonth() + 1); // Months are 0-indexed
+            const year = dateObj.getFullYear();
+            const hours = padTo2Digits(dateObj.getHours());
+            const minutes = padTo2Digits(dateObj.getMinutes());
+
+            const timeStamp = `${day}-${month}-${year} ${hours}:${minutes}`;
             const type = annotation.getType();
             const name = annotation.getName();
             const url = annotation.getURL();

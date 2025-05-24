@@ -3,10 +3,13 @@ let currentAnnotationTypeForCrop = null;
 
 window.onload = function () {
   initElements();
-
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
+  // Tooltip initialization removed as per jQuery removal task.
+  // If Bootstrap tooltips are needed, vanilla JS initialization is required.
+  // Example:
+  // var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'))
+  // var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  //   return new bootstrap.Tooltip(tooltipTriggerEl)
+  // })
 }
 
 function initElements() {
@@ -14,48 +17,46 @@ function initElements() {
   exportListeners();
   updateCounters();
   registerPopupMessageListener(); // Added listener registration
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
+  // Tooltip initialization removed
 }
 
 function annotationListeners() {
-  $(document).on('click', '#BugBtn', showBugReport);
-  $(document).on('click', '#IdeaBtn', showIdeaReport);
-  $(document).on('click', '#NoteBtn', showNoteReport);
-  $(document).on('click', '#QuestionBtn', showQuestionReport);
+  document.getElementById('BugBtn').addEventListener('click', showBugReport);
+  document.getElementById('IdeaBtn').addEventListener('click', showIdeaReport);
+  document.getElementById('NoteBtn').addEventListener('click', showNoteReport);
+  document.getElementById('QuestionBtn').addEventListener('click', showQuestionReport);
 
-  $(document).on('click', '#addNewBugBtn', () => {
-    addNewBug("")
+  document.getElementById('addNewBugBtn').addEventListener('click', () => {
+    addNewBug("", "") // Assuming description is empty, imageURL is empty
   });
-  $(document).on('click', '#addNewIdeaBtn', () => {
-    addNewIdea("")
+  document.getElementById('addNewIdeaBtn').addEventListener('click', () => {
+    addNewIdea("", "") // Assuming description is empty, imageURL is empty
   });
-  $(document).on('click', '#addNewNoteBtn', () => {
-    addNewNote("")
+  document.getElementById('addNewNoteBtn').addEventListener('click', () => {
+    addNewNote("", "") // Assuming description is empty, imageURL is empty
   });
-  $(document).on('click', '#addNewQuestionBtn', () => {
-    addNewQuestion("")
+  document.getElementById('addNewQuestionBtn').addEventListener('click', () => {
+    addNewQuestion("", "") // Assuming description is empty, imageURL is empty
   });
 
-  $(document).on('click', '#addNewBugSCBtn', () => {
+  document.getElementById('addNewBugSCBtn').addEventListener('click', () => {
     addNewAnnotationWithScreenShot("bug")
   });
-  $(document).on('click', '#addNewIdeaSCBtn', () => {
+  document.getElementById('addNewIdeaSCBtn').addEventListener('click', () => {
     addNewAnnotationWithScreenShot("idea")
   });
-  $(document).on('click', '#addNewNoteSCBtn', () => {
+  document.getElementById('addNewNoteSCBtn').addEventListener('click', () => {
     addNewAnnotationWithScreenShot("note")
   });
-  $(document).on('click', '#addNewQuestionSCBtn', () => {
+  document.getElementById('addNewQuestionSCBtn').addEventListener('click', () => {
     addNewAnnotationWithScreenShot("question")
   });
 
   // New listeners for crop buttons
-  $(document).on('click', '#addNewBugCropBtn', () => { handleCropScreenshot("bug"); });
-  $(document).on('click', '#addNewIdeaCropBtn', () => { handleCropScreenshot("idea"); });
-  $(document).on('click', '#addNewNoteCropBtn', () => { handleCropScreenshot("note"); });
-  $(document).on('click', '#addNewQuestionCropBtn', () => { handleCropScreenshot("question"); });
+  document.getElementById('addNewBugCropBtn').addEventListener('click', () => { handleCropScreenshot("bug"); });
+  document.getElementById('addNewIdeaCropBtn').addEventListener('click', () => { handleCropScreenshot("idea"); });
+  document.getElementById('addNewNoteCropBtn').addEventListener('click', () => { handleCropScreenshot("note"); });
+  document.getElementById('addNewQuestionCropBtn').addEventListener('click', () => { handleCropScreenshot("question"); });
 }
 
 function handleCropScreenshot(type) {
@@ -63,15 +64,15 @@ function handleCropScreenshot(type) {
     let description = "";
     let descriptionFieldId = "";
     switch (type) {
-        case "bug": descriptionFieldId = "#newBugDescription"; break;
-        case "idea": descriptionFieldId = "#newIdeaDescription"; break;
-        case "note": descriptionFieldId = "#newNoteDescription"; break;
-        case "question": descriptionFieldId = "#newQuestionDescription"; break;
+        case "bug": descriptionFieldId = "newBugDescription"; break;
+        case "idea": descriptionFieldId = "newIdeaDescription"; break;
+        case "note": descriptionFieldId = "newNoteDescription"; break;
+        case "question": descriptionFieldId = "newQuestionDescription"; break;
         default:
             console.error("Unknown annotation type for crop:", type);
             return;
     }
-    description = $(descriptionFieldId).val().trim();
+    description = document.getElementById(descriptionFieldId).value.trim();
 
     if (description === "") {
         alert("Please enter a description before taking a cropped screenshot.");
@@ -134,33 +135,38 @@ function registerPopupMessageListener() {
 
 function showBugReport() {
   hideAllReports();
-  $("#addNewBug").fadeIn();
-  $('#newBugDescription').focus();
+  document.getElementById("addNewBug").style.display = 'block'; // Or 'flex' if applicable
+  document.getElementById('newBugDescription').focus();
 };
 
 function showIdeaReport() {
   hideAllReports();
-  $("#addNewIdea").fadeIn();
-  $('#newIdeaDescription').focus();
+  document.getElementById("addNewIdea").style.display = 'block'; // Or 'flex' if applicable
+  document.getElementById('newIdeaDescription').focus();
 };
 
 function showNoteReport() {
   hideAllReports();
-  $("#addNewNote").fadeIn();
-  $('#newNoteDescription').focus();
+  document.getElementById("addNewNote").style.display = 'block'; // Or 'flex' if applicable
+  document.getElementById('newNoteDescription').focus();
 };
 
 function showQuestionReport() {
   hideAllReports();
-  $("#addNewQuestion").fadeIn();
-  $('#newQuestionDescription').focus();
+  document.getElementById("addNewQuestion").style.display = 'block'; // Or 'flex' if applicable
+  document.getElementById('newQuestionDescription').focus();
 };
 
-function addNewBug(imageURL) {
+function addNewBug(description, imageURL) {
   console.log("Popup: Inside addNewBug. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
-  var bugName = $('#newBugDescription').val().trim();
+  var bugName = description;
+  // If description is empty and it's not a screenshot call (imageURL is also empty),
+  // then fetch the description from the input field.
+  if (bugName === "" && (imageURL === "" || imageURL === undefined || imageURL === null)) {
+    bugName = document.getElementById('newBugDescription').value.trim();
+  }
   console.log("Popup: Bug name:", bugName);
-  if (bugName == "") return;
+  if (bugName === "") return; // Check again after potentially fetching from DOM
   console.log("Popup: Sending message to background for addBug. Name:", bugName);
 
   chrome.runtime.sendMessage({
@@ -176,11 +182,14 @@ function addNewBug(imageURL) {
   // window.close(); // <-- REMOVED THIS LINE
 };
 
-function addNewNote(imageURL) {
+function addNewNote(description, imageURL) {
   console.log("Popup: Inside addNewNote. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
-  var noteName = $('#newNoteDescription').val().trim();
+  var noteName = description;
+  if (noteName === "" && (imageURL === "" || imageURL === undefined || imageURL === null)) {
+    noteName = document.getElementById('newNoteDescription').value.trim();
+  }
   console.log("Popup: Note name:", noteName);
-  if (noteName == "") return;
+  if (noteName === "") return;
   console.log("Popup: Sending message to background for addNote. Name:", noteName);
   chrome.runtime.sendMessage({
     type: "addNote",
@@ -195,11 +204,14 @@ function addNewNote(imageURL) {
   // window.close(); // <-- REMOVED THIS LINE
 };
 
-function addNewIdea(imageURL) {
+function addNewIdea(description, imageURL) {
   console.log("Popup: Inside addNewIdea. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
-  var ideaName = $('#newIdeaDescription').val().trim();
+  var ideaName = description;
+  if (ideaName === "" && (imageURL === "" || imageURL === undefined || imageURL === null)) {
+    ideaName = document.getElementById('newIdeaDescription').value.trim();
+  }
   console.log("Popup: Idea name:", ideaName);
-  if (ideaName == "") return;
+  if (ideaName === "") return;
   console.log("Popup: Sending message to background for addIdea. Name:", ideaName);
   chrome.runtime.sendMessage({
     type: "addIdea",
@@ -214,11 +226,14 @@ function addNewIdea(imageURL) {
   // window.close(); // <-- REMOVED THIS LINE
 };
 
-function addNewQuestion(imageURL) {
+function addNewQuestion(description, imageURL) {
   console.log("Popup: Inside addNewQuestion. imageURL (first 100 chars):", imageURL ? imageURL.substring(0, 100) : "null");
-  var questionName = $('#newQuestionDescription').val().trim();
+  var questionName = description;
+  if (questionName === "" && (imageURL === "" || imageURL === undefined || imageURL === null)) {
+    questionName = document.getElementById('newQuestionDescription').value.trim();
+  }
   console.log("Popup: Question name:", questionName);
-  if (questionName == "") return;
+  if (questionName === "") return;
   console.log("Popup: Sending message to background for addQuestion. Name:", questionName);
   chrome.runtime.sendMessage({
     type: "addQuestion",
@@ -236,20 +251,38 @@ function addNewQuestion(imageURL) {
 
 
 function addNewAnnotationWithScreenShot(type) {
+  let description = "";
+  let descriptionFieldId = "";
+  switch (type) {
+    case "bug": descriptionFieldId = "newBugDescription"; break;
+    case "idea": descriptionFieldId = "newIdeaDescription"; break;
+    case "note": descriptionFieldId = "newNoteDescription"; break;
+    case "question": descriptionFieldId = "newQuestionDescription"; break;
+    default:
+      console.error("Unknown annotation type for screenshot:", type);
+      return;
+  }
+  description = document.getElementById(descriptionFieldId).value.trim();
+
+  if (description === "") {
+    alert("Please enter a description before taking a screenshot.");
+    return; 
+  }
+
   chrome.tabs.captureVisibleTab((screenshotUrl) => {
     if (screenshotUrl === 'undefined') screenshotUrl = "";
     switch (type) {
       case "bug":
-        addNewBug(screenshotUrl);
+        addNewBug(description, screenshotUrl);
         break;
       case "idea":
-        addNewIdea(screenshotUrl);
+        addNewIdea(description, screenshotUrl);
         break;
       case "question":
-        addNewQuestion(screenshotUrl);
+        addNewQuestion(description, screenshotUrl);
         break;
       case "note":
-        addNewNote(screenshotUrl);
+        addNewNote(description, screenshotUrl);
         break;
     }
   })
@@ -263,12 +296,12 @@ function exportSessionCSV() {
 };
 
 function exportListeners() {
-  $(document).on('click', '#exportCSVBtn', exportSessionCSV);
-  $(document).on('click', '#exportJsonBtn', exportSessionJSon);
-  $(document).on('click', '#importJsonBtn', () => {
-    $('#importJsonInput').click()
+  document.getElementById('exportCSVBtn').addEventListener('click', exportSessionCSV);
+  document.getElementById('exportJsonBtn').addEventListener('click', exportSessionJSon);
+  document.getElementById('importJsonBtn').addEventListener('click', () => {
+    document.getElementById('importJsonInput').click();
   });
-  $(document).on('change', '#importJsonInput', importSessionJSon);
+  document.getElementById('importJsonInput').addEventListener('change', importSessionJSon);
 }
 
 
@@ -298,7 +331,7 @@ function onReaderLoad(event) {
   }, function (response) {
     updateCounters();
     //Reset input value
-    $('#importJsonInput').val("");
+    document.getElementById('importJsonInput').value = "";
   });
 
 }
@@ -324,15 +357,15 @@ function clearAllReports() {
 };
 
 function hideAllReports() {
-  $("#newBugDescription").val('');
-  $("#newIdeaDescription").val('');
-  $("#newNoteDescription").val('');
-  $("#newQuestionDescription").val('');
+  document.getElementById("newBugDescription").value = '';
+  document.getElementById("newIdeaDescription").value = '';
+  document.getElementById("newNoteDescription").value = '';
+  document.getElementById("newQuestionDescription").value = '';
 
-  $("#addNewBug").slideUp();
-  $("#addNewIdea").slideUp();
-  $("#addNewNote").slideUp();
-  $("#addNewQuestion").slideUp();
+  document.getElementById("addNewBug").style.display = 'none';
+  document.getElementById("addNewIdea").style.display = 'none';
+  document.getElementById("addNewNote").style.display = 'none';
+  document.getElementById("addNewQuestion").style.display = 'none';
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -351,17 +384,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function updateCounters() {
   chrome.runtime.sendMessage({ type: "getSessionData" }, function (response) {
-    if (response.bugs > 0) $("#bugCounter").html(" " + response.bugs + " ");
-    else $("#bugCounter").html("");
+    const bugCounter = document.getElementById("bugCounter");
+    const noteCounter = document.getElementById("noteCounter");
+    const ideaCounter = document.getElementById("ideaCounter");
+    const questionCounter = document.getElementById("questionCounter");
 
-    if (response.notes > 0) $("#noteCounter").html(" " + response.notes + " ");
-    else $("#noteCounter").html("");
+    if (response.bugs > 0) bugCounter.innerHTML = " " + response.bugs + " ";
+    else bugCounter.innerHTML = "";
 
-    if (response.ideas > 0) $("#ideaCounter").html(" " + response.ideas + " ");
-    else $("#ideaCounter").html("");
+    if (response.notes > 0) noteCounter.innerHTML = " " + response.notes + " ";
+    else noteCounter.innerHTML = "";
 
-    if (response.questions > 0) $("#questionCounter").html(" " + response.questions + " ");
-    else $("#questionCounter").html("");
+    if (response.ideas > 0) ideaCounter.innerHTML = " " + response.ideas + " ";
+    else ideaCounter.innerHTML = "";
+
+    if (response.questions > 0) questionCounter.innerHTML = " " + response.questions + " ";
+    else questionCounter.innerHTML = "";
   });
 }
 
@@ -370,10 +408,10 @@ document.addEventListener('DOMContentLoaded', function () {
   newBugDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     // if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-    //   $('#newBugDescription').val($('#newBugDescription').val() + '\n');
+    //   newBugDescription.value = newBugDescription.value + '\n';
     // }
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      addNewBug("");
+      addNewBug(newBugDescription.value.trim(), "");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -388,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
   newIdeaDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      addNewIdea("");
+      addNewIdea(newIdeaDescription.value.trim(), "");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -403,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
   newNoteDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      addNewNote("");
+      addNewNote(newNoteDescription.value.trim(), "");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -418,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
   newQuestionDescription.addEventListener("keypress", function (e) {
     var key = e.which || e.keyCode;
     if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-      addNewQuestion("");
+      addNewQuestion(newQuestionDescription.value.trim(), "");
     }
     if (key == 13) { // 13 is enter
       if (e.shiftKey == true) {
@@ -435,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (response.annotationsCount === 0) return;
 
       var resetConfirmation = document.getElementById('resetConfirmation');
-      $("#resetConfirmation").fadeIn();
+      resetConfirmation.style.display = 'block'; // Or 'flex'
     });
   }, false);
 }, false);
@@ -443,19 +481,19 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
   var resetBtnNo = document.getElementById('resetNo');
   resetBtnNo.addEventListener('click', function () {
-    $("#resetConfirmation").slideUp();
+    document.getElementById('resetConfirmation').style.display = 'none';
   });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-  var resetBtnNo = document.getElementById('resetYes');
-  resetBtnNo.addEventListener('click', function () {
+  var resetBtnYes = document.getElementById('resetYes'); // Corrected variable name from resetBtnNo to resetBtnYes
+  resetBtnYes.addEventListener('click', function () { // Corrected variable name
     chrome.runtime.sendMessage({ type: "clearSession" }, function (response) {
-      $("#bugCounter").html("");
-      $("#ideaCounter").html("");
-      $("#noteCounter").html("");
-      $("#questionCounter").html("");
+      document.getElementById("bugCounter").innerHTML = "";
+      document.getElementById("ideaCounter").innerHTML = "";
+      document.getElementById("noteCounter").innerHTML = "";
+      document.getElementById("questionCounter").innerHTML = "";
     });
-    $("#resetConfirmation").slideUp();
+    document.getElementById('resetConfirmation').style.display = 'none';
   });
 });

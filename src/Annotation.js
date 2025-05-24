@@ -37,11 +37,7 @@ export class Annotation {
 export class Bug extends Annotation {
     constructor(name, url, timestamp, imageURL) {
         super(name, url, timestamp, imageURL);
-        this.type = this.getType();
-    }
-
-    getType() {
-        return "Bug";
+        this.type = "Bug";
     }
 }
 
@@ -49,11 +45,7 @@ export class Bug extends Annotation {
 export class Idea extends Annotation {
     constructor(name, url, timestamp, imageURL) {
         super(name, url, timestamp, imageURL);
-        this.type = this.getType();
-    }
-
-    getType() {
-        return "Idea";
+        this.type = "Idea";
     }
 }
 
@@ -61,11 +53,7 @@ export class Idea extends Annotation {
 export class Note extends Annotation {
     constructor(name, url, timestamp, imageURL) {
         super(name, url, timestamp, imageURL);
-        this.type = this.getType();
-    }
-
-    getType() {
-        return "Note";
+        this.type = "Note";
     }
 }
 
@@ -73,11 +61,7 @@ export class Note extends Annotation {
 export class Question extends Annotation {
     constructor(name, url, timestamp, imageURL) {
         super(name, url, timestamp, imageURL);
-        this.type = this.getType();
-    }
-
-    getType() {
-        return "Question";
+        this.type = "Question";
     }
 }
 
