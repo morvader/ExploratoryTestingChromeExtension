@@ -4,7 +4,7 @@ $path = "."
 $DateTime = (Get-Date -Format "yyyyMMddHHmmss")
 $destination = Join-Path $path ".\ETExtension-$DateTime.zip"
 # exclusion rules. Can use wild cards (*)
-$exclude = @("_*.config","ARCHIVE","*.zip","test","screenshots", ".gitignore",".\.git","*.ps1")
+$exclude = @("_*.config","ARCHIVE","*.zip","test","screenshots", ".gitignore",".\.git","*.ps1","node_modules")
 # get files to compress using exclusion filer
 $files = Get-ChildItem -Path $path -Exclude $exclude
 # compress
