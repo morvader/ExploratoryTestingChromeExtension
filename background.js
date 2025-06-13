@@ -12,7 +12,72 @@ let session = new Session();
 
 // Función para guardar la sesión en el storage
 async function saveSession() {
-    await chrome.storage.local.set({ 'session': session });
+    try {
+        await chrome.storage.local.set({ 'session': session });
+    } catch (error) {
+        if (error.name === 'QUOTA_BYTES' || (chrome.runtime.lastError && chrome.runtime.lastError.message && chrome.runtime.lastError.message.includes('QUOTA_BYTES'))) {
+            console.error('Error saving session due to quota limit:', error);
+
+            // Create a deep copy of the session object
+            const sessionCopy = JSON.parse(JSON.stringify(session));
+
+            // Find the oldest annotation with a non-null imageURL
+            let oldestAnnotationIndex = -1;
+            for (let i = 0; i < sessionCopy.annotations.length; i++) {
+                if (sessionCopy.annotations[i].imageURL) {
+                    oldestAnnotationIndex = i;
+                    break;
+                }
+            }
+
+            if (oldestAnnotationIndex !== -1) {
+                // const originalImageURL = sessionCopy.annotations[oldestAnnotationIndex].imageURL; // Optional: for logging
+                sessionCopy.annotations[oldestAnnotationIndex].imageURL = "IMAGE_REMOVED_DUE_TO_STORAGE_LIMIT";
+
+                try {
+                    await chrome.storage.local.set({ 'session': sessionCopy });
+                    // Notify user about successful save after removing screenshot
+                    const notifId = 'sessionSavedAfterQuota-' + Date.now();
+                    chrome.notifications.create(notifId, {
+                        type: 'basic',
+                        iconUrl: 'icons/iconbig.png',
+                        title: 'Session Saved with Adjustment',
+                        message: 'The oldest screenshot was removed to save the session due to storage limits.'
+                    });
+                    setTimeout(() => { chrome.notifications.clear(notifId); }, 7000);
+                     // Update the main session object to reflect the change if the save was successful.
+                    session.annotations[oldestAnnotationIndex].imageURL = "IMAGE_REMOVED_DUE_TO_STORAGE_LIMIT";
+
+                } catch (secondError) {
+                    console.error('Error saving session even after removing screenshot:', secondError);
+                    // Notify user about failed save even after removing screenshot
+                    const notifId = 'sessionSaveFailedAfterQuota-' + Date.now();
+                    chrome.notifications.create(notifId, {
+                        type: 'basic',
+                        iconUrl: 'icons/iconbig.png',
+                        title: 'Session Save Failed',
+                        message: 'Failed to save session. Insufficient storage even after removing the oldest screenshot.'
+                    });
+                    setTimeout(() => { chrome.notifications.clear(notifId); }, 7000);
+                }
+            } else {
+                // No annotation with imageURL found
+                console.error('Failed to save session. No screenshots to remove for quota.');
+                const notifId = 'sessionSaveFailedNoScreenshot-' + Date.now();
+                chrome.notifications.create(notifId, {
+                    type: 'basic',
+                    iconUrl: 'icons/iconbig.png',
+                    title: 'Session Save Failed',
+                    message: 'Failed to save session. Insufficient storage and no screenshots to remove.'
+                });
+                setTimeout(() => { chrome.notifications.clear(notifId); }, 7000);
+            }
+        } else {
+            // Not a quota error, re-throw or handle as appropriate
+            console.error('Error saving session:', error);
+            throw error;
+        }
+    }
 }
 
 // Función para cargar la sesión desde el storage
