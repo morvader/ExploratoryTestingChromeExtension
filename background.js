@@ -9,6 +9,7 @@ import { JSonSessionService } from './src/JSonSessionService.js';
 import { getSystemInfo } from './src/browserInfo.js';
 
 let session = new Session();
+let loadSessionPromise = null;
 
 // Función para guardar la sesión en el storage
 async function saveSession() {
@@ -81,40 +82,45 @@ async function saveSession() {
 }
 
 // Función para cargar la sesión desde el storage
-async function loadSession() {
-    const data = await chrome.storage.local.get('session');
-    if (data.session) {
-        // Reconstruir el objeto Session con sus métodos
+async function loadSessionInternal() {
+    try {
+        const data = await chrome.storage.local.get('session');
+        if (data.session) {
+            // Reconstruir el objeto Session con sus métodos
         const loadedSession = data.session;
         session = new Session(loadedSession.startDateTime, loadedSession.browserInfo);
 
-        // Reconstruir las anotaciones
-        loadedSession.annotations.forEach(annotation => {
-            let newAnnotation;
-            switch (annotation.type) {
-                case "Bug":
-                    newAnnotation = new Bug(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addBug(newAnnotation);
-                    break;
-                case "Note":
-                    newAnnotation = new Note(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addNote(newAnnotation);
-                    break;
-                case "Idea":
-                    newAnnotation = new Idea(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addIdea(newAnnotation);
-                    break;
-                case "Question":
-                    newAnnotation = new Question(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
-                    session.addQuestion(newAnnotation);
-                    break;
-            }
-        });
+            // Reconstruir las anotaciones
+            loadedSession.annotations.forEach(annotation => {
+                let newAnnotation;
+                switch (annotation.type) {
+                    case "Bug":
+                        newAnnotation = new Bug(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                        session.addBug(newAnnotation);
+                        break;
+                    case "Note":
+                        newAnnotation = new Note(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                        session.addNote(newAnnotation);
+                        break;
+                    case "Idea":
+                        newAnnotation = new Idea(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                        session.addIdea(newAnnotation);
+                        break;
+                    case "Question":
+                        newAnnotation = new Question(annotation.name, annotation.url, annotation.timestamp, annotation.imageURL);
+                        session.addQuestion(newAnnotation);
+                        break;
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Error during loadSessionInternal:", e);
+        // session will remain the default new Session() if loading fails.
     }
 }
 
 // Cargar la sesión al iniciar
-loadSession();
+loadSessionPromise = loadSessionInternal();
 
 // Helper function for notifications of processing errors (before addAnnotation is called)
 function notifyProcessingError(annotationType, descriptionName, errorMessage = "") {
@@ -215,13 +221,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             clearSession().then(() => sendResponse({ status: "ok" }));
             break;
         case "getSessionData":
-            sendResponse({
-                bugs: session.getBugs().length,
-                notes: session.getNotes().length,
-                ideas: session.getIdeas().length,
-                questions: session.getQuestions().length,
-                annotationsCount: session.getAnnotations().length
-            });
+            (async () => {
+                try {
+                    if (loadSessionPromise) { // Ensure the promise exists
+                        await loadSessionPromise;
+                    }
+                    // Proceed to send response with current session data
+                    sendResponse({
+                        bugs: session.getBugs().length,
+                        notes: session.getNotes().length,
+                        ideas: session.getIdeas().length,
+                        questions: session.getQuestions().length,
+                        annotationsCount: session.getAnnotations().length
+                    });
+                } catch (e) {
+                    console.error("Error in getSessionData after awaiting loadSessionPromise:", e);
+                    // Attempt to send a response even in case of error, to close the message port.
+                    // The popup's sendMessageWithRetry should ideally handle an undefined or error-indicating response.
+                    // However, if sendResponse is not called, the popup callback for sendMessage might not fire reliably.
+                    // For now, let's assume if an error occurs here, the session object might be in a default state.
+                    sendResponse({
+                        bugs: session.getBugs().length, // Send current state, whatever it is
+                        notes: session.getNotes().length,
+                        ideas: session.getIdeas().length,
+                        questions: session.getQuestions().length,
+                        annotationsCount: session.getAnnotations().length,
+                        error: "Failed to ensure session was fully loaded before sending data."
+                    });
+                }
+            })();
+            isAsync = true; // Indicate that sendResponse will be called asynchronously.
             break;
         case "getFullSession":
             if (!session) {

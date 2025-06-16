@@ -94,7 +94,7 @@ function handleCropScreenshot(type) {
             chrome.tabs.sendMessage(tabId, messagePayload, function(response) {
                 if (chrome.runtime.lastError) {
                     console.error("Error starting selection (sendMessage):", chrome.runtime.lastError.message);
-                    alert("Failed to start selection mode. Please ensure the page is fully loaded and try again. Error: " + chrome.runtime.lastError.message);
+                    alert("Failed to start selection mode. If the extension was recently updated, please try reloading the web page and then attempt the crop again. Error: " + chrome.runtime.lastError.message);
                     currentAnnotationTypeForCrop = null; // Reset
                     return;
                 }
