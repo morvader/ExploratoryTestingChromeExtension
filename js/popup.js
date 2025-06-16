@@ -365,6 +365,81 @@ function updateCounters() {
   });
 }
 
+// Helper function for sending messages with retry logic
+function sendMessageWithRetry(payload, options, callback) {
+    let currentAttempt = 1;
+    const maxRetries = options.maxRetries || 3;
+    const initialDelay = options.initialDelay || 100; // ms
+
+    function attempt() {
+        chrome.runtime.sendMessage(payload, function (response) {
+            if (chrome.runtime.lastError) {
+                console.warn(`Attempt ${currentAttempt} failed for ${payload.type}: ${chrome.runtime.lastError.message}`);
+                if (currentAttempt < maxRetries) {
+                    currentAttempt++;
+                    const delay = initialDelay * Math.pow(2, currentAttempt - 2); // Exponential backoff: 100ms, 200ms, 400ms for 3 retries
+                    console.log(`Retrying in ${delay}ms...`);
+                    setTimeout(attempt, delay);
+                } else {
+                    console.error(`Failed to get data for ${payload.type} after ${maxRetries} attempts.`);
+                    // Call the original callback with an error indicator or null response
+                    // This allows the UI to reflect the failure (e.g., by clearing counters).
+                    if (typeof callback === 'function') {
+                        callback(null, chrome.runtime.lastError); // Pass null response and the error
+                    }
+                }
+            } else {
+                // Success
+                if (typeof callback === 'function') {
+                    callback(response); // Pass the successful response
+                }
+            }
+        });
+    }
+    attempt(); // Initial attempt
+}
+
+
+function updateCounters() {
+    sendMessageWithRetry(
+        { type: "getSessionData" },
+        { maxRetries: 3, initialDelay: 100 },
+        function (response, error) {
+            if (error) {
+                // Handle final failure after retries
+                console.error("updateCounters - final attempt failed:", error.message);
+                $("#bugCounter").html("");
+                $("#noteCounter").html("");
+                $("#ideaCounter").html("");
+                $("#questionCounter").html("");
+                return;
+            }
+
+            // Success: process response
+            if (response) {
+                if (response.bugs > 0) $("#bugCounter").html(" " + response.bugs + " ");
+                else $("#bugCounter").html("");
+
+                if (response.notes > 0) $("#noteCounter").html(" " + response.notes + " ");
+                else $("#noteCounter").html("");
+
+                if (response.ideas > 0) $("#ideaCounter").html(" " + response.ideas + " ");
+                else $("#ideaCounter").html("");
+
+                if (response.questions > 0) $("#questionCounter").html(" " + response.questions + " ");
+                else $("#questionCounter").html("");
+            } else {
+                // This case might occur if sendMessage succeeds but background sends null response without an error
+                console.warn("updateCounters: Received null or undefined response without error on success path.");
+                $("#bugCounter").html("");
+                $("#noteCounter").html("");
+                $("#ideaCounter").html("");
+                $("#questionCounter").html("");
+            }
+        }
+    );
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   var newBugDescription = document.getElementById("newBugDescription");
   newBugDescription.addEventListener("keypress", function (e) {
