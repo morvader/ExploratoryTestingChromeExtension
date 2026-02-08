@@ -241,29 +241,8 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             // This ensures the screenshot won't include the blue overlay
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    // Obtener el Device Pixel Ratio
-                    const dpr = window.devicePixelRatio || 1;
-
-                    // Ajustar las coordenadas por el DPR
-                    const croppedCoordinates = {
-                        x: finalX * dpr,
-                        y: finalY * dpr,
-                        width: finalWidth * dpr,
-                        height: finalHeight * dpr
-                    };
-
-                    const messageToBackground = {
-                        type: "csToBgCropData",
-                        coordinates: croppedCoordinates,
-                        annotationType: currentAnnotationType,
-                        description: currentDescription
-                    };
-                    safeSendMessage(messageToBackground);
-                    console.log("Content script: Sent csToBgCropData to background with DPR adjusted coordinates:", croppedCoordinates);
-
-                    // Reset stored type and description AFTER sending the message
-                    currentAnnotationType = null;
-                    currentDescription = null;
+                    // Capture the selected area and open annotation editor
+                    captureAndOpenAnnotationEditor(finalX, finalY, finalWidth, finalHeight);
                 }, 50); // Wait 50ms for the DOM to fully update
             });
         } else {
@@ -275,6 +254,106 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             // Reset stored type and description
             currentAnnotationType = null;
             currentDescription = null;
+        }
+    }
+
+    // Capture the cropped area and open the annotation editor
+    function captureAndOpenAnnotationEditor(x, y, width, height) {
+        const dpr = window.devicePixelRatio || 1;
+
+        // Request screenshot from background
+        safeSendMessage({
+            type: "requestCropScreenshot",
+            coordinates: {
+                x: x * dpr,
+                y: y * dpr,
+                width: width * dpr,
+                height: height * dpr
+            }
+        }, (response) => {
+            if (response && response.croppedImageData) {
+                // Open annotation editor with the cropped image
+                openAnnotationEditor(response.croppedImageData);
+            } else {
+                console.error("Content script: Failed to get cropped screenshot");
+                safeSendMessage({
+                    type: "selectionCancelled",
+                    annotationType: currentAnnotationType
+                });
+                currentAnnotationType = null;
+                currentDescription = null;
+            }
+        });
+    }
+
+    // Open annotation editor overlay
+    function openAnnotationEditor(imageData) {
+        // Create iframe for annotation editor
+        const iframe = document.createElement('iframe');
+        iframe.id = 'exploratoryTestingAnnotationEditor';
+        iframe.style.position = 'fixed';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.style.zIndex = '2147483647';
+        iframe.src = chrome.runtime.getURL('js/annotation_editor.html');
+
+        document.body.appendChild(iframe);
+
+        // Wait for iframe to load, then send image data
+        iframe.addEventListener('load', () => {
+            iframe.contentWindow.postMessage({
+                type: 'initAnnotationEditor',
+                imageData: imageData
+            }, '*');
+        });
+
+        // Listen for messages from annotation editor
+        const messageHandler = (event) => {
+            if (event.data.type === 'annotationComplete') {
+                // Close editor
+                closeAnnotationEditor();
+
+                // Send annotated image to background
+                safeSendMessage({
+                    type: "csToBgCropData",
+                    annotatedImageData: event.data.imageData,
+                    annotationType: currentAnnotationType,
+                    description: currentDescription
+                });
+
+                console.log("Content script: Sent annotated crop data to background");
+
+                // Reset and cleanup
+                currentAnnotationType = null;
+                currentDescription = null;
+                window.removeEventListener('message', messageHandler);
+            } else if (event.data.type === 'annotationCancelled') {
+                // Close editor and cancel
+                closeAnnotationEditor();
+
+                safeSendMessage({
+                    type: "selectionCancelled",
+                    annotationType: currentAnnotationType
+                });
+
+                // Reset and cleanup
+                currentAnnotationType = null;
+                currentDescription = null;
+                window.removeEventListener('message', messageHandler);
+            }
+        };
+
+        window.addEventListener('message', messageHandler);
+    }
+
+    // Close annotation editor
+    function closeAnnotationEditor() {
+        const iframe = document.getElementById('exploratoryTestingAnnotationEditor');
+        if (iframe && iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
         }
     }
 

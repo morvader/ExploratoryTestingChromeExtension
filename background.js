@@ -236,14 +236,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 .catch(error => sendResponse({ status: "error", error: error.message }));
             isAsync = true;
             break;
-        case "csToBgCropData":
-            console.log("Background: Received csToBgCropData", request);
-            handleProcessCropRequest(request)
-                .then(() => {
-                    console.log("Background: Crop request processed successfully");
+        case "requestCropScreenshot":
+            console.log("Background: Received requestCropScreenshot", request);
+            handleCropScreenshotRequest(request)
+                .then((croppedImageData) => {
+                    sendResponse({ croppedImageData: croppedImageData });
                 })
                 .catch((error) => {
-                    console.error("Background: Failed to process crop request:", error);
+                    console.error("Background: Failed to capture crop screenshot:", error);
+                    sendResponse({ croppedImageData: null });
+                });
+            isAsync = true;
+            break;
+        case "csToBgCropData":
+            console.log("Background: Received csToBgCropData", request);
+            handleProcessAnnotatedCrop(request)
+                .then(() => {
+                    console.log("Background: Annotated crop processed successfully");
+                })
+                .catch((error) => {
+                    console.error("Background: Failed to process annotated crop:", error);
                 });
             break;
         case "updateAnnotationName":
@@ -321,85 +333,77 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 
-// Función para manejar la solicitud de captura de pantalla
-async function handleProcessCropRequest(request) {
+// Handle crop screenshot request - capture and crop, then return to content script
+async function handleCropScreenshotRequest(request) {
     try {
-        console.log("Background: Processing crop request for tab", request.tabId, request);
+        console.log("Background: Processing crop screenshot request", request);
 
-        // Obtener la pestaña activa
-        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tabs || tabs.length === 0) {
-            throw new Error("No active tab found");
-        }
-        const activeTab = tabs[0];
-
-        // Capturar la pantalla
+        // Capture the visible tab
         const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: "png" });
         if (!dataUrl) {
             throw new Error("Failed to capture screenshot");
         }
 
-        // Convertir dataUrl a Blob
+        // Convert dataUrl to Blob
         const response = await fetch(dataUrl);
         const blob = await response.blob();
 
-        // Crear un bitmap de la imagen
+        // Create bitmap from image
         const bitmap = await createImageBitmap(blob);
 
-        // Intentar inferir el DPR comparando el tamaño de la bitmap con las coordenadas CSS recibidas.
-        // Esto asume que las coordenadas request.coordinates representan el área de recorte en píxeles CSS 
-        // relativo al tamaño del viewport en píxeles CSS.
-        // NOTA: La forma correcta es ajustar en el content script.
-        let inferredDpr = 1;
-        if (request.viewportWidth && request.viewportHeight && bitmap.width && bitmap.height) {
-            // Asumiendo que la bitmap.width / viewportWidth en CSS es aproximadamente el DPR
-            // Esto puede no ser exacto si la captura no cubre exactamente el viewport o hay zoom.
-            inferredDpr = bitmap.width / request.viewportWidth;
-            console.log("Background: Inferred DPR based on bitmap size and viewport width:", inferredDpr);
-        } else {
-            console.log("Background: Could not infer DPR. Using assumed DPR of 1.");
-        }
-
-        // Crear un canvas fuera de pantalla con las dimensiones del recorte en píxeles de dispositivo
+        // Create offscreen canvas with crop dimensions
         const canvas = new OffscreenCanvas(
-            request.coordinates.width * inferredDpr,
-            request.coordinates.height * inferredDpr
+            request.coordinates.width,
+            request.coordinates.height
         );
         const ctx = canvas.getContext('2d');
 
-        // Dibujar la porción seleccionada
+        // Draw the selected portion
         ctx.drawImage(
             bitmap,
-            request.coordinates.x * inferredDpr, // Ajustar coordenada X origen
-            request.coordinates.y * inferredDpr, // Ajustar coordenada Y origen
-            request.coordinates.width * inferredDpr, // Ajustar ancho origen
-            request.coordinates.height * inferredDpr, // Ajustar alto origen
+            request.coordinates.x,
+            request.coordinates.y,
+            request.coordinates.width,
+            request.coordinates.height,
             0,
             0,
-            request.coordinates.width * inferredDpr, // Dibujar en el canvas con el tamaño ajustado
-            request.coordinates.height * inferredDpr  // Dibujar en el canvas con el tamaño ajustado
+            request.coordinates.width,
+            request.coordinates.height
         );
 
-        // Convertir el canvas a blob
+        // Convert canvas to blob
         const croppedBlob = await canvas.convertToBlob({ type: 'image/png' });
 
-        // Convertir blob a dataUrl
+        // Convert blob to dataUrl
         const croppedDataUrl = await new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(croppedBlob);
         });
 
-        // Crear la anotación
+        console.log("Background: Successfully created cropped screenshot");
+        return croppedDataUrl;
+    } catch (error) {
+        console.error("Background: Error in handleCropScreenshotRequest:", error);
+        throw error;
+    }
+}
+
+// Handle annotated crop data - save the final annotated image
+async function handleProcessAnnotatedCrop(request) {
+    try {
+        console.log("Background: Processing annotated crop", request);
+
+        // Create annotation with the annotated image
         await addAnnotation(
             request.annotationType.charAt(0).toUpperCase() + request.annotationType.slice(1),
             request.description,
-            croppedDataUrl
+            request.annotatedImageData
         );
 
-        console.log("Background: Successfully processed crop request");
+        console.log("Background: Successfully processed annotated crop");
     } catch (error) {
-        console.error("Background: Error in handleProcessCropRequest:", error);
+        console.error("Background: Error in handleProcessAnnotatedCrop:", error);
         throw error;
     }
 }

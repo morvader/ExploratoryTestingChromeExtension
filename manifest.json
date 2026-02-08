@@ -38,5 +38,16 @@
       ],
       "run_at": "document_idle"
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/annotation_editor.html",
+        "js/annotation_editor.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ]
 }

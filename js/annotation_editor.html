@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotation Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg-overlay: rgba(15, 23, 42, 0.95);
+            --color-surface: rgba(255, 255, 255, 0.1);
+            --color-surface-hover: rgba(255, 255, 255, 0.15);
+            --color-border: rgba(255, 255, 255, 0.2);
+            --color-text: #ffffff;
+            --color-text-muted: rgba(255, 255, 255, 0.7);
+            --color-accent: #DC2626;
+            --color-accent-glow: rgba(220, 38, 38, 0.3);
+            --font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            overflow: hidden;
+            background: var(--color-bg-overlay);
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #editor-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-bg-overlay);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        #canvas-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: calc(100vh - 160px);
+            margin-bottom: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #annotation-canvas {
+            display: block;
+            cursor: crosshair;
+            background: white;
+        }
+
+        #annotation-canvas.tool-arrow {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23DC2626" d="M7 17L17 7M17 7H9M17 7V15" stroke="%23DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 12 12, crosshair;
+        }
+
+        #annotation-canvas.tool-rectangle {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="none" stroke="%23DC2626" stroke-width="2"/></svg>') 12 12, crosshair;
+        }
+
+        #toolbar {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-section:not(:last-child) {
+            padding-right: 12px;
+            border-right: 1px solid var(--color-border);
+        }
+
+        .tool-button {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--color-surface);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text);
+            font-size: 20px;
+            border: 1px solid transparent;
+        }
+
+        .tool-button:hover {
+            background: var(--color-surface-hover);
+            transform: translateY(-1px);
+        }
+
+        .tool-button:active {
+            transform: translateY(0);
+        }
+
+        .tool-button.active {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            box-shadow:
+                0 0 0 3px var(--color-accent-glow),
+                0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        .tool-button.active:hover {
+            background: #B91C1C;
+        }
+
+        .action-button {
+            padding: 0 24px;
+            height: 44px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        #save-with-annotations {
+            background: var(--color-accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        #save-with-annotations:hover {
+            background: #B91C1C;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        }
+
+        #save-without-annotations {
+            background: var(--color-surface);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        #save-without-annotations:hover {
+            background: var(--color-surface-hover);
+        }
+
+        #cancel-button {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+        }
+
+        #cancel-button:hover {
+            background: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        /* Tooltip for tool buttons */
+        .tool-button::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tool-button:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Instructions overlay */
+        #instructions {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: var(--color-text);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--color-border);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.3s;
+            opacity: 0;
+            letter-spacing: 0.01em;
+            text-align: center;
+        }
+
+        #instructions .shortcuts {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--color-text-muted);
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        #instructions .shortcut-key {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* SVG Icons */
+        .icon-arrow {
+            width: 20px;
+            height: 20px;
+        }
+
+        .icon-rectangle {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor-overlay">
+        <div id="instructions">
+            <div>Click and drag to draw annotations on your screenshot</div>
+            <div class="shortcuts">
+                <span><span class="shortcut-key">A</span> Arrow</span>
+                <span><span class="shortcut-key">R</span> Rectangle</span>
+                <span><span class="shortcut-key">Esc</span> Cancel</span>
+                <span><span class="shortcut-key">Ctrl+Enter</span> Save</span>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="annotation-canvas"></canvas>
+        </div>
+
+        <div id="toolbar">
+            <div class="toolbar-section">
+                <button class="tool-button active" id="arrow-tool" data-tooltip="Arrow">
+                    <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                </button>
+                <button class="tool-button" id="rectangle-tool" data-tooltip="Rectangle">
+                    <svg class="icon-rectangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="toolbar-section">
+                <button class="action-button" id="save-with-annotations">Save with Annotations</button>
+                <button class="action-button" id="save-without-annotations">Save without Annotations</button>
+                <button class="action-button" id="cancel-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="annotation_editor.js"></script>
+</body>
+</html>
