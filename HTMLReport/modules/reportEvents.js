@@ -1,6 +1,6 @@
 import { deleteAnnotation } from './reportData.js';
 import { displayAnnotationsTable } from './reportUI.js';
-import { downloadCompleteReport } from './reportDownload.js';
+import { downloadCompleteReport, downloadAllImages } from './reportDownload.js';
 
 let annotationToDelete = null;
 let currentFilter = 'all';
@@ -77,6 +77,10 @@ function setupImagePreviewListeners() {
 function setupDownloadListener(session) {
     document.getElementById('downloadReportBtn').addEventListener('click', () => {
         downloadCompleteReport(session);
+    });
+
+    document.getElementById('downloadImagesBtn').addEventListener('click', () => {
+        downloadAllImages(session);
     });
 }
 

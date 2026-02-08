@@ -86,5 +86,28 @@ When adding new Chrome API calls, update the mocks in `jest.setup.js`.
 
 - jQuery 1.11.3, Bootstrap CSS (frontend)
 - Jest + Babel (testing/transpilation)
-- CanvasJS, Chart.js, TableFilter (reporting)
-- No npm runtime dependencies (all libraries bundled)
+- CanvasJS, Chart.js, TableFilter, JSZip (reporting)
+- No npm runtime dependencies (all libraries bundled in `lib/`)
+
+## HTML Report Features
+
+### Report Downloads
+
+The HTML report (`HTMLReport/preview.html`) supports two download options:
+
+1. **Download Report**: Generates a standalone HTML file with all resources embedded
+   - Contains all screenshots as embedded base64 images
+   - Fully self-contained and portable
+   - Can be opened offline without any dependencies
+
+2. **Download Images**: Creates a ZIP file with all screenshots
+   - **Only available in preview.html** (the initial report view)
+   - NOT available in downloaded HTML reports (to avoid Windows security warnings)
+   - Includes a README.txt file with session information
+   - Screenshots are named with type and timestamp
+
+### Libraries
+
+All external libraries are bundled locally in `lib/` for Chrome Extension CSP compliance:
+- `chart.umd.js`: Chart.js for data visualization
+- `jszip.min.js`: JSZip for creating ZIP archives

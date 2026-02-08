@@ -378,8 +378,14 @@ body {
 .filter-pill--question.active { background: var(--color-question); border-color: var(--color-question); }
 
 /* ============================================
-   Download Button
+   Button Group & Download Button
    ============================================ */
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .btn-download {
     display: inline-flex;
     align-items: center;
@@ -406,6 +412,14 @@ body {
 
 .btn-download:active {
     transform: translateY(0);
+}
+
+.btn-download--secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.btn-download--secondary:hover {
+    box-shadow: 0 4px 12px rgba(75, 85, 99, 0.4);
 }
 
 /* ============================================

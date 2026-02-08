@@ -1,5 +1,63 @@
 import { serializeSession } from './reportData.js';
 
+/**
+ * Downloads all screenshots as a ZIP file.
+ */
+export async function downloadAllImages(session) {
+    const annotations = session.getAnnotations();
+    const imagesWithScreenshots = annotations.filter(a => a.imageURL);
+
+    if (imagesWithScreenshots.length === 0) {
+        alert('No screenshots available to download.');
+        return;
+    }
+
+    if (typeof JSZip === 'undefined') {
+        alert('JSZip library is not loaded. Cannot create ZIP file.');
+        return;
+    }
+
+    const zip = new JSZip();
+    const imgFolder = zip.folder('screenshots');
+
+    // Add README file
+    const readmeContent = `Exploratory Testing Screenshots
+Generated: ${new Date().toLocaleString()}
+Source: Exploratory Testing Chrome Extension
+Total screenshots: ${imagesWithScreenshots.length}
+
+This ZIP file is safe and contains screenshots captured during your testing session.`;
+    zip.file('README.txt', readmeContent);
+
+    // Add all images to the ZIP
+    for (let i = 0; i < imagesWithScreenshots.length; i++) {
+        const annotation = imagesWithScreenshots[i];
+        const type = annotation.constructor.name;
+        const timestamp = annotation.timestamp ? new Date(annotation.timestamp).toISOString().replace(/[:.]/g, '-') : `annotation-${i}`;
+        const fileName = `${i + 1}_${type}_${timestamp}.png`;
+
+        // Convert base64 to binary
+        const base64Data = annotation.imageURL.split(',')[1];
+        imgFolder.file(fileName, base64Data, { base64: true });
+    }
+
+    // Generate and download the ZIP
+    try {
+        const content = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ExploratoryTesting_Screenshots_${new Date().toISOString().slice(0, 10)}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error creating ZIP:', error);
+        alert('Error creating ZIP file. Please try again.');
+    }
+}
+
 const SVG_PATHS = {
     Bug: '../images/bug.svg',
     Note: '../images/note.svg',
@@ -30,13 +88,43 @@ export async function downloadCompleteReport(session) {
 }
 
 function removeInteractiveElements(container) {
-    // Remove chart container
-    const chart = container.querySelector('#chartContainer');
-    if (chart) chart.remove();
+    // Convert chart canvas to static image
+    const chartCanvas = document.getElementById('annotationsChart');
+    const chartContainer = container.querySelector('#chartContainer');
+    if (chartCanvas && chartContainer) {
+        try {
+            // Get the canvas as base64 image
+            const chartImageData = chartCanvas.toDataURL('image/png');
 
-    // Remove download button
-    const downloadBtn = container.querySelector('#downloadReportBtn');
-    if (downloadBtn) downloadBtn.remove();
+            // Replace canvas with img element
+            const canvas = chartContainer.querySelector('canvas');
+            if (canvas) {
+                const img = document.createElement('img');
+                img.src = chartImageData;
+                img.alt = 'Annotations Distribution Chart';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                canvas.replaceWith(img);
+            }
+        } catch (error) {
+            console.error('Error converting chart to image:', error);
+            // If conversion fails, remove the chart
+            if (chartContainer) chartContainer.remove();
+        }
+    }
+
+    // Remove both download buttons
+    const downloadReportBtn = container.querySelector('#downloadReportBtn');
+    if (downloadReportBtn) downloadReportBtn.remove();
+
+    const downloadImagesBtn = container.querySelector('#downloadImagesBtn');
+    if (downloadImagesBtn) downloadImagesBtn.remove();
+
+    // Remove button group if it's now empty
+    const buttonGroup = container.querySelector('.button-group');
+    if (buttonGroup && buttonGroup.children.length === 0) {
+        buttonGroup.remove();
+    }
 
     // Remove delete column from header
     const headerRow = container.querySelector('thead tr');

@@ -348,17 +348,40 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 function updateCounters() {
-  chrome.runtime.sendMessage({ type: "getSessionData" }, function (response) {
-    if (response.bugs > 0) $("#bugCounter").html(" " + response.bugs + " ");
+  // Read directly from storage instead of using message passing
+  chrome.storage.local.get('session', function(data) {
+    if (chrome.runtime.lastError) {
+      console.log("Error reading session from storage:", chrome.runtime.lastError.message);
+      return;
+    }
+
+    if (!data.session || !data.session.annotations) {
+      // No session data yet, leave counters empty
+      $("#bugCounter").html("");
+      $("#noteCounter").html("");
+      $("#ideaCounter").html("");
+      $("#questionCounter").html("");
+      return;
+    }
+
+    // Count annotations by type
+    const annotations = data.session.annotations;
+    const bugs = annotations.filter(a => a.type === "Bug").length;
+    const notes = annotations.filter(a => a.type === "Note").length;
+    const ideas = annotations.filter(a => a.type === "Idea").length;
+    const questions = annotations.filter(a => a.type === "Question").length;
+
+    // Update counters
+    if (bugs > 0) $("#bugCounter").html(" " + bugs + " ");
     else $("#bugCounter").html("");
 
-    if (response.notes > 0) $("#noteCounter").html(" " + response.notes + " ");
+    if (notes > 0) $("#noteCounter").html(" " + notes + " ");
     else $("#noteCounter").html("");
 
-    if (response.ideas > 0) $("#ideaCounter").html(" " + response.ideas + " ");
+    if (ideas > 0) $("#ideaCounter").html(" " + ideas + " ");
     else $("#ideaCounter").html("");
 
-    if (response.questions > 0) $("#questionCounter").html(" " + response.questions + " ");
+    if (questions > 0) $("#questionCounter").html(" " + questions + " ");
     else $("#questionCounter").html("");
   });
 }
