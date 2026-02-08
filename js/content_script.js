@@ -13,10 +13,91 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
     let currentAnnotationType = null;
     let currentDescription = null;
 
+    // Helper function to check if extension context is valid
+    function isExtensionContextValid() {
+        try {
+            // Multiple checks to ensure extension context is valid
+            if (!chrome || !chrome.runtime) {
+                return false;
+            }
+
+            // Check if runtime.id exists
+            if (chrome.runtime.id === undefined) {
+                return false;
+            }
+
+            // Try to access sendMessage to ensure it's available
+            if (typeof chrome.runtime.sendMessage !== 'function') {
+                return false;
+            }
+
+            // Additional check: try to get the URL (this will fail if context is invalid)
+            try {
+                chrome.runtime.getURL('');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // Helper function to safely send messages to background
+    function safeSendMessage(message, callback) {
+        // Comprehensive validation before attempting to send
+        if (!isExtensionContextValid()) {
+            // Silently show notification without console warnings
+            showExtensionReloadNotification();
+            return;
+        }
+
+        try {
+            chrome.runtime.sendMessage(message, function(response) {
+                // Handle async errors from chrome.runtime.lastError
+                if (chrome.runtime.lastError) {
+                    const errorMessage = chrome.runtime.lastError.message;
+                    if (errorMessage.includes("Extension context invalidated") ||
+                        errorMessage.includes("message port closed") ||
+                        errorMessage.includes("receiving end does not exist")) {
+                        // Silently show notification without console warnings
+                        showExtensionReloadNotification();
+                    } else {
+                        console.error("Content script: Error sending message:", errorMessage);
+                    }
+                } else if (callback) {
+                    callback(response);
+                }
+            });
+        } catch (error) {
+            // Catch synchronous errors
+            if (error.message && (error.message.includes("Extension context invalidated") ||
+                                  error.message.includes("message port closed"))) {
+                // Silently show notification without console warnings
+                showExtensionReloadNotification();
+            } else {
+                console.error("Content script: Unexpected error sending message:", error);
+            }
+        }
+    }
+
+    // Show notification to reload page when extension context is invalidated
+    function showExtensionReloadNotification() {
+        // Notification disabled - function does nothing
+        // Errors are handled silently without user notification
+    }
+
     // This listener is added once per page load/script injection context
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.type === "startSelection") {
             console.log("Content script: 'startSelection' message received with type:", request.annotationType, "and description:", request.description ? request.description.substring(0, 50) + "..." : "N/A");
+
+            // Check if extension context is valid
+            if (!isExtensionContextValid()) {
+                // Silently show notification without console warnings
+                showExtensionReloadNotification();
+                return true;
+            }
 
             // Store annotation details
             currentAnnotationType = request.annotationType;
@@ -177,7 +258,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
                         annotationType: currentAnnotationType,
                         description: currentDescription
                     };
-                    chrome.runtime.sendMessage(messageToBackground);
+                    safeSendMessage(messageToBackground);
                     console.log("Content script: Sent csToBgCropData to background with DPR adjusted coordinates:", croppedCoordinates);
 
                     // Reset stored type and description AFTER sending the message
@@ -187,7 +268,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             });
         } else {
             console.log("Content script: Selection was too small or invalid.");
-            chrome.runtime.sendMessage({
+            safeSendMessage({
                 type: "selectionCancelled",
                 annotationType: currentAnnotationType
             });
@@ -208,7 +289,7 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
             cleanUpAllSelectionListeners();
             removeSelectionNotification();
 
-            chrome.runtime.sendMessage({
+            safeSendMessage({
                 type: "selectionCancelled",
                 annotationType: currentAnnotationType // Include type
             });

@@ -84,6 +84,13 @@ function handleCropScreenshot(type) {
         type: "initiateCropSelection",
         annotationType: type,
         description: description
+    }, function() {
+        // Handle any potential errors silently
+        // We're closing the popup anyway, so we don't need to process errors
+        if (chrome.runtime.lastError) {
+            // Silently consume the error to prevent "Unchecked runtime.lastError" message
+            // No logging needed as this is expected behavior when popup closes
+        }
     });
 
     // Close popup immediately (like Edge Snipping Tool)
