@@ -1,38 +1,168 @@
+/* ============================================
+   CSS Custom Properties (matching report theme)
+   ============================================ */
+:root {
+	--color-bg: #f0f2f5;
+	--color-surface: #ffffff;
+	--color-text: #1a1a2e;
+	--color-text-secondary: #64748b;
+	--color-border: #e2e8f0;
+
+	--color-bug: #ef4444;
+	--color-bug-light: #fef2f2;
+	--color-note: #22c55e;
+	--color-note-light: #f0fdf4;
+	--color-idea: #f59e0b;
+	--color-idea-light: #fffbeb;
+	--color-question: #3b82f6;
+	--color-question-light: #eff6ff;
+
+	--color-primary: #6366f1;
+	--color-primary-dark: #4f46e5;
+
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+	--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--transition: 0.2s ease;
+}
+
 body {
 	min-width: 300px;
 	max-width: 400px;
+	background-color: #ffffff;
+	font-family: var(--font-sans);
+	color: var(--color-text);
+	-webkit-font-smoothing: antialiased;
 }
 
 .form-control-sm {
 	width: 100%;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	font-family: var(--font-sans);
+	transition: border-color var(--transition), box-shadow var(--transition);
 }
 
-.screenshot {
-	background-image: url("../images/device-camera.svg");
-	background-repeat: no-repeat;
-	background-size: 75%;
-	background-position: 4px 3px;
-	min-width: 30px;
+.form-control-sm:focus {
+	outline: none;
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+/* ============================================
+   Annotation Action Buttons (Modern Style)
+   ============================================ */
+.annotation-group {
+	gap: 6px !important;
+}
+
+.add,
+.screenshot,
 .crop-screenshot {
-	background-image: url("../images/crop.png");
 	background-repeat: no-repeat;
-	background-size: 75%;
-	background-position: 4px 3px;
-	min-width: 30px;
+	background-size: 18px 18px;
+	background-position: center;
+	min-width: 38px;
+	min-height: 38px;
+	border-radius: var(--radius-md) !important;
+	border-width: 1.5px !important;
+	transition: all var(--transition);
+	position: relative;
+	overflow: hidden;
+}
+
+.add::before,
+.screenshot::before,
+.crop-screenshot::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: currentColor;
+	opacity: 0;
+	transition: opacity var(--transition);
+}
+
+.add:hover,
+.screenshot:hover,
+.crop-screenshot:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.add:hover::before,
+.screenshot:hover::before,
+.crop-screenshot:hover::before {
+	opacity: 0.1;
+}
+
+.add:active,
+.screenshot:active,
+.crop-screenshot:active {
+	transform: translateY(0);
 }
 
 .add {
 	background-image: url("../images/diff-added.svg");
-	background-repeat: no-repeat;
-	background-size: 75%;
-	background-position: 4px 3px;
-	min-width: 30px;
+}
+
+.screenshot {
+	background-image: url("../images/device-camera.svg");
+}
+
+.crop-screenshot {
+	background-image: url("../images/crop.png");
+}
+
+.cancel {
+	border-radius: var(--radius-md) !important;
+	border-width: 1.5px !important;
+	min-height: 38px;
+	padding: 8px 16px;
+	font-weight: 500;
+	transition: all var(--transition);
+}
+
+.cancel:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cancel:active {
+	transform: translateY(0);
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+.card {
+	background: var(--color-surface);
+	border: 1.5px solid var(--color-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-sm);
+	margin-bottom: 10px;
+	transition: all var(--transition);
+}
+
+.card:hover {
+	box-shadow: var(--shadow-md);
 }
 
 .card-header {
 	padding: 4px 0 0 7px;
+	background: transparent;
+	border-bottom: none;
+}
+
+.card-header h5 {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--color-text);
+	margin: 8px 0;
 }
 
 .card,
@@ -40,6 +170,12 @@ body {
 .card>.card>.card-header,
 .card-body>.card-footer {
 	padding: 2px 3px;
+	border: none;
+}
+
+.card>.card {
+	box-shadow: none;
+	margin-bottom: 0;
 }
 
 .cancel {
@@ -61,68 +197,353 @@ body {
 	margin-top: 20px;
 }
 
-.btn-secondary {
-	background-color: #f7f7f7;
-	border-color: #f7f7f7;
+/* ============================================
+   Main Header
+   ============================================ */
+.card:first-child {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	box-shadow: var(--shadow-sm);
+}
 
+.card:first-child .card-header h5 {
+	color: var(--color-text);
+	font-weight: 700;
+}
+
+/* ============================================
+   Buttons - Matching Report Colors
+   ============================================ */
+.btn {
+	border-radius: var(--radius-sm);
+	font-family: var(--font-sans);
+	font-weight: 500;
+	transition: all var(--transition);
+}
+
+/* Bug Button */
+.BugButton.btn-danger {
+	background-color: var(--color-bug);
+	border-color: var(--color-bug);
+	color: #ffffff;
+}
+
+.BugButton.btn-danger:hover {
+	background-color: #dc2626;
+	border-color: #dc2626;
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-md);
+}
+
+.btn-outline-danger {
+	color: var(--color-bug);
+	border-color: var(--color-bug);
+}
+
+.btn-outline-danger:hover {
+	background-color: var(--color-bug-light);
+	border-color: var(--color-bug);
+	color: var(--color-bug);
+}
+
+/* Note Button */
+.NoteButton.btn-warning {
+	background-color: var(--color-note);
+	border-color: var(--color-note);
+	color: #ffffff;
+}
+
+.NoteButton.btn-warning:hover {
+	background-color: #16a34a;
+	border-color: #16a34a;
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-md);
+}
+
+.btn-outline-warning {
+	color: var(--color-note);
+	border-color: var(--color-note);
+}
+
+.btn-outline-warning:hover {
+	background-color: var(--color-note-light);
+	border-color: var(--color-note);
+	color: var(--color-note);
+}
+
+/* Question Button */
+.QuestionButton.btn-success {
+	background-color: var(--color-question);
+	border-color: var(--color-question);
+	color: #ffffff;
+}
+
+.QuestionButton.btn-success:hover {
+	background-color: #2563eb;
+	border-color: #2563eb;
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-md);
+}
+
+.btn-outline-success {
+	color: var(--color-question);
+	border-color: var(--color-question);
+}
+
+.btn-outline-success:hover {
+	background-color: var(--color-question-light);
+	border-color: var(--color-question);
+	color: var(--color-question);
+}
+
+/* Idea Button */
+.IdeaButton.btn-info {
+	background-color: var(--color-idea);
+	border-color: var(--color-idea);
+	color: #ffffff;
+}
+
+.IdeaButton.btn-info:hover {
+	background-color: #d97706;
+	border-color: #d97706;
+	transform: translateY(-1px);
+	box-shadow: var(--shadow-md);
+}
+
+.btn-outline-info {
+	color: var(--color-idea);
+	border-color: var(--color-idea);
+}
+
+.btn-outline-info:hover {
+	background-color: var(--color-idea-light);
+	border-color: var(--color-idea);
+	color: var(--color-idea);
+}
+
+/* Secondary Buttons */
+.btn-secondary {
+	background-color: #f1f5f9;
+	border-color: #e2e8f0;
+	color: var(--color-text-secondary);
+}
+
+.btn-secondary:hover {
+	background-color: #e2e8f0;
+	border-color: #cbd5e1;
+}
+
+.btn-outline-secondary {
+	color: var(--color-text-secondary);
+	border-color: var(--color-border);
+}
+
+.btn-outline-secondary:hover {
+	background-color: #f1f5f9;
+	border-color: var(--color-border);
+}
+
+/* Badges (Modern Style) */
+.badge-light {
+	background-color: rgba(255, 255, 255, 0.25);
+	color: #ffffff;
+	border-radius: 12px;
+	padding: 3px 10px;
+	font-weight: 700;
+	font-size: 0.8rem;
+	min-width: 24px;
+	text-align: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   Footer & Actions
+   ============================================ */
+.footer {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-sm);
+	padding: 8px;
 }
 
 #resetBtn {
-
-	max-height: 30px;
+	max-height: 38px;
 	margin-right: 100px;
-
-
+	border-radius: var(--radius-md);
+	padding: 8px 16px;
+	font-weight: 500;
+	border: 1.5px solid var(--color-bug);
+	color: var(--color-bug);
+	background-color: var(--color-surface);
+	transition: all var(--transition);
 }
 
+#resetBtn:hover {
+	background-color: var(--color-bug);
+	color: #ffffff;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+#resetBtn:active {
+	transform: translateY(0);
+}
+
+/* ============================================
+   Export/Import Buttons (Modern Style)
+   ============================================ */
 button input.file-input {
 	display: none;
-	/*position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0;
-  padding: 0;
-  font-size: 20px;
-  cursor: pointer;
-  opacity: 0;
-  filter: alpha(opacity=0);*/
+}
+
+.session-group {
+	gap: 6px;
+}
+
+#exportCSVBtn,
+#exportJsonBtn,
+#importJsonBtn,
+#previewBtn {
+	background-repeat: no-repeat;
+	background-size: 18px 18px;
+	background-position: center;
+	min-width: 38px;
+	min-height: 38px;
+	background-color: var(--color-surface);
+	border: 1.5px solid var(--color-border);
+	border-radius: var(--radius-md);
+	transition: all var(--transition);
+	position: relative;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+#exportCSVBtn::before,
+#exportJsonBtn::before,
+#importJsonBtn::before,
+#previewBtn::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: var(--color-primary);
+	opacity: 0;
+	transition: opacity var(--transition);
+}
+
+#exportCSVBtn:hover,
+#exportJsonBtn:hover,
+#importJsonBtn:hover,
+#previewBtn:hover {
+	border-color: var(--color-primary);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+#exportCSVBtn:hover::before,
+#exportJsonBtn:hover::before,
+#importJsonBtn:hover::before,
+#previewBtn:hover::before {
+	opacity: 0.08;
+}
+
+#exportCSVBtn:active,
+#exportJsonBtn:active,
+#importJsonBtn:active,
+#previewBtn:active {
+	transform: translateY(0);
 }
 
 #exportCSVBtn {
 	background-image: url("../images/003-csv.svg");
-	background-repeat: no-repeat;
-	background-size: 100%;
-	/*background-position: 4px 3px; */
-	min-width: 30px;
-	min-height: 30px;
 }
 
 #exportJsonBtn {
 	background-image: url("../images/002-download.svg");
-	background-repeat: no-repeat;
-	background-size: 100%;
-	/*background-position: 4px 3px; */
-	min-width: 30px;
-	min-height: 30px;
-	margin-left: 5px;
+	margin-left: 0;
 }
 
 #importJsonBtn {
 	background-image: url("../images/004-up-arrow.svg");
-	background-repeat: no-repeat;
-	background-size: 100%;
-	/*background-position: 4px 3px; */
-	min-width: 30px;
-	min-height: 30px;
-	margin-left: 5px;
+	margin-left: 0;
 }
 
 #previewBtn {
 	background-image: url("../images/001-graphic.svg");
-	background-repeat: no-repeat;
-	background-size: 100%;
-	/*background-position: 4px 3px; */
-	min-width: 30px;
-	min-height: 30px;
-	margin-left: 5px;
+	margin-left: 0;
+}
+
+/* ============================================
+   Reset Confirmation (Modern Style)
+   ============================================ */
+#resetConfirmation {
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+}
+
+#resetConfirmation .card-header {
+	background-color: var(--color-bug);
+	color: #ffffff;
+	border-radius: 0;
+	padding: 14px 16px;
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+#resetConfirmation .card-body {
+	padding: 20px 16px;
+}
+
+#resetConfirmation .text-danger {
+	color: var(--color-bug);
+	font-weight: 500;
+	margin-bottom: 16px;
+}
+
+#resetYes.actionButton,
+#resetNo.cancelButton {
+	border-radius: var(--radius-md);
+	padding: 8px 20px;
+	font-weight: 500;
+	border-width: 1.5px;
+	transition: all var(--transition);
+}
+
+#resetYes.actionButton {
+	background-color: var(--color-bug);
+	border-color: var(--color-bug);
+	color: #ffffff;
+}
+
+#resetYes.actionButton:hover {
+	background-color: #dc2626;
+	border-color: #dc2626;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+#resetYes.actionButton:active {
+	transform: translateY(0);
+}
+
+#resetNo.cancelButton {
+	background-color: var(--color-note);
+	border-color: var(--color-note);
+	color: #ffffff;
+}
+
+#resetNo.cancelButton:hover {
+	background-color: #16a34a;
+	border-color: #16a34a;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
+#resetNo.cancelButton:active {
+	transform: translateY(0);
 }

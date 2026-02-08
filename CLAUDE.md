@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Skills to use
+
+Always reference these skills when working on the codebase:
+
+- `.claude/skills/frontend-design/skill.md` for all CSS changes and UI componentes
+
 ## Project Overview
 
 Exploratory Testing Chrome Extension (Manifest v3) - A tool for web exploratory testing that allows testers to report bugs, ideas, notes, and questions with screenshots during testing sessions.

@@ -133,27 +133,43 @@ function registerPopupMessageListener() {
 }
 
 function showBugReport() {
-  hideAllReports();
-  $("#addNewBug").fadeIn();
-  $('#newBugDescription').focus();
+  if ($("#addNewBug").is(':visible')) {
+    $("#addNewBug").fadeOut();
+  } else {
+    hideAllReports();
+    $("#addNewBug").fadeIn();
+    $('#newBugDescription').focus();
+  }
 };
 
 function showIdeaReport() {
-  hideAllReports();
-  $("#addNewIdea").fadeIn();
-  $('#newIdeaDescription').focus();
+  if ($("#addNewIdea").is(':visible')) {
+    $("#addNewIdea").fadeOut();
+  } else {
+    hideAllReports();
+    $("#addNewIdea").fadeIn();
+    $('#newIdeaDescription').focus();
+  }
 };
 
 function showNoteReport() {
-  hideAllReports();
-  $("#addNewNote").fadeIn();
-  $('#newNoteDescription').focus();
+  if ($("#addNewNote").is(':visible')) {
+    $("#addNewNote").fadeOut();
+  } else {
+    hideAllReports();
+    $("#addNewNote").fadeIn();
+    $('#newNoteDescription').focus();
+  }
 };
 
 function showQuestionReport() {
-  hideAllReports();
-  $("#addNewQuestion").fadeIn();
-  $('#newQuestionDescription').focus();
+  if ($("#addNewQuestion").is(':visible')) {
+    $("#addNewQuestion").fadeOut();
+  } else {
+    hideAllReports();
+    $("#addNewQuestion").fadeIn();
+    $('#newQuestionDescription').focus();
+  }
 };
 
 function addNewBug(imageURL) {
