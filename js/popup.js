@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       chrome.tabs.create({
         url: chrome.runtime.getURL("HTMLReport/preview.html"),
-        'active': false
+        'active': true
       });
     });
   }, false);
