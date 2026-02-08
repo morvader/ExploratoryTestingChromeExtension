@@ -21,23 +21,21 @@ export function displaySessionInfo(session) {
     const startDateTime = session.getStartDateTime();
 
     sessionInfo.innerHTML = `
-        <div class="info-grid">
-            <div class="info-item">
-                <span class="info-label">Start Date</span>
-                <span class="info-value">${startDateTime.toLocaleString()}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Browser</span>
-                <span class="info-value">${browserInfo.browser} ${browserInfo.browserVersion}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Operating System</span>
-                <span class="info-value">${browserInfo.os}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Cookies</span>
-                <span class="info-value">${browserInfo.cookies ? 'Enabled' : 'Disabled'}</span>
-            </div>
+        <div class="info-item">
+            <span class="info-label">Start Date</span>
+            <span class="info-value">${startDateTime.toLocaleString()}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Browser</span>
+            <span class="info-value">${browserInfo.browser} ${browserInfo.browserVersion}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Operating System</span>
+            <span class="info-value">${browserInfo.os}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Cookies</span>
+            <span class="info-value">${browserInfo.cookies ? 'Enabled' : 'Disabled'}</span>
         </div>
     `;
 }

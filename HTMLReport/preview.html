@@ -20,22 +20,18 @@
             </div>
         </header>
 
-        <!-- Session Info -->
-        <section class="section">
-            <div id="sessionInfo"></div>
-        </section>
-
-        <!-- Stats Cards -->
-        <section class="section">
-            <div id="statsCards" class="stats-grid"></div>
-        </section>
-
-        <!-- Chart + Toolbar -->
-        <section class="section section--row">
-            <div id="chartContainer" class="chart-card">
+        <!-- Session Overview: Info + Stats + Chart -->
+        <section class="section section--overview">
+            <div id="sessionInfo" class="info-column"></div>
+            <div id="statsCards" class="stats-column"></div>
+            <div id="chartContainer" class="chart-column">
                 <h3 class="chart-card__title">Distribution</h3>
                 <canvas id="annotationsChart"></canvas>
             </div>
+        </section>
+
+        <!-- Filters & Actions -->
+        <section class="section">
             <div class="toolbar-card">
                 <div class="filter-section">
                     <span class="filter-section__label">Filter by type</span>
@@ -57,7 +53,7 @@
         </section>
 
         <!-- Annotations Table -->
-        <section class="section">
+        <section class="section section--table">
             <div class="table-wrapper">
                 <table class="report-table">
                     <thead>
