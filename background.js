@@ -139,6 +139,75 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let isAsync = false;
 
     switch (request.type) {
+        case "initiateCropSelection":
+            // Forward the crop selection request to the content script
+            chrome.tabs.query({ active: true, currentWindow: true }, async function(tabs) {
+                if (tabs && tabs[0] && tabs[0].id != null) {
+                    const tab = tabs[0];
+
+                    // Check if the page allows content scripts
+                    if (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://') ||
+                        tab.url.startsWith('chrome-extension://') || tab.url.startsWith('about:')) {
+                        const notifId = 'cropSelectionError-' + Date.now();
+                        chrome.notifications.create(notifId, {
+                            type: 'basic',
+                            iconUrl: 'icons/iconbig.png',
+                            title: 'Selection Not Available',
+                            message: 'Screen selection cannot be used on this type of page. Please try on a regular webpage.'
+                        });
+                        setTimeout(() => { chrome.notifications.clear(notifId); }, 5000);
+                        return;
+                    }
+
+                    try {
+                        // Try to inject content script if it's not already loaded
+                        await chrome.scripting.executeScript({
+                            target: { tabId: tab.id },
+                            files: ['js/content_script.js']
+                        }).catch(() => {
+                            // Content script might already be loaded, ignore error
+                            console.log("Background: Content script might already be loaded");
+                        });
+
+                        // Small delay to ensure content script is ready
+                        setTimeout(() => {
+                            chrome.tabs.sendMessage(tab.id, {
+                                type: "startSelection",
+                                annotationType: request.annotationType,
+                                description: request.description
+                            }, function(response) {
+                                if (chrome.runtime.lastError) {
+                                    console.error("Background: Error sending startSelection to content script:", chrome.runtime.lastError.message);
+                                    const notifId = 'cropSelectionError-' + Date.now();
+                                    chrome.notifications.create(notifId, {
+                                        type: 'basic',
+                                        iconUrl: 'icons/iconbig.png',
+                                        title: 'Selection Failed',
+                                        message: 'Could not start screen selection. Please try again.'
+                                    });
+                                    setTimeout(() => { chrome.notifications.clear(notifId); }, 5000);
+                                } else {
+                                    console.log("Background: Successfully initiated crop selection on content script");
+                                }
+                            });
+                        }, 100);
+
+                    } catch (error) {
+                        console.error("Background: Error injecting content script:", error);
+                        const notifId = 'cropSelectionError-' + Date.now();
+                        chrome.notifications.create(notifId, {
+                            type: 'basic',
+                            iconUrl: 'icons/iconbig.png',
+                            title: 'Selection Failed',
+                            message: 'Could not start screen selection. Error: ' + error.message
+                        });
+                        setTimeout(() => { chrome.notifications.clear(notifId); }, 5000);
+                    }
+                } else {
+                    console.error("Background: No active tab found for crop selection");
+                }
+            });
+            break;
         case "addBug":
             console.log("Background: Received message", request.type, ". Name:", request.name, ". imageURL (first 100 chars):", request.imageURL ? request.imageURL.substring(0, 100) : "null");
             addAnnotation("Bug", request.name, request.imageURL)

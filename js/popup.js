@@ -78,42 +78,17 @@ function handleCropScreenshot(type) {
         return; // Prevent starting selection if description is empty
     }
 
-    // currentAnnotationTypeForCrop is still useful for 'selectionCancelled' if popup handles it.
-    // If not, it can be removed from this function. Let's assume it might be used for cancellation.
-    currentAnnotationTypeForCrop = type; 
-
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        if (tabs && tabs[0] && tabs[0].id != null) {
-            const tabId = tabs[0].id;
-            const messagePayload = {
-                type: "startSelection",
-                annotationType: type, // Pass the annotation type
-                description: description // Pass the description
-            };
-
-            chrome.tabs.sendMessage(tabId, messagePayload, function(response) {
-                if (chrome.runtime.lastError) {
-                    console.error("Error starting selection (sendMessage):", chrome.runtime.lastError.message);
-                    alert("Failed to start selection mode. Please ensure the page is fully loaded and try again. Error: " + chrome.runtime.lastError.message);
-                    currentAnnotationTypeForCrop = null; // Reset
-                    return;
-                }
-                if (response && response.status === "selectionStarted") {
-                    console.log("Popup: Selection started in content script for type '"+type+"' with description '"+description.substring(0,20)+"...'.");
-                    // Popup remains open. No window.close().
-                    // No longer processes coordinates here.
-                } else {
-                    console.warn("Popup: Content script did not confirm selection start. Response:", response);
-                    alert("Could not initiate selection on the page. The selection script might not have responded correctly. Please try refreshing the page.");
-                    currentAnnotationTypeForCrop = null; // Reset
-                }
-            });
-        } else {
-            console.error("Popup: No active tab with valid ID found.");
-            alert("No active tab found. Please select a tab to capture from.");
-            currentAnnotationTypeForCrop = null; // Reset
-        }
+    // Send message to background script (which will forward to content script)
+    // This allows the popup to close immediately without breaking the message chain
+    chrome.runtime.sendMessage({
+        type: "initiateCropSelection",
+        annotationType: type,
+        description: description
     });
+
+    // Close popup immediately (like Edge Snipping Tool)
+    console.log("Popup: Sent initiateCropSelection to background and closing popup");
+    window.close();
 }
 
 // Register the listener for messages from content script

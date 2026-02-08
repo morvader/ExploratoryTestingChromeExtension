@@ -151,39 +151,50 @@ if (typeof window.exploratoryTestingCropperInitialized === 'undefined') {
         let finalWidth = parseInt(selectionBox.style.width, 10);
         let finalHeight = parseInt(selectionBox.style.height, 10);
 
+        // Hide selection box and notification IMMEDIATELY
         if (selectionBox) selectionBox.style.display = 'none';
         removeSelectionNotification();
 
         if (finalWidth > 0 && finalHeight > 0) {
-            // Obtener el Device Pixel Ratio
-            const dpr = window.devicePixelRatio || 1;
+            // Wait for the browser to re-render without the selection box
+            // This ensures the screenshot won't include the blue overlay
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    // Obtener el Device Pixel Ratio
+                    const dpr = window.devicePixelRatio || 1;
 
-            // Ajustar las coordenadas por el DPR
-            const croppedCoordinates = {
-                x: finalX * dpr,
-                y: finalY * dpr,
-                width: finalWidth * dpr,
-                height: finalHeight * dpr
-            };
+                    // Ajustar las coordenadas por el DPR
+                    const croppedCoordinates = {
+                        x: finalX * dpr,
+                        y: finalY * dpr,
+                        width: finalWidth * dpr,
+                        height: finalHeight * dpr
+                    };
 
-            const messageToBackground = {
-                type: "csToBgCropData",
-                coordinates: croppedCoordinates, // Usar las coordenadas ajustadas
-                annotationType: currentAnnotationType,
-                description: currentDescription
-            };
-            chrome.runtime.sendMessage(messageToBackground);
-            console.log("Content script: Sent csToBgCropData to background with DPR adjusted coordinates:", croppedCoordinates);
+                    const messageToBackground = {
+                        type: "csToBgCropData",
+                        coordinates: croppedCoordinates,
+                        annotationType: currentAnnotationType,
+                        description: currentDescription
+                    };
+                    chrome.runtime.sendMessage(messageToBackground);
+                    console.log("Content script: Sent csToBgCropData to background with DPR adjusted coordinates:", croppedCoordinates);
+
+                    // Reset stored type and description AFTER sending the message
+                    currentAnnotationType = null;
+                    currentDescription = null;
+                }, 50); // Wait 50ms for the DOM to fully update
+            });
         } else {
             console.log("Content script: Selection was too small or invalid.");
             chrome.runtime.sendMessage({
                 type: "selectionCancelled",
                 annotationType: currentAnnotationType
             });
+            // Reset stored type and description
+            currentAnnotationType = null;
+            currentDescription = null;
         }
-        // Reset stored type and description
-        currentAnnotationType = null;
-        currentDescription = null;
     }
 
     function handleKeyDown(event) {
