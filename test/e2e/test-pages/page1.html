@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Página de Prueba 1</h1>
+        <p>Esta es la primera página de prueba. Tiene un diseño diferente para que las capturas de pantalla sean distintas.</p>
+
+        <h2>Características de esta página:</h2>
+        <ul>
+            <li>Fondo rosa/rojo</li>
+            <li>Contenido específico de la Página 1</li>
+            <li>URL única: /page1.html</li>
+        </ul>
+
+        <button onclick="window.location.href='index.html'">← Volver al Inicio</button>
+        <button onclick="window.location.href='page2.html'">Ir a Página 2 →</button>
+
+        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+            <h3>Información de Prueba</h3>
+            <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+            <p><strong>ID de Página:</strong> PAGE-001</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+    </script>
+</body>
+</html>

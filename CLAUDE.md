@@ -8,6 +8,14 @@ Always reference these skills when working on the codebase:
 
 - `.claude/skills/frontend-design/skill.md` for all CSS changes and UI componentes
 
+When working with E2E tests:
+- **ALWAYS** use the `playwright-cli` skill for:
+  - Generating new tests
+  - Exploring UI elements
+  - Creating selectors
+  - Capturing screenshots
+- Only write tests manually when the skill can't handle the specific case
+
 ## Project Overview
 
 Exploratory Testing Chrome Extension (Manifest v3) - A tool for web exploratory testing that allows testers to report bugs, ideas, notes, and questions with screenshots during testing sessions.

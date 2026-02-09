@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page - Exploratory Testing Extension</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        .info-box {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        #output {
+            min-height: 100px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Page para Exploratory Testing Extension</h1>
+
+        <div class="info-box">
+            <p><strong>URL actual:</strong> <span id="currentUrl"></span></p>
+            <p><strong>Hora:</strong> <span id="currentTime"></span></p>
+        </div>
+
+        <div class="test-section">
+            <h2>Formulario de Prueba</h2>
+            <input type="text" id="testInput" placeholder="Escribe algo aquí...">
+            <textarea id="testTextarea" placeholder="Área de texto para pruebas..." rows="4"></textarea>
+            <button onclick="submitForm()">Enviar Formulario</button>
+            <button onclick="clearForm()">Limpiar</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Acciones de Prueba</h2>
+            <button onclick="changeBackground()">Cambiar Color de Fondo</button>
+            <button onclick="addContent()">Añadir Contenido</button>
+            <button onclick="showAlert()">Mostrar Alerta</button>
+            <button onclick="simulateError()">Simular Error</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Navegación</h2>
+            <button onclick="goToPage('page1')">Ir a Página 1</button>
+            <button onclick="goToPage('page2')">Ir a Página 2</button>
+            <button onclick="goToPage('screenshot-test')">Test de Screenshots</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Output</h2>
+            <div id="output">Aquí se mostrarán los mensajes...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>Instrucciones para Testing</h2>
+            <ol>
+                <li>Abre la extensión de Exploratory Testing</li>
+                <li>Prueba añadir diferentes tipos de anotaciones (Bug, Note, Idea, Question)</li>
+                <li>Toma capturas de pantalla de esta página</li>
+                <li>Interactúa con los botones y formularios</li>
+                <li>Navega entre páginas y verifica que las URLs se capturan</li>
+                <li>Exporta los informes en diferentes formatos</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Update current info
+        function updateInfo() {
+            document.getElementById('currentUrl').textContent = window.location.href;
+            document.getElementById('currentTime').textContent = new Date().toLocaleString();
+        }
+        updateInfo();
+        setInterval(updateInfo, 1000);
+
+        // Form actions
+        function submitForm() {
+            const input = document.getElementById('testInput').value;
+            const textarea = document.getElementById('testTextarea').value;
+            log(`Formulario enviado - Input: "${input}", Textarea: "${textarea}"`);
+        }
+
+        function clearForm() {
+            document.getElementById('testInput').value = '';
+            document.getElementById('testTextarea').value = '';
+            log('Formulario limpiado');
+        }
+
+        // Test actions
+        const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
+        let colorIndex = 0;
+
+        function changeBackground() {
+            colorIndex = (colorIndex + 1) % colors.length;
+            document.body.style.background = `linear-gradient(135deg, ${colors[colorIndex]} 0%, ${colors[(colorIndex + 1) % colors.length]} 100%)`;
+            log(`Color de fondo cambiado a ${colors[colorIndex]}`);
+        }
+
+        function addContent() {
+            const newDiv = document.createElement('div');
+            newDiv.className = 'info-box';
+            newDiv.textContent = `Nuevo contenido añadido a las ${new Date().toLocaleTimeString()}`;
+            document.querySelector('.container').appendChild(newDiv);
+            log('Contenido dinámico añadido');
+        }
+
+        function showAlert() {
+            alert('¡Esta es una alerta de prueba!');
+            log('Alerta mostrada');
+        }
+
+        function simulateError() {
+            log('⚠️ ERROR SIMULADO: Esto es un error de prueba');
+            console.error('Error simulado para testing');
+        }
+
+        // Navigation
+        function goToPage(page) {
+            window.location.href = `./${page}.html`;
+        }
+
+        // Logging
+        function log(message) {
+            const output = document.getElementById('output');
+            const time = new Date().toLocaleTimeString();
+            output.innerHTML = `[${time}] ${message}<br>` + output.innerHTML;
+        }
+
+        // Log page load
+        log('Página cargada correctamente');
+    </script>
+</body>
+</html>

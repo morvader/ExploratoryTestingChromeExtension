@@ -10,12 +10,21 @@
   "devDependencies": {
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
+    "@playwright/test": "^1.58.2",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "playwright test smoke.spec.js basic-functionality.spec.js",
+    "test:e2e:all": "playwright test smoke.spec.js basic-functionality.spec.js reports-export.spec.js crop-screenshot.spec.js",
+    "test:e2e:headed": "playwright test smoke.spec.js basic-functionality.spec.js --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test smoke.spec.js basic-functionality.spec.js --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:crop": "playwright test crop-screenshot.spec.js --headed",
+    "test:all": "npm test && npm run test:e2e"
   },
   "repository": {
     "type": "git",
