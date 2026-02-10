@@ -2,6 +2,9 @@
 const { defineConfig, devices } = require('@playwright/test');
 const path = require('path');
 
+const isCI = !!process.env.CI;
+const isWindows = process.platform === 'win32';
+
 /**
  * Playwright configuration for Chrome Extension E2E testing
  * @see https://playwright.dev/docs/test-configuration
@@ -14,9 +17,9 @@ module.exports = defineConfig({
 
   // Test execution settings
   fullyParallel: false, // Extensions can't run fully parallel easily
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 1, // Run tests sequentially for extensions
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: 1, // Run tests sequentially for extensions
 
   // Reporter to use
   reporter: [
@@ -50,8 +53,8 @@ module.exports = defineConfig({
       name: 'chromium-extension',
       use: {
         ...devices['Desktop Chrome'],
-        // Edge has the best extension support with Playwright
-        channel: 'msedge', // Use Microsoft Edge - works best with extensions
+        // In CI (Linux), use plain chromium; locally on Windows/macOS use msedge
+        ...(isCI ? {} : { channel: 'msedge' }),
         // Note: Extension loading happens in test setup via helper functions
       },
     },
@@ -59,9 +62,11 @@ module.exports = defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'powershell -File ./start_test_server.ps1',
+    command: isWindows
+      ? 'powershell -File ./start_test_server.ps1'
+      : 'python3 -m http.server 8000',
     url: 'http://localhost:8000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCI,
     timeout: 10 * 1000,
   },
 });
