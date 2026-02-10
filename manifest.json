@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Exploratory Testing Extension",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Chrome extension for exploratory testing",
   "permissions": [
     "storage",
