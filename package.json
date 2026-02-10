@@ -24,6 +24,7 @@
     "test:e2e:debug": "playwright test smoke.spec.js basic-functionality.spec.js --debug",
     "test:e2e:report": "playwright show-report",
     "test:e2e:crop": "playwright test crop-screenshot.spec.js --headed",
+    "test:e2e:ci": "playwright test smoke.spec.js basic-functionality.spec.js reports-export.spec.js crop-screenshot.spec.js",
     "test:all": "npm test && npm run test:e2e"
   },
   "repository": {
