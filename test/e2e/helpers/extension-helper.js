@@ -14,6 +14,7 @@ const { chromium } = require('@playwright/test');
 async function launchBrowserWithExtension() {
   const extensionPath = path.join(__dirname, '../../../');
   const userDataDir = path.join(__dirname, '../.chrome-profile');
+  const isHeaded = process.env.HEADED === 'true';
 
   // Clean user data directory to ensure fresh state for each test run
   if (fs.existsSync(userDataDir)) {
@@ -35,12 +36,13 @@ async function launchBrowserWithExtension() {
     console.log(`Loading extension from: ${extensionPath}`);
 
     const context = await chromium.launchPersistentContext(userDataDir, {
-      headless: false,
+      headless: !isHeaded,
       args: [
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
         '--no-sandbox',
         '--disable-setuid-sandbox',
+        ...(isHeaded ? [] : ['--headless=new']),
       ],
       viewport: { width: 1280, height: 720 },
     });
@@ -57,11 +59,12 @@ async function launchBrowserWithExtension() {
   console.log('🔧 Using Microsoft Edge (best extension support)');
 
   const context = await chromium.launchPersistentContext(userDataDir, {
-    headless: false,
+    headless: !isHeaded,
     channel: 'msedge', // Use Microsoft Edge - works better with extensions
     args: [
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
+      ...(isHeaded ? [] : ['--headless=new']),
     ],
     viewport: { width: 1280, height: 720 },
   });

@@ -12,6 +12,7 @@
     "@babel/preset-env": "^7.27.2",
     "@playwright/test": "^1.58.2",
     "babel-jest": "^29.7.0",
+    "cross-env": "^10.1.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
   },
@@ -19,12 +20,12 @@
     "test": "jest",
     "test:e2e": "playwright test smoke.spec.js basic-functionality.spec.js",
     "test:e2e:all": "playwright test smoke.spec.js basic-functionality.spec.js reports-export.spec.js crop-screenshot.spec.js",
-    "test:e2e:headed": "playwright test smoke.spec.js basic-functionality.spec.js --headed",
+    "test:e2e:headed": "cross-env HEADED=true playwright test smoke.spec.js basic-functionality.spec.js",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test smoke.spec.js basic-functionality.spec.js --debug",
     "test:e2e:report": "playwright show-report",
-    "test:e2e:crop": "playwright test crop-screenshot.spec.js --headed",
-    "test:all": "npm test && npm run test:e2e"
+    "test:e2e:crop": "cross-env HEADED=true playwright test crop-screenshot.spec.js",
+    "test:all": "npm test && npm run test:e2e:all"
   },
   "repository": {
     "type": "git",

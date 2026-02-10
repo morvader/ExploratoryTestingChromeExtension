@@ -16,6 +16,11 @@ When working with E2E tests:
   - Capturing screenshots
 - Only write tests manually when the skill can't handle the specific case
 
+- Always use context7 when I need code generation, setup or configuration steps, or
+library/API documentation. This means you should automatically use the Context7 MCP
+tools to resolve library id and get library docs without me having to explicitly ask.
+
+
 ## Project Overview
 
 Exploratory Testing Chrome Extension (Manifest v3) - A tool for web exploratory testing that allows testers to report bugs, ideas, notes, and questions with screenshots during testing sessions.

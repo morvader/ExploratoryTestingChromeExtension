@@ -40,6 +40,8 @@ module.exports = defineConfig({
 
     // Slower actions for better stability with extensions
     actionTimeout: 10 * 1000,
+    headless: true, // Uses --headless=new which supports extensions (Chrome 109+)
+
   },
 
   // Configure projects for major browsers
