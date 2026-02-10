@@ -5,7 +5,7 @@ import { Bug, Idea, Note, Question } from '../../src/Annotation';
 describe("Manage Session with Json format", function () {
     describe("export session to Json", function () {
         it("should export every session data to JSon format", function () {
-            var BrowserInfo = "TestBrowser 10.0.1.3";
+            var BrowserInfo = { browser: "TestBrowser", browserVersion: "10.0.1.3", os: "TestOS" };
             var currentDateTime = new Date(2015, 10, 30, 6, 51); // Assuming this creates a date in local TZ
 
             var session = new Session(currentDateTime, BrowserInfo);
@@ -16,12 +16,8 @@ describe("Manage Session with Json format", function () {
             session.addNote(new Note("Add Note", "http://TestSite/NoteUrl.com", new Date(2015, 9, 30, 8, 10, 0)));
             session.addQuestion(new Question("Add Question", "http://TestSite/QuestionUrl.com", new Date(2015, 9, 30, 8, 15, 0)));
 
-            // Expected JSON should match the toJSON() output from the above Date objects
-            // Based on the previous test run, the dates are serialized with an offset.
-            // If currentDateTime = new Date(2015, 10, 30, 6, 51) becomes "2015-11-30T06:51:00.000Z"
-            // and new Date(2015, 9, 30, 8, 0, 0) becomes "2015-10-30T08:00:00.000Z"
             var parsedExpected = JSON.parse(`{
-                "BrowserInfo": "TestBrowser 10.0.1.3",
+                "BrowserInfo": {"browser":"TestBrowser","browserVersion":"10.0.1.3","os":"TestOS"},
                 "StartDateTime": "${new Date(2015, 10, 30, 6, 51).toJSON()}",
                 "annotations": [
                     {
@@ -61,12 +57,11 @@ describe("Manage Session with Json format", function () {
         });
 
         it("should export session with no annotations", function () {
-            var BrowserInfo = "TestBrowser 10.0.1.3";
+            var BrowserInfo = { browser: "TestBrowser", browserVersion: "10.0.1.3", os: "TestOS" };
             var currentDateTime = new Date(2015, 10, 30, 6, 51);
 
             var session = new Session(currentDateTime, BrowserInfo);
-            // Expected JSON should match the toJSON() output from currentDateTime
-            var expectedJSon = `{"BrowserInfo":"TestBrowser 10.0.1.3","StartDateTime":"${currentDateTime.toJSON()}","annotations":[]}`
+            var expectedJSon = `{"BrowserInfo":{"browser":"TestBrowser","browserVersion":"10.0.1.3","os":"TestOS"},"StartDateTime":"${currentDateTime.toJSON()}","annotations":[]}`
             var JSONService = new JSonSessionService();
             var actualJson = JSONService.getJSon(session);
 
@@ -247,7 +242,7 @@ describe('JSonSessionService', function () {
 
     beforeEach(function () {
         jsonService = new JSonSessionService();
-        testSession = new Session(new Date(), "Chrome");
+        testSession = new Session(new Date(), { browser: "Chrome", browserVersion: "1.0.0", os: "TestPlatform" });
 
         // Crear anotaciones de prueba
         testBug = new Bug("Test Bug", "http://test.com", new Date().getTime(), "http://test.com/bug.jpg");
@@ -267,7 +262,7 @@ describe('JSonSessionService', function () {
             const parsedJson = JSON.parse(jsonString);
 
             expect(parsedJson.annotations.length).toBe(4);
-            expect(parsedJson.BrowserInfo).toBe("Chrome");
+            expect(parsedJson.BrowserInfo).toEqual({ browser: "Chrome", browserVersion: "1.0.0", os: "TestPlatform" });
             expect(new Date(parsedJson.StartDateTime)).toEqual(testSession.getStartDateTime());
         });
     });
@@ -278,7 +273,7 @@ describe('JSonSessionService', function () {
             const restoredSession = jsonService.getSession(jsonString);
 
             expect(restoredSession.getAnnotations().length).toBe(4);
-            expect(restoredSession.getBrowserInfo()).toBe("Chrome");
+            expect(restoredSession.getBrowserInfo()).toEqual({ browser: "Chrome", browserVersion: "1.0.0", os: "TestPlatform" });
             expect(restoredSession.getStartDateTime()).toEqual(testSession.getStartDateTime());
         });
 
