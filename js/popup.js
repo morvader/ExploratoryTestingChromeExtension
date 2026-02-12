@@ -12,7 +12,9 @@ window.onload = function () {
 function initElements() {
   annotationListeners();
   exportListeners();
+  driveListeners();
   updateCounters();
+  updateDriveUI();
   registerPopupMessageListener(); // Added listener registration
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
@@ -480,3 +482,179 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#resetConfirmation").slideUp();
   });
 });
+
+/* ============================================
+   Google Drive Integration
+   ============================================ */
+
+function driveListeners() {
+  $(document).on('click', '#driveConnectBtn', driveConnect);
+  $(document).on('click', '#driveDisconnectBtn', driveDisconnect);
+  $(document).on('click', '#driveSaveBtn', driveSaveNow);
+  $(document).on('click', '#driveLoadBtn', driveShowLoadPanel);
+  $(document).on('click', '#driveLoadClose', driveHideLoadPanel);
+  $(document).on('change', '#driveAutoSaveToggle', driveToggleAutoSave);
+}
+
+function updateDriveUI() {
+  chrome.runtime.sendMessage({ type: "driveGetStatus" }, function (response) {
+    if (chrome.runtime.lastError || !response) return;
+
+    if (response.connected) {
+      $("#driveDisconnected").hide();
+      $("#driveConnected").show();
+      $("#driveAutoSaveToggle").prop('checked', response.autoSave);
+      updateDriveSyncStatusUI(response.syncStatus);
+    } else {
+      $("#driveDisconnected").show();
+      $("#driveConnected").hide();
+      $("#driveSyncStatus").text("").removeClass();
+      $("#driveSyncStatus").addClass("drive-status");
+    }
+  });
+}
+
+function updateDriveSyncStatusUI(status) {
+  var $el = $("#driveSyncStatus");
+  $el.removeClass("drive-status-synced drive-status-syncing drive-status-error");
+
+  switch (status) {
+    case "synced":
+      $el.text("Synced").addClass("drive-status-synced");
+      break;
+    case "syncing":
+      $el.text("Syncing...").addClass("drive-status-syncing");
+      break;
+    case "error":
+      $el.text("Error").addClass("drive-status-error");
+      break;
+    default:
+      $el.text("");
+      break;
+  }
+}
+
+function driveConnect() {
+  $("#driveConnectBtn").prop('disabled', true).text("Connecting...");
+  chrome.runtime.sendMessage({ type: "driveConnect" }, function (response) {
+    $("#driveConnectBtn").prop('disabled', false).text("Connect");
+    if (response && response.status === "ok") {
+      updateDriveUI();
+    } else {
+      var errorMsg = response && response.error ? response.error : "Connection failed";
+      console.error("Drive connect failed:", errorMsg);
+    }
+  });
+}
+
+function driveDisconnect() {
+  chrome.runtime.sendMessage({ type: "driveDisconnect" }, function (response) {
+    updateDriveUI();
+    driveHideLoadPanel();
+  });
+}
+
+function driveToggleAutoSave() {
+  var enabled = $("#driveAutoSaveToggle").is(':checked');
+  chrome.runtime.sendMessage({ type: "driveSetAutoSave", enabled: enabled }, function (response) {
+    if (response && response.status === "ok") {
+      // If enabling auto-save, trigger an immediate sync
+      if (enabled) {
+        driveSaveNow();
+      }
+    }
+  });
+}
+
+function driveSaveNow() {
+  updateDriveSyncStatusUI("syncing");
+  $("#driveSaveBtn").prop('disabled', true);
+  chrome.runtime.sendMessage({ type: "driveSaveNow" }, function (response) {
+    $("#driveSaveBtn").prop('disabled', false);
+    if (response) {
+      updateDriveSyncStatusUI(response.syncStatus || "error");
+    }
+  });
+}
+
+function driveShowLoadPanel() {
+  $("#driveLoadPanel").slideDown();
+  $("#driveFileList").html('<div class="drive-loading">Loading...</div>');
+
+  chrome.runtime.sendMessage({ type: "driveListSessions" }, function (response) {
+    if (response && response.status === "ok") {
+      renderDriveFileList(response.files);
+    } else {
+      $("#driveFileList").html('<div class="drive-empty">Could not load sessions</div>');
+    }
+  });
+}
+
+function driveHideLoadPanel() {
+  $("#driveLoadPanel").slideUp();
+}
+
+function renderDriveFileList(files) {
+  var $list = $("#driveFileList");
+  $list.empty();
+
+  if (!files || files.length === 0) {
+    $list.html('<div class="drive-empty">No sessions saved yet</div>');
+    return;
+  }
+
+  files.forEach(function (file) {
+    var date = new Date(file.modifiedTime);
+    var dateStr = date.toLocaleDateString() + " " +
+      date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    var displayName = file.name.replace('.json', '').replace('ExploratorySession_', '').replace(/_/g, ' ');
+
+    var $item = $(
+      '<div class="drive-file-item">' +
+      '  <div class="drive-file-info">' +
+      '    <span class="drive-file-name" title="' + file.name + '">' + displayName + '</span>' +
+      '    <span class="drive-file-date">' + dateStr + '</span>' +
+      '  </div>' +
+      '  <div class="drive-file-actions">' +
+      '    <button class="drive-file-load" title="Load this session">Load</button>' +
+      '    <button class="drive-file-delete" title="Delete from Drive">&times;</button>' +
+      '  </div>' +
+      '</div>'
+    );
+
+    $item.find('.drive-file-load').on('click', function () {
+      driveLoadSession(file.id);
+    });
+
+    $item.find('.drive-file-delete').on('click', function () {
+      driveDeleteSession(file.id, $item);
+    });
+
+    $list.append($item);
+  });
+}
+
+function driveLoadSession(fileId) {
+  $("#driveFileList").html('<div class="drive-loading">Loading session...</div>');
+  chrome.runtime.sendMessage({ type: "driveLoadSession", fileId: fileId }, function (response) {
+    if (response && response.status === "ok") {
+      updateCounters();
+      driveHideLoadPanel();
+      updateDriveUI();
+    } else {
+      var errorMsg = response && response.error ? response.error : "Load failed";
+      $("#driveFileList").html('<div class="drive-empty">' + errorMsg + '</div>');
+    }
+  });
+}
+
+function driveDeleteSession(fileId, $item) {
+  $item.css('opacity', '0.5');
+  chrome.runtime.sendMessage({ type: "driveDeleteSession", fileId: fileId }, function (response) {
+    if (response && response.status === "ok") {
+      $item.slideUp(200, function () { $item.remove(); });
+    } else {
+      $item.css('opacity', '1');
+    }
+  });
+}
