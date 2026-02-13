@@ -36,6 +36,19 @@
         img.src = screenshotDataUrl;
     }
 
+    // Undo last annotation
+    function undo() {
+        if (annotations.length === 0) return;
+        annotations.pop();
+        redrawCanvas();
+        updateUndoButton();
+    }
+
+    // Enable/disable undo button based on annotations count
+    function updateUndoButton() {
+        document.getElementById('undo-button').disabled = annotations.length === 0;
+    }
+
     // Redraw canvas with base image and all annotations
     function redrawCanvas() {
         // Clear canvas
@@ -168,6 +181,7 @@
         }
 
         redrawCanvas();
+        updateUndoButton();
     });
 
     // Tool selection
@@ -184,6 +198,9 @@
         document.getElementById('arrow-tool').classList.remove('active');
         canvas.className = 'tool-rectangle';
     });
+
+    // Undo button
+    document.getElementById('undo-button').addEventListener('click', undo);
 
     // Action buttons
     document.getElementById('save-with-annotations').addEventListener('click', () => {
@@ -228,6 +245,9 @@
             document.getElementById('arrow-tool').click();
         } else if (e.key === 'r' || e.key === 'R') {
             document.getElementById('rectangle-tool').click();
+            } else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            undo();
         } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
             document.getElementById('save-with-annotations').click();
         }
