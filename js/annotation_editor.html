@@ -94,6 +94,25 @@
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="none" stroke="%23DC2626" stroke-width="2"/></svg>') 12 12, crosshair;
         }
 
+        #annotation-canvas.tool-text {
+            cursor: text;
+        }
+
+        #text-input {
+            position: absolute;
+            display: none;
+            background: transparent;
+            border: 1px dashed var(--color-accent);
+            border-radius: 2px;
+            color: var(--color-accent);
+            font-family: var(--font-family);
+            font-weight: bold;
+            outline: none;
+            padding: 2px 4px;
+            min-width: 100px;
+            z-index: 10;
+        }
+
         #toolbar {
             position: fixed;
             bottom: 32px;
@@ -321,6 +340,7 @@
             <div class="shortcuts">
                 <span><span class="shortcut-key">A</span> Arrow</span>
                 <span><span class="shortcut-key">R</span> Rectangle</span>
+                <span><span class="shortcut-key">T</span> Text</span>
                 <span><span class="shortcut-key">Ctrl+Z</span> Undo</span>
                 <span><span class="shortcut-key">Esc</span> Cancel</span>
                 <span><span class="shortcut-key">Ctrl+Enter</span> Save</span>
@@ -329,6 +349,7 @@
 
         <div id="canvas-container">
             <canvas id="annotation-canvas"></canvas>
+            <input type="text" id="text-input" placeholder="Type text..." />
         </div>
 
         <div id="toolbar">
@@ -342,6 +363,13 @@
                 <button class="tool-button" id="rectangle-tool" data-tooltip="Rectangle">
                     <svg class="icon-rectangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    </svg>
+                </button>
+                <button class="tool-button" id="text-tool" data-tooltip="Text">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                        <line x1="9.5" y1="20" x2="14.5" y2="20"></line>
+                        <line x1="12" y1="4" x2="12" y2="20"></line>
                     </svg>
                 </button>
                 <button class="tool-button" id="undo-button" data-tooltip="Undo (Ctrl+Z)" disabled>
