@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Exploratory Testing Extension",
+  "name": "Exploratory Testing - QA Bug Reporter",
   "version": "4.1.0",
-  "description": "Chrome extension for exploratory testing",
+  "description": "Manual testing tool for QA teams. Report bugs, ideas & notes with annotated screenshots. Export sessions as CSV, JSON or HTML.",
   "permissions": [
     "storage",
     "tabs",
