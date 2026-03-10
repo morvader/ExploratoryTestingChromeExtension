@@ -504,7 +504,7 @@ async function addAnnotation(type, name, imageURL) {
 }
 
 async function startSession() {
-    var systemInfo = getSystemInfo();
+    var systemInfo = await getSystemInfo();
     session = new Session(Date.now(), systemInfo);
     await saveSession();
 }
@@ -521,7 +521,7 @@ function exportSessionCSV() {
     var csvData = exportService.getCSVData();
 
     var browserInfo = session.getBrowserInfo();
-    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+    var browserInfoString = (browserInfo.brand || browserInfo.browser || 'Chrome') + "_" + browserInfo.browserVersion;
 
     // Formatear la fecha correctamente
     const date = new Date(session.getStartDateTime());
@@ -552,7 +552,7 @@ function exportSessionJSon() {
     var jsonData = exportJSonService.getJSon(session);
 
     var browserInfo = session.getBrowserInfo();
-    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+    var browserInfoString = (browserInfo.brand || browserInfo.browser || 'Chrome') + "_" + browserInfo.browserVersion;
 
     // Formatear la fecha correctamente
     const date = new Date(session.getStartDateTime());

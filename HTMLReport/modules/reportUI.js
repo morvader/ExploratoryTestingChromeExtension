@@ -20,6 +20,13 @@ export function displaySessionInfo(session) {
     const browserInfo = session.getBrowserInfo();
     const startDateTime = session.getStartDateTime();
 
+    const brand = browserInfo.brand || browserInfo.browser || 'N/A';
+    const model = browserInfo.model || '';
+    const browserLabel = model ? `${brand} (${model})` : brand;
+    const os = browserInfo.os || 'N/A';
+    const osVersion = browserInfo.osVersion || '';
+    const osLabel = osVersion ? `${os} ${osVersion}` : os;
+
     sessionInfo.innerHTML = `
         <div class="info-item">
             <span class="info-label">Start Date</span>
@@ -27,11 +34,27 @@ export function displaySessionInfo(session) {
         </div>
         <div class="info-item">
             <span class="info-label">Browser</span>
-            <span class="info-value">${browserInfo.browser} ${browserInfo.browserVersion}</span>
+            <span class="info-value">${browserLabel}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Version</span>
+            <span class="info-value">${browserInfo.browserVersion || 'N/A'}</span>
         </div>
         <div class="info-item">
             <span class="info-label">Operating System</span>
-            <span class="info-value">${browserInfo.os}</span>
+            <span class="info-value">${osLabel}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Resolution</span>
+            <span class="info-value">${browserInfo.screenResolution || 'N/A'}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Language</span>
+            <span class="info-value">${browserInfo.language || 'N/A'}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Timezone</span>
+            <span class="info-value">${browserInfo.timezone || 'N/A'}</span>
         </div>
         <div class="info-item">
             <span class="info-label">Cookies</span>
