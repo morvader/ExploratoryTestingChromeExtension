@@ -311,14 +311,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             sendResponse({
                 startDateTime: session.StartDateTime,
-                browserInfo: {
-                    browser: session.BrowserInfo.browser || "Chrome",
-                    browserVersion: session.BrowserInfo.browserVersion || chrome.runtime.getManifest().version,
-                    os: session.BrowserInfo.os || navigator.platform,
-                    osVersion: session.BrowserInfo.osVersion || navigator.userAgent,
-                    cookies: session.BrowserInfo.cookies || navigator.cookieEnabled,
-                    flashVersion: session.BrowserInfo.flashVersion || "N/A"
-                },
+                browserInfo: session.BrowserInfo,
                 annotations: session.annotations.map(annotation => ({
                     type: annotation.constructor.name,
                     name: annotation.name,

@@ -44,22 +44,6 @@ export function displaySessionInfo(session) {
             <span class="info-label">Operating System</span>
             <span class="info-value">${osLabel}</span>
         </div>
-        <div class="info-item">
-            <span class="info-label">Resolution</span>
-            <span class="info-value">${browserInfo.screenResolution || 'N/A'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Language</span>
-            <span class="info-value">${browserInfo.language || 'N/A'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Timezone</span>
-            <span class="info-value">${browserInfo.timezone || 'N/A'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Cookies</span>
-            <span class="info-value">${browserInfo.cookies ? 'Enabled' : 'Disabled'}</span>
-        </div>
     `;
 }
 

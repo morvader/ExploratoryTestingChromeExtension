@@ -18,17 +18,14 @@ describe('getSystemInfo', () => {
     expect(systemInfo).toHaveProperty('browserVersion');
     expect(systemInfo).toHaveProperty('os');
     expect(systemInfo).toHaveProperty('osVersion');
-    expect(systemInfo).toHaveProperty('screenResolution');
-    expect(systemInfo).toHaveProperty('language');
-    expect(systemInfo).toHaveProperty('timezone');
-    expect(systemInfo).toHaveProperty('cookies');
   });
 
-  it('should retrieve browser brand from userAgentData', () => {
+  it('should retrieve real browser brand (not Chromium or fake brand)', () => {
     expect(systemInfo.brand).toBe('Google Chrome');
+    expect(systemInfo.brand).not.toBe('Chromium');
   });
 
-  it('should retrieve full browser version from userAgentData', () => {
+  it('should retrieve full browser version matching Chromium version', () => {
     expect(systemInfo.browserVersion).toBe('122.0.6261.112');
   });
 
@@ -40,19 +37,10 @@ describe('getSystemInfo', () => {
     expect(systemInfo.osVersion).toBe('10.0');
   });
 
-  it('should retrieve screen resolution from screen dimensions', () => {
-    expect(systemInfo.screenResolution).toBe('1920 × 1080');
-  });
-
-  it('should retrieve language from navigator.language', () => {
-    expect(systemInfo.language).toBe('es-ES');
-  });
-
-  it('should retrieve timezone from Intl', () => {
-    expect(systemInfo.timezone).toBe('Europe/Madrid');
-  });
-
-  it('should retrieve cookie status from navigator.cookieEnabled', () => {
-    expect(systemInfo.cookies).toBe(true);
+  it('should not include screenResolution, language, timezone or cookies', () => {
+    expect(systemInfo).not.toHaveProperty('screenResolution');
+    expect(systemInfo).not.toHaveProperty('language');
+    expect(systemInfo).not.toHaveProperty('timezone');
+    expect(systemInfo).not.toHaveProperty('cookies');
   });
 });

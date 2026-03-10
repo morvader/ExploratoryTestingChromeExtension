@@ -46,20 +46,6 @@ global.navigator = {
   }
 };
 
-// Mock screen properties
-global.screen = {
-  width: 1920,
-  height: 1080
-};
-
-// Mock Intl
-global.Intl = {
-  DateTimeFormat: () => ({
-    resolvedOptions: () => ({ timeZone: 'Europe/Madrid' })
-  })
-};
-
-
 // Attempt to load the custom date.js library.
 // IMPORTANT: This path is relative to the project root.
 // Ensure 'lib/date.js' exists and this path is correct.
