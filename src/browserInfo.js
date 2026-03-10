@@ -44,7 +44,7 @@ export async function getSystemInfo() {
         browserVersion,
         os,
         osVersion,
-        screenResolution: `${screen.width} × ${screen.height}`,
+        screenResolution: (typeof screen !== 'undefined' && screen.width) ? `${screen.width} × ${screen.height}` : 'N/A',
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         cookies: navigator.cookieEnabled
