@@ -163,6 +163,46 @@
                 <button id="resetNo" class="cancelButton btn btn-success btn-sm" title="Cancel reset">No</button>
             </div>
         </div>
+
+        <!-- Google Drive Section -->
+        <div id="driveSection" class="drive-section">
+            <div class="drive-header">
+                <span class="drive-label">Google Drive</span>
+                <span id="driveSyncStatus" class="drive-status"></span>
+            </div>
+
+            <div id="driveDisconnected">
+                <button id="driveConnectBtn" class="btn btn-sm drive-connect-btn" title="Connect to Google Drive">
+                    Connect
+                </button>
+            </div>
+
+            <div id="driveConnected" style="display:none">
+                <div class="drive-controls">
+                    <label class="drive-autosave-toggle" title="Auto-save to Drive after each change">
+                        <input type="checkbox" id="driveAutoSaveToggle">
+                        <span class="drive-toggle-slider"></span>
+                        <span class="drive-toggle-label">Auto</span>
+                    </label>
+                    <button id="driveSaveBtn" class="btn btn-secondary drive-action-btn"
+                        title="Save to Google Drive"></button>
+                    <button id="driveLoadBtn" class="btn btn-secondary drive-action-btn drive-load-icon"
+                        title="Load from Google Drive"></button>
+                    <button id="driveDisconnectBtn" class="btn btn-sm drive-disconnect-btn"
+                        title="Disconnect Google Drive">&times;</button>
+                </div>
+            </div>
+
+            <div id="driveLoadPanel" style="display:none">
+                <div class="drive-load-header">
+                    <span>Sessions in Drive</span>
+                    <button id="driveLoadClose" class="drive-load-close">&times;</button>
+                </div>
+                <div id="driveFileList" class="drive-file-list">
+                    <div class="drive-loading">Loading...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

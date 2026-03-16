@@ -7,8 +7,72 @@ import { Question } from './src/Annotation.js';
 import { ExportSessionCSV } from './src/ExportSessionCSV.js';
 import { JSonSessionService } from './src/JSonSessionService.js';
 import { getSystemInfo } from './src/browserInfo.js';
+import { GoogleDriveService } from './src/GoogleDriveService.js';
 
 let session = new Session();
+
+// --- Google Drive state ---
+const driveService = new GoogleDriveService();
+let driveAutoSave = false;
+let driveFileId = null;
+let driveSyncStatus = 'idle'; // idle | syncing | synced | error
+let syncTimeout = null;
+
+async function loadDriveSettings() {
+    const data = await chrome.storage.local.get(['driveAutoSave', 'driveFileId']);
+    driveAutoSave = data.driveAutoSave || false;
+    driveFileId = data.driveFileId || null;
+
+    // Try to restore token silently if auto-save was on
+    if (driveAutoSave) {
+        try {
+            await driveService.getToken();
+        } catch (e) {
+            driveAutoSave = false;
+            await chrome.storage.local.set({ driveAutoSave: false });
+        }
+    }
+}
+
+async function saveDriveSettings() {
+    await chrome.storage.local.set({ driveAutoSave, driveFileId });
+}
+
+function scheduleDriveSync() {
+    if (!driveAutoSave || !driveService.isAuthenticated()) return;
+    if (syncTimeout) clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(() => syncToDrive(), 1500);
+}
+
+async function syncToDrive() {
+    if (!driveService.isAuthenticated()) return;
+    if (session.getAnnotations().length === 0) return;
+
+    driveSyncStatus = 'syncing';
+    try {
+        const jsonService = new JSonSessionService();
+        const sessionJson = jsonService.getJSon(session);
+        const fileName = getDriveFileName();
+
+        const result = await driveService.uploadSession(sessionJson, fileName, driveFileId);
+        driveFileId = result.id;
+        driveSyncStatus = 'synced';
+        await saveDriveSettings();
+    } catch (error) {
+        console.error('Drive sync failed:', error);
+        driveSyncStatus = 'error';
+    }
+}
+
+function getDriveFileName() {
+    const date = new Date(session.getStartDateTime());
+    const startDateTime = date.getFullYear() +
+        ('0' + (date.getMonth() + 1)).slice(-2) +
+        ('0' + date.getDate()).slice(-2) + '_' +
+        ('0' + date.getHours()).slice(-2) +
+        ('0' + date.getMinutes()).slice(-2);
+    return `ExploratorySession_${startDateTime}.json`;
+}
 
 // Función para guardar la sesión en el storage
 async function saveSession() {
@@ -78,6 +142,9 @@ async function saveSession() {
             throw error;
         }
     }
+
+    // Trigger Drive auto-sync after local save
+    scheduleDriveSync();
 }
 
 // Función para cargar la sesión desde el storage
@@ -113,8 +180,9 @@ async function loadSession() {
     }
 }
 
-// Cargar la sesión al iniciar
+// Cargar la sesión y configuración de Drive al iniciar
 loadSession();
+loadDriveSettings();
 
 // Helper function for notifications of processing errors (before addAnnotation is called)
 function notifyProcessingError(annotationType, descriptionName, errorMessage = "") {
@@ -328,6 +396,105 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }))
             });
             break;
+
+        // --- Google Drive handlers ---
+        case "driveConnect":
+            driveService.authenticate()
+                .then(() => {
+                    sendResponse({ status: "ok" });
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message });
+                });
+            isAsync = true;
+            break;
+
+        case "driveDisconnect":
+            driveService.disconnect()
+                .then(async () => {
+                    driveAutoSave = false;
+                    driveFileId = null;
+                    driveSyncStatus = 'idle';
+                    await saveDriveSettings();
+                    sendResponse({ status: "ok" });
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message });
+                });
+            isAsync = true;
+            break;
+
+        case "driveGetStatus":
+            sendResponse({
+                connected: driveService.isAuthenticated(),
+                autoSave: driveAutoSave,
+                syncStatus: driveSyncStatus,
+                fileId: driveFileId
+            });
+            break;
+
+        case "driveSetAutoSave":
+            driveAutoSave = request.enabled;
+            saveDriveSettings().then(() => {
+                sendResponse({ status: "ok", autoSave: driveAutoSave });
+            });
+            isAsync = true;
+            break;
+
+        case "driveSaveNow":
+            syncToDrive()
+                .then(() => {
+                    sendResponse({ status: "ok", syncStatus: driveSyncStatus, fileId: driveFileId });
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message, syncStatus: driveSyncStatus });
+                });
+            isAsync = true;
+            break;
+
+        case "driveListSessions":
+            driveService.listSessions()
+                .then(files => {
+                    sendResponse({ status: "ok", files });
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message });
+                });
+            isAsync = true;
+            break;
+
+        case "driveLoadSession":
+            driveService.downloadSession(request.fileId)
+                .then(jsonData => {
+                    if (importSessionJSon(jsonData)) {
+                        driveFileId = request.fileId;
+                        return saveDriveSettings().then(() => saveSession()).then(() => {
+                            sendResponse({ status: "ok" });
+                        });
+                    } else {
+                        sendResponse({ status: "error", error: "Invalid session data" });
+                    }
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message });
+                });
+            isAsync = true;
+            break;
+
+        case "driveDeleteSession":
+            driveService.deleteSession(request.fileId)
+                .then(() => {
+                    if (driveFileId === request.fileId) {
+                        driveFileId = null;
+                        saveDriveSettings();
+                    }
+                    sendResponse({ status: "ok" });
+                })
+                .catch(error => {
+                    sendResponse({ status: "error", error: error.message });
+                });
+            isAsync = true;
+            break;
     }
     return isAsync; // Return true only if sendResponse is used asynchronously in any of the handled cases.
 });
@@ -511,6 +678,8 @@ async function startSession() {
 
 async function clearSession() {
     session.clearAnnotations();
+    driveFileId = null;
+    await saveDriveSettings();
     await saveSession();
 }
 

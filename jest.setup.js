@@ -2,6 +2,7 @@
 global.chrome = {
   runtime: {
     getManifest: () => ({ version: '1.0.0' }), // Basic mock
+    lastError: null,
     // Add other chrome.runtime APIs if needed by tests
   },
   // Mock other chrome.* APIs as necessary
@@ -16,6 +17,10 @@ global.chrome = {
   tabs: {
     query: jest.fn((queryInfo, callback) => callback([{ id: 1, url: 'http://example.com' }])),
     // Add other chrome.tabs APIs if needed
+  },
+  identity: {
+    getAuthToken: jest.fn((options, callback) => callback('mock-token-123')),
+    removeCachedAuthToken: jest.fn((details, callback) => callback()),
   }
   // Add more chrome API mocks as identified during testing
 };
