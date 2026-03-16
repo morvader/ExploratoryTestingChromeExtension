@@ -311,14 +311,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             sendResponse({
                 startDateTime: session.StartDateTime,
-                browserInfo: {
-                    browser: session.BrowserInfo.browser || "Chrome",
-                    browserVersion: session.BrowserInfo.browserVersion || chrome.runtime.getManifest().version,
-                    os: session.BrowserInfo.os || navigator.platform,
-                    osVersion: session.BrowserInfo.osVersion || navigator.userAgent,
-                    cookies: session.BrowserInfo.cookies || navigator.cookieEnabled,
-                    flashVersion: session.BrowserInfo.flashVersion || "N/A"
-                },
+                browserInfo: session.BrowserInfo,
                 annotations: session.annotations.map(annotation => ({
                     type: annotation.constructor.name,
                     name: annotation.name,
@@ -504,7 +497,7 @@ async function addAnnotation(type, name, imageURL) {
 }
 
 async function startSession() {
-    var systemInfo = getSystemInfo();
+    var systemInfo = await getSystemInfo();
     session = new Session(Date.now(), systemInfo);
     await saveSession();
 }
@@ -521,7 +514,7 @@ function exportSessionCSV() {
     var csvData = exportService.getCSVData();
 
     var browserInfo = session.getBrowserInfo();
-    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+    var browserInfoString = (browserInfo.brand || browserInfo.browser || 'Chrome') + "_" + browserInfo.browserVersion;
 
     // Formatear la fecha correctamente
     const date = new Date(session.getStartDateTime());
@@ -552,7 +545,7 @@ function exportSessionJSon() {
     var jsonData = exportJSonService.getJSon(session);
 
     var browserInfo = session.getBrowserInfo();
-    var browserInfoString = browserInfo.browser + "_" + browserInfo.browserVersion;
+    var browserInfoString = (browserInfo.brand || browserInfo.browser || 'Chrome') + "_" + browserInfo.browserVersion;
 
     // Formatear la fecha correctamente
     const date = new Date(session.getStartDateTime());

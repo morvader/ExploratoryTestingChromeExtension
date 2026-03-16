@@ -22,12 +22,29 @@ global.chrome = {
 
 // Mock navigator properties used in browserInfo.js
 global.navigator = {
-  ...global.navigator, // Preserve existing navigator properties if any
+  ...global.navigator,
   platform: 'TestPlatform',
   userAgent: 'TestUserAgent/1.0',
   cookieEnabled: true,
+  language: 'es-ES',
+  userAgentData: {
+    platform: 'Windows',
+    brands: [
+      { brand: 'Google Chrome', version: '122' },
+      { brand: 'Chromium', version: '122' },
+      { brand: 'Not A;Brand', version: '99' }
+    ],
+    getHighEntropyValues: jest.fn(() => Promise.resolve({
+      fullVersionList: [
+        { brand: 'Google Chrome', version: '122.0.6261.112' },
+        { brand: 'Chromium', version: '122.0.6261.112' },
+        { brand: 'Not A;Brand', version: '99.0.0.0' }
+      ],
+      platformVersion: '10.0',
+      model: ''
+    }))
+  }
 };
-
 
 // Attempt to load the custom date.js library.
 // IMPORTANT: This path is relative to the project root.
