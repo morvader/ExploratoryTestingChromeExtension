@@ -7,6 +7,23 @@ const {
 } = require('./helpers/extension-helper');
 
 /**
+ * Registers a window 'message' listener in the editor page and resolves once
+ * it is attached, so the action that triggers the message can run afterwards
+ * without racing the listener registration.
+ * @returns {() => Promise<object>} waits for the first message of the given type
+ */
+async function listenForEditorMessage(page, type) {
+  await page.evaluate((expectedType) => {
+    window.__editorMessage = new Promise((resolve) => {
+      window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === expectedType) resolve(event.data);
+      });
+    });
+  }, type);
+  return () => page.evaluate(() => window.__editorMessage);
+}
+
+/**
  * Annotation Editor Tests
  *
  * These tests verify the annotation editor functionality that allows users to:
@@ -312,21 +329,13 @@ test.describe('Annotation Editor Functionality', () => {
     }, testImageData);
     await editorPage.waitForTimeout(500);
 
-    // Listen for postMessage
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationComplete') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationComplete');
 
     // Click save with annotations
     await editorPage.click('#save-with-annotations');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationComplete');
     expect(message.imageData).toBeTruthy();
@@ -356,21 +365,13 @@ test.describe('Annotation Editor Functionality', () => {
     }, testImageData);
     await editorPage.waitForTimeout(500);
 
-    // Listen for postMessage
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationComplete') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationComplete');
 
     // Click save without annotations
     await editorPage.click('#save-without-annotations');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationComplete');
     expect(message.imageData).toBe(testImageData);
@@ -391,21 +392,13 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.goto(editorUrl);
     await editorPage.waitForLoadState('domcontentloaded');
 
-    // Listen for postMessage
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationCancelled') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationCancelled');
 
     // Click cancel
     await editorPage.click('#cancel-button');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationCancelled');
 
@@ -424,21 +417,13 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.goto(editorUrl);
     await editorPage.waitForLoadState('domcontentloaded');
 
-    // Listen for postMessage
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationCancelled') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationCancelled');
 
     // Press Escape
     await editorPage.keyboard.press('Escape');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationCancelled');
 
@@ -464,21 +449,13 @@ test.describe('Annotation Editor Functionality', () => {
     }, testImageData);
     await editorPage.waitForTimeout(500);
 
-    // Listen for postMessage
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationComplete') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationComplete');
 
     // Press Ctrl+Enter
     await editorPage.keyboard.press('Control+Enter');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationComplete');
     expect(message.hasAnnotations).toBe(true);
@@ -534,19 +511,12 @@ test.describe('Annotation Editor Functionality', () => {
     console.log('✓ Multiple annotations drawn successfully');
 
     // Save and verify all annotations are in the image
-    const messagePromise = editorPage.evaluate(() => {
-      return new Promise((resolve) => {
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'annotationComplete') {
-            resolve(event.data);
-          }
-        });
-      });
-    });
+    // Register the listener before triggering the action to avoid missing the message
+    const waitForMessage = await listenForEditorMessage(editorPage, 'annotationComplete');
 
     await editorPage.click('#save-with-annotations');
 
-    const message = await messagePromise;
+    const message = await waitForMessage();
 
     expect(message.type).toBe('annotationComplete');
     expect(message.hasAnnotations).toBe(true);
