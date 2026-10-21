@@ -15,6 +15,7 @@ $include = @(
     "manifest.json",
     "background.js",
     "popup.html",
+    "tutorial.html",
     "css",
     "HTMLReport",
     "icons",
