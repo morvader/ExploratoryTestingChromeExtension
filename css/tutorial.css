@@ -1,0 +1,130 @@
+/* Tutorial page. Loaded after popUp.css, which also styles the popup mock. */
+
+/* popUp.css limits the body to popup width; the tutorial page needs the full window. */
+body.tutorial {
+	min-width: 0;
+	max-width: none;
+	background-color: var(--color-bg);
+}
+
+.tutorial-header {
+	text-align: center;
+	padding: 40px 16px 24px;
+	background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+	color: #ffffff;
+}
+
+.tutorial-header h1 {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.tutorial-header p {
+	margin-bottom: 16px;
+	opacity: 0.9;
+}
+
+.tutorial-header .btn-primary {
+	background-color: #ffffff;
+	border-color: #ffffff;
+	color: var(--color-primary-dark);
+	border-radius: var(--radius-md);
+	padding: 8px 20px;
+	font-weight: 600;
+}
+
+.tutorial-main {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 24px 16px 64px;
+}
+
+.scene {
+	margin-bottom: 48px;
+}
+
+.scene h2 {
+	font-size: 1.3rem;
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+
+.scene-caption {
+	color: var(--color-text-secondary);
+	margin-bottom: 16px;
+}
+
+/* Popup mock: same width as the real popup, inert. */
+.popup-mock {
+	width: 400px;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 8px;
+	background: #ffffff;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
+	pointer-events: none;
+	user-select: none;
+}
+
+.popup-mock #resetBtn {
+	margin-right: 0;
+}
+
+.popup-mock .session-buttons {
+	display: inline-flex;
+	gap: 6px;
+}
+
+/* Screenshots with transparent hotspots that Driver.js can highlight. */
+.shot {
+	position: relative;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-md);
+	overflow: hidden;
+	background: #ffffff;
+}
+
+.shot img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.hotspot {
+	position: absolute;
+	display: block;
+	pointer-events: none;
+}
+
+/* Driver.js popover tweaks to match the extension look. */
+.driver-popover.et-tour {
+	font-family: var(--font-sans);
+	border-radius: var(--radius-md);
+	max-width: 340px;
+}
+
+.driver-popover.et-tour .driver-popover-title {
+	font-size: 1.05rem;
+	font-weight: 700;
+}
+
+.driver-popover.et-tour .driver-popover-description {
+	line-height: 1.45;
+}
+
+.driver-popover.et-tour .driver-popover-description kbd {
+	background: #f1f5f9;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	color: var(--color-text);
+	padding: 0 4px;
+}
+
+.driver-popover.et-tour .driver-popover-next-btn,
+.driver-popover.et-tour .driver-popover-prev-btn {
+	border-radius: var(--radius-sm);
+}

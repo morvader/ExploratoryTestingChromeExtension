@@ -56,6 +56,8 @@ HTMLReport/preview.html ── reads session ── renders stats, charts, filte
 | `manifest.json` | MV3 manifest. Permissions: `storage`, `tabs`, `activeTab`, `downloads`, `scripting`, `notifications` |
 | `background.js` | Service worker (`type: module`). Owns the `Session`, routes messages, saves to storage, triggers downloads, shows notifications |
 | `popup.html`, `js/popup.js` | Popup UI: annotation forms, counters, export/import/clear, open report |
+| `tutorial.html`, `js/tutorial.js`, `css/tutorial.css` | Interactive tutorial (Driver.js tour). Opened by the popup on first use and by the **?** help button. See [Tutorial](#tutorial) |
+| `lib/driverjs/` | Vendored Driver.js (pinned version in its `README.md`), loaded locally — never from a CDN |
 | `js/content_script.js` | Crop-area selection on the page; hosts the annotation editor iframe |
 | `js/annotation_editor.*` | Screenshot editor (arrow, rectangle, text, blur, undo). Talks to the content script via `postMessage` (`initAnnotationEditor`, `annotationComplete`, `annotationCancelled`) |
 | `src/Session.js` | Session model: browser info, start time, `annotations[]` |
@@ -94,6 +96,20 @@ Content script also sends `selectionCancelled` (not handled by background).
 - **Download Report** — single self-contained HTML, screenshots inlined as base64, must work offline.
 - **Download Images** — ZIP (JSZip) of screenshots named by type + timestamp, plus `README.txt`. Only offered in `preview.html`; deliberately omitted from downloaded reports to avoid Windows security warnings.
 
+## Tutorial
+
+`tutorial.html` is a guided tour of every user-facing feature: types of annotation, add with / without screenshot, crop with description and blur, report, export / import, and the **?** help button. It is shown automatically the first time the popup opens (`tutorialSeen` flag in the popup's `localStorage`) and reopened from the **?** button in `popup.html`.
+
+**Keep the tutorial in sync.** Whenever you add a user-facing feature or change an existing one (popup buttons or shortcuts, crop / editor tools, report, export / import, session behaviour), update the tutorial in the same change:
+
+1. `js/tutorial.js` — add, edit or remove the step. Steps target `[data-tour="..."]` elements; step text is English.
+2. `tutorial.html` — the popup mock mirrors the markup of `popup.html` (same classes and ids so `css/popUp.css` styles it); mirror UI changes there. Editor and report scenes are screenshots with transparent `.hotspot` boxes (percent positions) that Driver.js highlights.
+3. `images/tutorial/editor.png`, `images/tutorial/report.png` — regenerate when the editor or report UI changes, and re-check the hotspot positions. Use fake data only: no real URLs, names or customer content in screenshots.
+4. `test/e2e/tutorial.spec.js` — the tour test walks every step and requires each one to highlight an existing element, so a removed or renamed `data-tour` target fails it.
+5. If the change is user-visible, also refresh the README screenshots in `screenshots/` and the feature list.
+
+Rules for the tutorial code: no CDN and no remote code (the page makes no external requests; a test enforces it); keep the last step pointing at the help button; the mock is inert, so never load `js/popup.js` in `tutorial.html`.
+
 ## Testing
 
 ### Unit (Jest)
@@ -104,7 +120,8 @@ Content script also sends `selectionCancelled` (not handled by background).
 
 ### E2E (Playwright)
 
-- Specs in `test/e2e/*.spec.js`: `smoke`, `basic-functionality`, `reports-export`, `crop-screenshot`, `annotation-editor`. Shared setup in `test/e2e/helpers/extension-helper.js`; fixture pages in `test/e2e/test-pages/` (served at `http://localhost:8000/test/e2e/test-pages`).
+- Specs in `test/e2e/*.spec.js`: `smoke`, `basic-functionality`, `reports-export`, `crop-screenshot`, `annotation-editor`, `tutorial`. Shared setup in `test/e2e/helpers/extension-helper.js`; fixture pages in `test/e2e/test-pages/` (served at `http://localhost:8000/test/e2e/test-pages`).
+- `openExtensionPopup` marks the tutorial as seen (sets `tutorialSeen` in the extension's `localStorage`) so the first-run tutorial tab does not open during specs. Pass `{ firstRun: true }` to test the first-run behaviour.
 - Runs one worker, not parallel (extensions require a persistent Chromium context). Retries 2× on CI.
 - `npm run` scripts list spec files explicitly — **a new spec must be added to `test:e2e:all` and `test:e2e:ci` in `package.json`** or CI won't run it.
 - Prefer role / label / test-id selectors over CSS paths; use Playwright's auto-waiting assertions, never fixed sleeps.
@@ -139,8 +156,7 @@ If your agent supports these, use them:
 
 ## Gotchas
 
-- `genetareZip.ps1` (filename typo is real) packages an **allowlist** of runtime files (`manifest.json`, `background.js`, `popup.html`, `css`, `HTMLReport`, `icons`, `images`, `js`, `lib`, `src`). A new top-level runtime file or folder must be added to `$include`, or it will be missing from the store package.
-- `README.md` still claims `ExportSessionCSV.test.js` is broken — it now passes.
+- `genetareZip.ps1` (filename typo is real) packages an **allowlist** of runtime files (`manifest.json`, `background.js`, `popup.html`, `tutorial.html`, `css`, `HTMLReport`, `icons`, `images`, `js`, `lib`, `src`). A new top-level runtime file or folder must be added to `$include`, or it will be missing from the store package.
 
 ## Definition of done
 
@@ -148,4 +164,5 @@ If your agent supports these, use them:
 2. Relevant E2E specs pass (`npm run test:e2e:all` for UI / message-flow changes).
 3. New `chrome.*` calls are mocked in `jest.setup.js`; new specs are wired into `package.json`.
 4. Extension reloaded and the change checked manually in Chrome when it affects UI.
-5. This file updated if architecture, commands or conventions changed.
+5. The tutorial (`js/tutorial.js`, `tutorial.html`, images) and README features / screenshots updated if the change is user-visible.
+6. This file updated if architecture, commands or conventions changed.

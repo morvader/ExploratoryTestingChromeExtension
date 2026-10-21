@@ -9,7 +9,27 @@ window.onload = function () {
   })
 }
 
+const TUTORIAL_SEEN_KEY = 'tutorialSeen';
+
+function openTutorial() {
+  chrome.tabs.create({ url: chrome.runtime.getURL('tutorial.html'), active: true });
+}
+
+// Opens the tutorial the first time the popup is shown; the help button reopens it afterwards.
+function tutorialListeners() {
+  $(document).on('click', '#helpBtn', openTutorial);
+
+  try {
+    if (localStorage.getItem(TUTORIAL_SEEN_KEY)) return;
+    localStorage.setItem(TUTORIAL_SEEN_KEY, '1');
+  } catch (e) {
+    return; // storage unavailable: skip the automatic tutorial rather than show it on every open
+  }
+  openTutorial();
+}
+
 function initElements() {
+  tutorialListeners();
   annotationListeners();
   exportListeners();
   updateCounters();
