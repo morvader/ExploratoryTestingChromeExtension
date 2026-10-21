@@ -7,6 +7,6 @@ if ($LASTEXITCODE -ne 0) {
 
 # Iniciar el servidor HTTP
 Write-Host "Iniciando servidor de pruebas en http://localhost:8000"
-Write-Host "Abre http://localhost:8000/test/SpecRunner.html en tu navegador"
+Write-Host "Abre http://localhost:8000/test/e2e/test-pages/index.html en tu navegador"
 Write-Host "Presiona Ctrl+C para detener el servidor"
 python -m http.server 8000 
