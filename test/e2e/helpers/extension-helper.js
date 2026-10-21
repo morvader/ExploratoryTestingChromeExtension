@@ -149,9 +149,14 @@ async function launchBrowserWithExtension() {
  * @param {string} extensionId
  * @returns {Promise<import('@playwright/test').Page>}
  */
-async function openExtensionPopup(context, extensionId) {
+async function openExtensionPopup(context, extensionId, { firstRun = false } = {}) {
   // Open a new page with the popup
   const popupPage = await context.newPage();
+  if (!firstRun) {
+    // Mark the tutorial as seen so the first-run tutorial tab does not open during tests
+    await popupPage.goto(`chrome-extension://${extensionId}/manifest.json`);
+    await popupPage.evaluate(() => localStorage.setItem('tutorialSeen', '1'));
+  }
   await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
   await popupPage.waitForLoadState('domcontentloaded');
 

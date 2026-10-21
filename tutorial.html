@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Exploratory Testing Extension - Tutorial</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/popUp.css">
+    <link rel="stylesheet" href="lib/driverjs/driver.css">
+    <link rel="stylesheet" href="css/tutorial.css">
+    <script src="lib/driverjs/driver.js.iife.js"></script>
+    <script src="js/tutorial.js"></script>
+</head>
+
+<body class="tutorial">
+    <header class="tutorial-header">
+        <h1>Exploratory Testing Extension</h1>
+        <p>A quick tour of the main features. It takes about two minutes.</p>
+        <button id="startTourBtn" class="btn btn-primary">Start the tour</button>
+    </header>
+
+    <main class="tutorial-main">
+
+        <!-- Scene 1: the popup. Markup mirrors popup.html; the mock is purely visual. -->
+        <section class="scene">
+            <h2>1. The popup: add annotations</h2>
+            <p class="scene-caption">This is a copy of the extension popup. Nothing here is clickable.</p>
+
+            <div class="popup-mock" aria-hidden="true">
+                <div class="card">
+                    <div class="card-header header-with-help">
+                        <h5>Add new Annotation</h5>
+                        <button id="helpBtn" class="help-btn" data-tour="help" tabindex="-1">?</button>
+                    </div>
+
+                    <div data-tour="types">
+                        <div class="card">
+                            <div class="card-header">
+                                <button class="BugButton btn btn-danger btn-block" tabindex="-1">
+                                    <span>Bug</span>
+                                    <span class="badge badge-light"> 2 </span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <textarea rows="4" class="form-control-sm" data-tour="description" tabindex="-1"
+                                        readonly>The checkout button stays disabled after filling the form</textarea>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="btn-group-sm annotation-group" role="group">
+                                        <button class="btn btn-outline-danger add" data-tour="add"
+                                            tabindex="-1">&nbsp;</button>
+                                        <button class="btn btn-outline-danger screenshot" data-tour="screenshot"
+                                            tabindex="-1">&nbsp;</button>
+                                        <button class="btn btn-outline-danger crop-screenshot" data-tour="crop"
+                                            tabindex="-1">&nbsp;</button>
+                                        <button class="btn btn-outline-secondary btn-sm cancel"
+                                            tabindex="-1">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <button class="NoteButton btn btn-warning btn-block" tabindex="-1">
+                                    <span>Note</span>
+                                    <span class="badge badge-light"> 1 </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <button class="QuestionButton btn btn-success btn-block" tabindex="-1">
+                                    <span>Question</span>
+                                    <span class="badge badge-light"> 1 </span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <button class="IdeaButton btn btn-info btn-block" tabindex="-1">
+                                    <span>Idea</span>
+                                    <span class="badge badge-light"> 1 </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer card-footer">
+                    <div class="btn-group btn-group-sm session-group" role="group">
+                        <button id="resetBtn" class="btn btn-sm btn-outline-danger" data-tour="reset"
+                            tabindex="-1">Reset</button>
+                        <span class="session-buttons" data-tour="export">
+                            <button id="exportCSVBtn" class="btn btn-secondary" tabindex="-1"></button>
+                            <button id="exportJsonBtn" class="btn btn-secondary" tabindex="-1"></button>
+                        </span>
+                        <button id="importJsonBtn" class="btn btn-secondary" data-tour="import"
+                            tabindex="-1"></button>
+                        <button id="previewBtn" class="btn btn-secondary" data-tour="report-btn"
+                            tabindex="-1"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 2: the crop editor. Hotspots are transparent boxes positioned over the screenshot. -->
+        <section class="scene">
+            <h2>2. The crop editor: annotate and blur</h2>
+            <p class="scene-caption">After you select an area of the page, this editor opens on top of it.</p>
+
+            <div class="shot">
+                <img src="images/tutorial/editor.png" alt="Screenshot of the annotation editor with a rectangle, an arrow and a blurred area">
+                <span class="hotspot" data-tour="editor-canvas" style="left:7.14%; top:12.5%; width:64.29%; height:63.89%"></span>
+                <span class="hotspot" data-tour="editor-tools" style="left:40.57%; top:85.83%; width:18.71%; height:8.33%"></span>
+                <span class="hotspot" data-tour="editor-blur-tool" style="left:51.86%; top:86.39%; width:3.86%; height:7.5%"></span>
+                <span class="hotspot" data-tour="editor-blurred" style="left:12.57%; top:48.06%; width:51.29%; height:7.64%"></span>
+                <span class="hotspot" data-tour="editor-save" style="left:60.43%; top:86.11%; width:38.14%; height:8.06%"></span>
+            </div>
+        </section>
+
+        <!-- Scene 3: the report. -->
+        <section class="scene">
+            <h2>3. The session report</h2>
+            <p class="scene-caption">The report button in the popup opens this page in a new tab.</p>
+
+            <div class="shot">
+                <img src="images/tutorial/report.png" alt="Screenshot of the session report with statistics, filters and the annotations table">
+                <span class="hotspot" data-tour="report-summary" style="left:7.11%; top:18.5%; width:85.78%; height:42.75%"></span>
+                <span class="hotspot" data-tour="report-filters" style="left:7.81%; top:65%; width:28.9%; height:8.75%"></span>
+                <span class="hotspot" data-tour="report-downloads" style="left:62.97%; top:66%; width:28.9%; height:6%"></span>
+                <span class="hotspot" data-tour="report-table" style="left:7.11%; top:76.9%; width:85.78%; height:23.1%"></span>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

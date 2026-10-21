@@ -158,6 +158,32 @@ body {
 	border-bottom: none;
 }
 
+.header-with-help {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-right: 8px;
+}
+
+.help-btn {
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 1.5px solid var(--color-primary);
+	border-radius: 50%;
+	background: var(--color-surface);
+	color: var(--color-primary);
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	transition: all var(--transition);
+}
+
+.help-btn:hover {
+	background: var(--color-primary);
+	color: #ffffff;
+}
+
 .card-header h5 {
 	font-size: 1rem;
 	font-weight: 600;

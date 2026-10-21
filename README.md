@@ -24,6 +24,12 @@ Install from [Chrome Store](https://chrome.google.com/webstore/detail/explorator
 
 <img src="./screenshots/report.PNG" width="800">
 
+## Tutorial
+
+The extension opens an interactive tutorial the first time you open its popup. It covers adding annotations (with and without screenshots), cropping with description and blur, viewing the report, and exporting or importing a session. To see it again, click the **?** button at the top right of the popup.
+
+The tour is built with [Driver.js](https://driverjs.com/), bundled in `lib/driverjs/` (no CDN). The page is `tutorial.html`, with the steps in `js/tutorial.js`.
+
 ## Development and Testing
 
 This section provides instructions for setting up the project locally for development and running tests.
