@@ -91,7 +91,8 @@ const tourSteps = [
     element: '[data-tour="editor-blurred"]',
     popover: {
       title: 'Blurred area',
-      description: 'This is how a blurred area looks. The blur is baked into the image when you save with annotations.',
+      description:
+        'This is how a blurred area looks. The blur is baked into the image when you save with annotations.',
       side: 'bottom',
     },
   },
@@ -117,7 +118,8 @@ const tourSteps = [
     element: '[data-tour="report-summary"]',
     popover: {
       title: 'Session summary',
-      description: 'Start date, browser, operating system, the number of annotations per type and their distribution.',
+      description:
+        'Start date, browser, operating system, the number of annotations per type and their distribution.',
       side: 'bottom',
     },
   },

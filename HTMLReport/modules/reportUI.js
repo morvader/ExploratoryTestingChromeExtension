@@ -1,26 +1,26 @@
 const ANNOTATION_ICONS = {
-    Bug: '../images/bug.svg',
-    Note: '../images/note.svg',
-    Idea: '../images/light-bulb.svg',
-    Question: '../images/question.svg'
+  Bug: '../images/bug.svg',
+  Note: '../images/note.svg',
+  Idea: '../images/light-bulb.svg',
+  Question: '../images/question.svg',
 };
 
 const ANNOTATION_COLORS = {
-    Bug: '#ef4444',
-    Note: '#22c55e',
-    Idea: '#f59e0b',
-    Question: '#3b82f6'
+  Bug: '#ef4444',
+  Note: '#22c55e',
+  Idea: '#f59e0b',
+  Question: '#3b82f6',
 };
 
 /**
  * Renders session information in the header area.
  */
 export function displaySessionInfo(session) {
-    const sessionInfo = document.getElementById('sessionInfo');
-    const browserInfo = session.getBrowserInfo();
-    const startDateTime = session.getStartDateTime();
+  const sessionInfo = document.getElementById('sessionInfo');
+  const browserInfo = session.getBrowserInfo();
+  const startDateTime = session.getStartDateTime();
 
-    sessionInfo.innerHTML = `
+  sessionInfo.innerHTML = `
         <div class="info-item">
             <span class="info-label">Start Date</span>
             <span class="info-value">${startDateTime.toLocaleString()}</span>
@@ -44,15 +44,22 @@ export function displaySessionInfo(session) {
  * Renders the summary stat cards.
  */
 export function displayStats(session) {
-    const stats = [
-        { type: 'Bug', label: 'Bugs', count: session.getBugs().length, icon: ANNOTATION_ICONS.Bug },
-        { type: 'Note', label: 'Notes', count: session.getNotes().length, icon: ANNOTATION_ICONS.Note },
-        { type: 'Idea', label: 'Ideas', count: session.getIdeas().length, icon: ANNOTATION_ICONS.Idea },
-        { type: 'Question', label: 'Questions', count: session.getQuestions().length, icon: ANNOTATION_ICONS.Question }
-    ];
+  const stats = [
+    { type: 'Bug', label: 'Bugs', count: session.getBugs().length, icon: ANNOTATION_ICONS.Bug },
+    { type: 'Note', label: 'Notes', count: session.getNotes().length, icon: ANNOTATION_ICONS.Note },
+    { type: 'Idea', label: 'Ideas', count: session.getIdeas().length, icon: ANNOTATION_ICONS.Idea },
+    {
+      type: 'Question',
+      label: 'Questions',
+      count: session.getQuestions().length,
+      icon: ANNOTATION_ICONS.Question,
+    },
+  ];
 
-    const statsContainer = document.getElementById('statsCards');
-    statsContainer.innerHTML = stats.map(stat => `
+  const statsContainer = document.getElementById('statsCards');
+  statsContainer.innerHTML = stats
+    .map(
+      (stat) => `
         <div class="stat-card stat-card--${stat.type.toLowerCase()}">
             <div class="stat-card__icon">
                 <img src="${stat.icon}" alt="${stat.type}" class="annotation-icon">
@@ -62,78 +69,83 @@ export function displayStats(session) {
                 <span class="stat-card__label">${stat.label}</span>
             </div>
         </div>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /**
  * Creates the pie chart for annotation distribution.
  */
 export function createAnnotationsChart(session) {
-    const data = [
-        session.getBugs().length,
-        session.getNotes().length,
-        session.getIdeas().length,
-        session.getQuestions().length
-    ];
+  const data = [
+    session.getBugs().length,
+    session.getNotes().length,
+    session.getIdeas().length,
+    session.getQuestions().length,
+  ];
 
-    // Don't render chart if no annotations
-    if (data.every(d => d === 0)) {
-        document.getElementById('chartContainer').style.display = 'none';
-        return;
-    }
+  // Don't render chart if no annotations
+  if (data.every((d) => d === 0)) {
+    document.getElementById('chartContainer').style.display = 'none';
+    return;
+  }
 
-    const ctx = document.getElementById('annotationsChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Bugs', 'Notes', 'Ideas', 'Questions'],
-            datasets: [{
-                data,
-                backgroundColor: [
-                    ANNOTATION_COLORS.Bug,
-                    ANNOTATION_COLORS.Note,
-                    ANNOTATION_COLORS.Idea,
-                    ANNOTATION_COLORS.Question
-                ],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
+  const ctx = document.getElementById('annotationsChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Bugs', 'Notes', 'Ideas', 'Questions'],
+      datasets: [
+        {
+          data,
+          backgroundColor: [
+            ANNOTATION_COLORS.Bug,
+            ANNOTATION_COLORS.Note,
+            ANNOTATION_COLORS.Idea,
+            ANNOTATION_COLORS.Question,
+          ],
+          borderWidth: 0,
+          hoverOffset: 4,
         },
-        options: {
-            responsive: true,
-            cutout: '60%',
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
+      ],
+    },
+    options: {
+      responsive: true,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+    },
+  });
 }
 
 /**
  * Renders the annotations table filtered by the current filter.
  */
 export function displayAnnotationsTable(session, currentFilter) {
-    const tableBody = document.getElementById('annotationsTableBody');
-    const annotations = session.getAnnotations();
-    const filtered = annotations.filter(
-        a => currentFilter === 'all' || a.constructor.name === currentFilter
-    );
+  const tableBody = document.getElementById('annotationsTableBody');
+  const annotations = session.getAnnotations();
+  const filtered = annotations.filter(
+    (a) => currentFilter === 'all' || a.constructor.name === currentFilter
+  );
 
-    if (filtered.length === 0) {
-        tableBody.innerHTML = `
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `
             <tr>
                 <td colspan="6" class="empty-state">
                     No annotations found for this filter.
                 </td>
             </tr>`;
-        return;
-    }
+    return;
+  }
 
-    tableBody.innerHTML = filtered.map((annotation, index) => {
-        const type = annotation.constructor.name;
-        return `
+  tableBody.innerHTML = filtered
+    .map((annotation, index) => {
+      const type = annotation.constructor.name;
+      return `
         <tr class="annotation-row annotation-row--${type.toLowerCase()}">
             <td>
                 <span class="type-badge type-badge--${type.toLowerCase()}">
@@ -147,13 +159,15 @@ export function displayAnnotationsTable(session, currentFilter) {
             </td>
             <td class="annotation-time">${annotation.timestamp ? new Date(annotation.timestamp).toLocaleString() : 'N/A'}</td>
             <td class="screenshot-cell">
-                ${annotation.imageURL
-                ? `<img src="${annotation.imageURL}"
+                ${
+                  annotation.imageURL
+                    ? `<img src="${annotation.imageURL}"
                          class="preview-image"
                          data-index="${index}"
                          data-preview="${annotation.imageURL}"
                          alt="Screenshot">`
-                : '<span class="text-muted">--</span>'}
+                    : '<span class="text-muted">--</span>'
+                }
             </td>
             <td>
                 <button class="delete-btn" data-index="${index}" title="Delete annotation">
@@ -163,21 +177,22 @@ export function displayAnnotationsTable(session, currentFilter) {
                 </button>
             </td>
         </tr>`;
-    }).join('');
+    })
+    .join('');
 }
 
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function truncateUrl(url) {
-    try {
-        const parsed = new URL(url);
-        const display = parsed.hostname + parsed.pathname;
-        return display.length > 50 ? display.substring(0, 47) + '...' : display;
-    } catch {
-        return url.length > 50 ? url.substring(0, 47) + '...' : url;
-    }
+  try {
+    const parsed = new URL(url);
+    const display = parsed.hostname + parsed.pathname;
+    return display.length > 50 ? display.substring(0, 47) + '...' : display;
+  } catch {
+    return url.length > 50 ? url.substring(0, 47) + '...' : url;
+  }
 }

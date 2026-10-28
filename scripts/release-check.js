@@ -10,6 +10,21 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const run = (cmd) =>
   execSync(cmd, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
 
+// --staged (pre-commit): skip unless the staged manifest differs in content from
+// HEAD, so formatting-only changes to manifest.json don't trigger the gate.
+if (process.argv.includes('--staged')) {
+  try {
+    const staged = JSON.parse(run('git show :manifest.json'));
+    const head = JSON.parse(run('git show HEAD:manifest.json'));
+    if (JSON.stringify(staged) === JSON.stringify(head)) {
+      console.log('release:check skipped (manifest.json content unchanged)');
+      process.exit(0);
+    }
+  } catch {
+    // no HEAD or unreadable manifest: fall through and run the full check
+  }
+}
+
 const errors = [];
 const warnings = [];
 

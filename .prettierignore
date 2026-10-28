@@ -7,3 +7,4 @@ coverage/
 *.min.js
 HTMLReport/TableFilter/
 package-lock.json
+*.min.css

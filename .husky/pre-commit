@@ -1,5 +1,5 @@
 npx lint-staged
 npm test
 if git diff --cached --name-only | grep -qx "manifest.json"; then
-  npm run release:check
+  node scripts/release-check.js --staged
 fi

@@ -107,7 +107,7 @@ test.describe('Reports and Export Functionality', () => {
     expect(originalCount).toBeGreaterThanOrEqual(3);
 
     // Find specific annotation to verify later
-    const testBug = originalSession.annotations.find(a => a.name === 'Test Bug for Export');
+    const testBug = originalSession.annotations.find((a) => a.name === 'Test Bug for Export');
     expect(testBug).toBeTruthy();
 
     // Close popup
@@ -122,7 +122,7 @@ test.describe('Reports and Export Functionality', () => {
     expect(newSession.annotations.length).toBe(originalCount);
 
     // Verify specific annotation persisted
-    const persistedBug = newSession.annotations.find(a => a.name === 'Test Bug for Export');
+    const persistedBug = newSession.annotations.find((a) => a.name === 'Test Bug for Export');
     expect(persistedBug).toBeTruthy();
     expect(persistedBug.type).toBe('Bug');
   });

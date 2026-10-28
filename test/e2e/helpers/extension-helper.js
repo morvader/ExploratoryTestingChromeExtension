@@ -20,7 +20,7 @@ async function launchBrowserWithExtension() {
   if (fs.existsSync(userDataDir)) {
     try {
       // Wait a bit for any file locks to release
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       fs.rmSync(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 1000 });
     } catch (error) {
       console.warn(`⚠️ Could not fully clean user data dir: ${error.message}`);
@@ -48,7 +48,7 @@ async function launchBrowserWithExtension() {
     });
 
     // Give extension time to load
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     console.log(`✅ Using extension ID: ${manualExtensionId}`);
     return { context, extensionId: manualExtensionId };
@@ -70,7 +70,7 @@ async function launchBrowserWithExtension() {
   });
 
   console.log('Browser context launched, waiting for extension to initialize...');
-  await new Promise(resolve => setTimeout(resolve, 5000)); // Edge needs more time
+  await new Promise((resolve) => setTimeout(resolve, 5000)); // Edge needs more time
 
   // Try multiple methods to get extension ID
   let extensionId = null;
@@ -82,9 +82,8 @@ async function launchBrowserWithExtension() {
     const client = await context.newCDPSession(page);
     const targets = await client.send('Target.getTargets');
 
-    const extensionTarget = targets.targetInfos.find(target =>
-      target.type === 'service_worker' &&
-      target.url.includes('chrome-extension://')
+    const extensionTarget = targets.targetInfos.find(
+      (target) => target.type === 'service_worker' && target.url.includes('chrome-extension://')
     );
 
     if (extensionTarget) {
@@ -119,24 +118,23 @@ async function launchBrowserWithExtension() {
     // Debug info
     console.error('❌ Could not find extension ID using any method');
     console.error('Debug info:', {
-      cdpTargets: targets.targetInfos.map(t => ({ type: t.type, url: t.url })),
+      cdpTargets: targets.targetInfos.map((t) => ({ type: t.type, url: t.url })),
       backgroundPages: backgroundPages.length,
       serviceWorkers: workers.length,
     });
 
     throw new Error(
       '❌ Could not determine extension ID.\n\n' +
-      '📋 Troubleshooting steps:\n' +
-      '1. Load the extension manually in Chrome (chrome://extensions)\n' +
-      '2. Check for errors in the extension (click "Errors" button)\n' +
-      '3. Verify background.js loads without errors\n' +
-      '4. Ensure manifest.json is valid\n\n' +
-      '💡 Alternative: Use environment variable:\n' +
-      '   $env:EXTENSION_ID="your-extension-id"\n' +
-      '   npm run test:e2e\n\n' +
-      `Extension path: ${extensionPath}`
+        '📋 Troubleshooting steps:\n' +
+        '1. Load the extension manually in Chrome (chrome://extensions)\n' +
+        '2. Check for errors in the extension (click "Errors" button)\n' +
+        '3. Verify background.js loads without errors\n' +
+        '4. Ensure manifest.json is valid\n\n' +
+        '💡 Alternative: Use environment variable:\n' +
+        '   $env:EXTENSION_ID="your-extension-id"\n' +
+        '   npm run test:e2e\n\n' +
+        `Extension path: ${extensionPath}`
     );
-
   } catch (error) {
     await page.close();
     throw error;

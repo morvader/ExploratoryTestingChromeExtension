@@ -1,8 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const {
-  launchBrowserWithExtension,
-  openExtensionPopup,
-} = require('./helpers/extension-helper');
+const { launchBrowserWithExtension, openExtensionPopup } = require('./helpers/extension-helper');
 
 /**
  * Smoke tests - Quick verification that the extension loads and basic functionality works
@@ -22,7 +19,7 @@ test.describe('Smoke Tests', () => {
   test.afterAll(async () => {
     await context.close();
     // Wait a bit for cleanup before next test suite
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   test('extension loads successfully', async () => {
