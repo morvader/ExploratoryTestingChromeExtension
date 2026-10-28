@@ -88,7 +88,7 @@ test.describe('Crop Screenshot Functionality', () => {
 
     // Setup dialog handler to catch the alert
     let alertShown = false;
-    popupPage.once('dialog', async dialog => {
+    popupPage.once('dialog', async (dialog) => {
       expect(dialog.type()).toBe('alert');
       expect(dialog.message()).toContain('description');
       alertShown = true;
@@ -160,7 +160,7 @@ test.describe('Crop Screenshot Functionality', () => {
 
         // Intercept the message
         const originalSendMessage = chrome.runtime.sendMessage;
-        chrome.runtime.sendMessage = function(message, callback) {
+        chrome.runtime.sendMessage = function (message, callback) {
           if (message.type === 'initiateCropSelection') {
             clearTimeout(timeout);
             resolve(message);
@@ -190,9 +190,24 @@ test.describe('Crop Screenshot Functionality', () => {
   test('should verify crop buttons work for all annotation types', async () => {
     // Verify each annotation type has working crop functionality
     const types = [
-      { button: '#NoteBtn', input: '#newNoteDescription', crop: '#addNewNoteCropBtn', name: 'Note' },
-      { button: '#IdeaBtn', input: '#newIdeaDescription', crop: '#addNewIdeaCropBtn', name: 'Idea' },
-      { button: '#QuestionBtn', input: '#newQuestionDescription', crop: '#addNewQuestionCropBtn', name: 'Question' }
+      {
+        button: '#NoteBtn',
+        input: '#newNoteDescription',
+        crop: '#addNewNoteCropBtn',
+        name: 'Note',
+      },
+      {
+        button: '#IdeaBtn',
+        input: '#newIdeaDescription',
+        crop: '#addNewIdeaCropBtn',
+        name: 'Idea',
+      },
+      {
+        button: '#QuestionBtn',
+        input: '#newQuestionDescription',
+        crop: '#addNewQuestionCropBtn',
+        name: 'Question',
+      },
     ];
 
     for (const type of types) {
@@ -222,14 +237,19 @@ test.describe('Crop Screenshot Functionality', () => {
       bug: '#addNewBugCropBtn',
       note: '#addNewNoteCropBtn',
       idea: '#addNewIdeaCropBtn',
-      question: '#addNewQuestionCropBtn'
+      question: '#addNewQuestionCropBtn',
     };
 
     for (const [type, buttonId] of Object.entries(cropButtons)) {
       // Click the type button
-      const typeButtonId = type === 'bug' ? '#BugBtn' :
-                          type === 'note' ? '#NoteBtn' :
-                          type === 'idea' ? '#IdeaBtn' : '#QuestionBtn';
+      const typeButtonId =
+        type === 'bug'
+          ? '#BugBtn'
+          : type === 'note'
+            ? '#NoteBtn'
+            : type === 'idea'
+              ? '#IdeaBtn'
+              : '#QuestionBtn';
 
       await popupPage.click(typeButtonId);
       await popupPage.waitForTimeout(300);
@@ -239,7 +259,7 @@ test.describe('Crop Screenshot Functionality', () => {
       await expect(button).toBeVisible();
 
       // Verify it has the crop-screenshot class
-      const hasClass = await button.evaluate(el => el.classList.contains('crop-screenshot'));
+      const hasClass = await button.evaluate((el) => el.classList.contains('crop-screenshot'));
       expect(hasClass).toBe(true);
 
       console.log(`✓ Verified crop button for ${type}: ${buttonId}`);
@@ -325,8 +345,8 @@ test.describe('Crop Screenshot Functionality', () => {
       const cells = Array.from(document.querySelectorAll('.screenshot-cell'));
       return {
         total: cells.length,
-        withImages: cells.filter(c => c.querySelector('img[src^="data:image"]')).length,
-        withPlaceholder: cells.filter(c => c.querySelector('.text-muted')).length
+        withImages: cells.filter((c) => c.querySelector('img[src^="data:image"]')).length,
+        withPlaceholder: cells.filter((c) => c.querySelector('.text-muted')).length,
       };
     });
 

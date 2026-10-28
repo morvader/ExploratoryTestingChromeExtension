@@ -1,8 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const {
-  launchBrowserWithExtension,
-  openExtensionPopup,
-} = require('./helpers/extension-helper');
+const { launchBrowserWithExtension, openExtensionPopup } = require('./helpers/extension-helper');
 
 /**
  * Tutorial tests - Driver.js tour in tutorial.html and the popup entry points
@@ -12,7 +9,7 @@ test.describe('Tutorial', () => {
   let context;
   let extensionId;
 
-  const tutorialPages = () => context.pages().filter(p => p.url().endsWith('/tutorial.html'));
+  const tutorialPages = () => context.pages().filter((p) => p.url().endsWith('/tutorial.html'));
 
   test.beforeAll(async () => {
     const result = await launchBrowserWithExtension();
@@ -32,7 +29,7 @@ test.describe('Tutorial', () => {
 
   test('opens the tutorial automatically the first time the popup is shown', async () => {
     const tutorialOpened = context.waitForEvent('page', {
-      predicate: p => p.url().endsWith('/tutorial.html') || p.url() === 'about:blank',
+      predicate: (p) => p.url().endsWith('/tutorial.html') || p.url() === 'about:blank',
       timeout: 10000,
     });
     await openExtensionPopup(context, extensionId, { firstRun: true });
@@ -43,7 +40,7 @@ test.describe('Tutorial', () => {
 
   test('does not open the tutorial again once it has been seen', async () => {
     await openExtensionPopup(context, extensionId);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     expect(tutorialPages()).toHaveLength(0);
   });
@@ -82,7 +79,7 @@ test.describe('Tutorial', () => {
   test('tutorial loads Driver.js from the extension, not from a CDN', async () => {
     const externalRequests = [];
     const page = await context.newPage();
-    page.on('request', request => {
+    page.on('request', (request) => {
       const url = request.url();
       if (!url.startsWith('chrome-extension://') && !url.startsWith('data:')) {
         externalRequests.push(url);

@@ -4,13 +4,19 @@ import { getSystemInfo } from './browserInfo.js';
 export class Session {
   constructor(dateTime, browserInfo) {
     // Check if provided browserInfo is sufficiently complete
-    if (browserInfo && typeof browserInfo.browser === 'string' && browserInfo.browser !== '' &&
-        typeof browserInfo.browserVersion === 'string' && browserInfo.browserVersion !== '' &&
-        typeof browserInfo.os === 'string' && browserInfo.os !== '') {
-        this.BrowserInfo = browserInfo;
+    if (
+      browserInfo &&
+      typeof browserInfo.browser === 'string' &&
+      browserInfo.browser !== '' &&
+      typeof browserInfo.browserVersion === 'string' &&
+      browserInfo.browserVersion !== '' &&
+      typeof browserInfo.os === 'string' &&
+      browserInfo.os !== ''
+    ) {
+      this.BrowserInfo = browserInfo;
     } else {
-        // If browserInfo is missing, null, undefined, or incomplete, get current system info
-        this.BrowserInfo = getSystemInfo();
+      // If browserInfo is missing, null, undefined, or incomplete, get current system info
+      this.BrowserInfo = getSystemInfo();
     }
     this.StartDateTime = dateTime || Date.now(); // Provide a fallback for dateTime
     this.annotations = [];
@@ -43,19 +49,19 @@ export class Session {
   }
 
   getBugs() {
-    return this.annotations.filter(item => item instanceof Bug);
+    return this.annotations.filter((item) => item instanceof Bug);
   }
 
   getNotes() {
-    return this.annotations.filter(item => item instanceof Note);
+    return this.annotations.filter((item) => item instanceof Note);
   }
 
   getIdeas() {
-    return this.annotations.filter(item => item instanceof Idea);
+    return this.annotations.filter((item) => item instanceof Idea);
   }
 
   getQuestions() {
-    return this.annotations.filter(item => item instanceof Question);
+    return this.annotations.filter((item) => item instanceof Question);
   }
 
   addBug(newBug) {

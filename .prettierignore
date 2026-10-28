@@ -1,0 +1,10 @@
+lib/
+node_modules/
+playwright-report/
+test-results/
+coverage/
+*.zip
+*.min.js
+HTMLReport/TableFilter/
+package-lock.json
+*.min.css

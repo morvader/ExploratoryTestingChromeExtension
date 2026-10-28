@@ -111,7 +111,7 @@ test.describe('Basic Extension Functionality', () => {
     expect(noteCounter.trim()).toBe('1');
 
     const sessionData = await getSessionData(popupPage);
-    const noteAnnotation = sessionData.annotations.find(a => a.type === 'Note');
+    const noteAnnotation = sessionData.annotations.find((a) => a.type === 'Note');
     expect(noteAnnotation).toBeTruthy();
     expect(noteAnnotation.name).toBe('Test Note');
   });
@@ -130,7 +130,7 @@ test.describe('Basic Extension Functionality', () => {
     expect(ideaCounter.trim()).toBe('1');
 
     const sessionData = await getSessionData(popupPage);
-    const ideaAnnotation = sessionData.annotations.find(a => a.type === 'Idea');
+    const ideaAnnotation = sessionData.annotations.find((a) => a.type === 'Idea');
     expect(ideaAnnotation).toBeTruthy();
     expect(ideaAnnotation.name).toBe('Test Idea');
   });
@@ -149,7 +149,7 @@ test.describe('Basic Extension Functionality', () => {
     expect(questionCounter.trim()).toBe('1');
 
     const sessionData = await getSessionData(popupPage);
-    const questionAnnotation = sessionData.annotations.find(a => a.type === 'Question');
+    const questionAnnotation = sessionData.annotations.find((a) => a.type === 'Question');
     expect(questionAnnotation).toBeTruthy();
     expect(questionAnnotation.name).toBe('Test Question?');
   });
@@ -196,10 +196,10 @@ test.describe('Basic Extension Functionality', () => {
     expect(sessionData.annotations.length).toBeGreaterThanOrEqual(4);
 
     // Verify we have at least one of each type
-    const bugAnnotations = sessionData.annotations.filter(a => a.type === 'Bug');
-    const noteAnnotations = sessionData.annotations.filter(a => a.type === 'Note');
-    const ideaAnnotations = sessionData.annotations.filter(a => a.type === 'Idea');
-    const questionAnnotations = sessionData.annotations.filter(a => a.type === 'Question');
+    const bugAnnotations = sessionData.annotations.filter((a) => a.type === 'Bug');
+    const noteAnnotations = sessionData.annotations.filter((a) => a.type === 'Note');
+    const ideaAnnotations = sessionData.annotations.filter((a) => a.type === 'Idea');
+    const questionAnnotations = sessionData.annotations.filter((a) => a.type === 'Question');
 
     expect(bugAnnotations.length).toBeGreaterThanOrEqual(1);
     expect(noteAnnotations.length).toBeGreaterThanOrEqual(1);
@@ -236,7 +236,7 @@ test.describe('Basic Extension Functionality', () => {
 
     // Verify URL was captured (should contain page1.html or at least localhost)
     const sessionData = await getSessionData(popupPage);
-    const bugAnnotation = sessionData.annotations.find(a => a.name === 'Bug with URL');
+    const bugAnnotation = sessionData.annotations.find((a) => a.name === 'Bug with URL');
     expect(bugAnnotation).toBeTruthy();
     // Note: Extension might capture popup URL in test environment - this is a known limitation
     expect(bugAnnotation.url).toBeTruthy();
@@ -271,7 +271,7 @@ test.describe('Basic Extension Functionality', () => {
     await waitForStorageUpdate(popupPage, 300);
 
     // Session might have annotation with empty name or no annotation
-    const sessionData = await getSessionData(popupPage);
+    await getSessionData(popupPage);
     // This test verifies the extension doesn't crash with empty input
     // The actual behavior depends on your validation logic
   });

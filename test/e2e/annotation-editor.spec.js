@@ -3,7 +3,6 @@ const {
   launchBrowserWithExtension,
   openExtensionPopup,
   clearExtensionStorage,
-  waitForStorageUpdate,
 } = require('./helpers/extension-helper');
 
 /**
@@ -186,14 +185,18 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Create a simple test image (1x1 red pixel)
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
 
     // Send initialization message
     await editorPage.evaluate((imageData) => {
-      window.postMessage({
-        type: 'initAnnotationEditor',
-        imageData: imageData
-      }, '*');
+      window.postMessage(
+        {
+          type: 'initAnnotationEditor',
+          imageData: imageData,
+        },
+        '*'
+      );
     }, testImageData);
 
     // Wait for canvas to be initialized
@@ -204,7 +207,7 @@ test.describe('Annotation Editor Functionality', () => {
       const canvas = document.getElementById('annotation-canvas');
       return {
         width: canvas.width,
-        height: canvas.height
+        height: canvas.height,
       };
     });
 
@@ -229,7 +232,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
@@ -280,7 +284,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
@@ -323,7 +328,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
@@ -359,7 +365,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
@@ -443,7 +450,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
@@ -477,7 +485,8 @@ test.describe('Annotation Editor Functionality', () => {
     await editorPage.waitForLoadState('domcontentloaded');
 
     // Initialize with test image
-    const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
+    const testImageData =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==';
     await editorPage.evaluate((imageData) => {
       window.postMessage({ type: 'initAnnotationEditor', imageData }, '*');
     }, testImageData);
