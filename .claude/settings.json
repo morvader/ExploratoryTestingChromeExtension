@@ -1,7 +1,18 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(npx playwright:*)"
+    "allow": ["Bash(npx playwright:*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/claude-guard.js\""
+          }
+        ]
+      }
     ]
   }
 }

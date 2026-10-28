@@ -1,6 +1,5 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
-const path = require('path');
 
 const isCI = !!process.env.CI;
 const isWindows = process.platform === 'win32';
@@ -22,10 +21,7 @@ module.exports = defineConfig({
   workers: 1, // Run tests sequentially for extensions
 
   // Reporter to use
-  reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['list']
-  ],
+  reporter: [['html', { outputFolder: 'playwright-report' }], ['list']],
 
   // Shared settings for all the projects below
   use: {
@@ -44,7 +40,6 @@ module.exports = defineConfig({
     // Slower actions for better stability with extensions
     actionTimeout: 10 * 1000,
     headless: true, // Uses --headless=new which supports extensions (Chrome 109+)
-
   },
 
   // Configure projects for major browsers
@@ -62,9 +57,7 @@ module.exports = defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: isWindows
-      ? 'powershell -File ./start_test_server.ps1'
-      : 'python3 -m http.server 8000',
+    command: isWindows ? 'powershell -File ./start_test_server.ps1' : 'python3 -m http.server 8000',
     url: 'http://localhost:8000',
     reuseExistingServer: !isCI,
     timeout: 10 * 1000,
