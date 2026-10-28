@@ -35,6 +35,9 @@ Load the extension manually: `chrome://extensions` → Developer mode → **Load
 | `npm run test:e2e:ui` / `:debug` | Playwright UI mode / step debugger |
 | `npm run test:e2e:crop` | Crop-screenshot specs, headed |
 | `npm run test:e2e:report` | Open last HTML report |
+| `npm run lint` / `npm run format` | ESLint / Prettier write (`format:check` only verifies) |
+| `npm run check` | Lint + format check + unit tests |
+| `npm run release:check` | Release gate: version bumped, `package.json` = `manifest.json`, zip allowlist covers the manifest, no high/critical `npm audit` findings |
 | `npm run test:all` | Unit + full E2E |
 | `.\genetareZip.ps1` | Build `ETExtension-<timestamp>.zip` for Web Store upload (PowerShell, runtime files only) |
 | `.\start_test_server.ps1` | `python -m http.server 8000` serving the repo; open `/test/e2e/test-pages/index.html` |
@@ -160,9 +163,19 @@ If your agent supports these, use them:
 
 ## Definition of done
 
-1. `npm test` passes.
+1. `npm run check` passes (ESLint, Prettier check, Jest). Run `npm run format` to fix formatting.
 2. Relevant E2E specs pass (`npm run test:e2e:all` for UI / message-flow changes).
 3. New `chrome.*` calls are mocked in `jest.setup.js`; new specs are wired into `package.json`.
 4. Extension reloaded and the change checked manually in Chrome when it affects UI.
 5. The tutorial (`js/tutorial.js`, `tutorial.html`, images) and README features / screenshots updated if the change is user-visible.
 6. This file updated if architecture, commands or conventions changed.
+7. Release: bump `manifest.json` `version` (and `package.json` to match), then `npm run release:check` passes.
+
+### Git hooks (Husky)
+
+Installed by `npm install` (`prepare` script). They are the gate; do not bypass them.
+
+- **pre-commit**: lint-staged (ESLint + Prettier on staged files), full Jest suite, and `release:check` when the content of `manifest.json` changes.
+- **pre-push**: headless E2E (`npm run test:e2e:ci`) when runtime files changed in the pushed range; skipped otherwise. CI runs the same suite.
+- Never use `--no-verify` or `HUSKY=0`; a Claude Code hook (`scripts/claude-guard.js`) blocks them. If a hook fails, fix the cause.
+- Why the checks are split this way: `docs/adr/0001-tiered-git-hooks.md`.
